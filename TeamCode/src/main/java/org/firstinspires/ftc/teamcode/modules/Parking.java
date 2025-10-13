@@ -10,9 +10,13 @@ public class Parking {
     private Servo servo;
 
     public static double POWER = 1;
-    public static double UP = 1000;
-    public static double POS = 0;
+    public static double ENCODER_PULSES = 537.7;
+    public static double WHEEL_DIAMETER = 9.6;
+    public static double PULSES_CM = ENCODER_PULSES / (Math.PI * WHEEL_DIAMETER);
 
+
+    public static int MAX_POSITION = 1000;
+    public static int MIN_POSITION = 0;
 
 
     public Parking(LinearOpMode linearOpMode) {
@@ -22,8 +26,12 @@ public class Parking {
 //??  Не уверена сюда ли направление
         upMotor.setDirection(DcMotor.Direction.FORWARD);
     }
-
-    public void setPower() {
-        upMotor.setPower(POWER);
+// Не уверена
+    public void getUpOrDown() {
+        if (upMotor.getCurrentPosition() == MAX_POSITION) {
+            upMotor.setTargetPosition(MIN_POSITION);
+        } else if (upMotor.getCurrentPosition() == MIN_POSITION) {
+            upMotor.setTargetPosition(MAX_POSITION);
+        }
     }
 }
