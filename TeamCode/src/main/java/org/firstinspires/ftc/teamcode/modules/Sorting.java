@@ -84,12 +84,9 @@ public class Sorting {
             timer.reset();
 
             while (!isInterrupted()) {
-
                 intaker();
                 drumTurner(pos, artefact_pos(getColor()));
                 shooter(drumMotor.getCurrentPosition());
-
-
             }
         }
     }
@@ -108,9 +105,11 @@ public class Sorting {
     }
 
     public void shooter(int pos) {
+        int a = pos;
         switchWall();
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-            while (drumMotor.getCurrentPosition() <= DEGREES * 120) drumMotor.setPower(SPEED);
+            while (a <= DEGREES * 120) drumMotor.setPower(SPEED);
+            a += 120;
         }
     }
 
