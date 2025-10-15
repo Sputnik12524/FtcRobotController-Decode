@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules;
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,55 +8,32 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 import java.util.ArrayList;
 
-
 public class Sorting {
-
-
     private final ElapsedTime timer = new ElapsedTime();
     private final NormalizedColorSensor colorSensor;
     private final NormalizedColorSensor colorSensor2;
     private final NormalizedColorSensor colorSensor3;
-
-    enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
-    //private Scan position;
-
-
-
-    enum Color {GREEN, PURPLE, NONE}
-
-
     private final DcMotor drumMotor;
     private final Servo wall;
     public Scan pos;
-    public static double SPEED = 0.5;
-    public static double OPEN_WALL;
-    public static double CLOSE_WALL;
-    public static final double GREEN_MAX = 100;
-    public static final double GREEN_MIN = 100;
-    //public static final double PURPLE_MAX = 100;
-    //public static final double PURPLE_MIN = 100;
-
-
-    public static final double PULSES = 537.7;
-    public static final float GAIN = 0.2F;
+    public static final float GAIN = 3F;
     public static float[] hsv = new float[3];
     public static float[] hsv2 = new float[3];
     public static float[] hsv3 = new float[3];
-    boolean green;
-    boolean purple;
-    boolean a; // 1 датчик
-    boolean b;// 2 датчик
-    boolean c;// 3 датчик
-
-    public static final double DEGREES = PULSES / 360; // Использование: DEGREES * distanse
-
+    public static final double PULSES = 537.7;
+    public static final double DEGREES = PULSES / 360;
+    enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
+    enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
+    public static double SPEED = 0.5;
+    public static final double OPEN_WALL = 0.57;
+    public static final double CLOSE_WALL = 0.34;
+    public static final double GREEN_MAX = 160;
+    public static final double GREEN_MIN = 135;
+    public static final double PURPLE_MAX = 305;
+   public static final double PURPLE_MIN = 220;
     SortMotorDriver sortMotorDriver = new SortMotorDriver();
-
 
     public Sorting(LinearOpMode opMode, Scan scan) {
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drumMotor");
@@ -182,20 +158,23 @@ public class Sorting {
         android.graphics.Color.colorToHSV(color2.toColor(), hsv2);
         android.graphics.Color.colorToHSV(color3.toColor(), hsv3);
 
-        if (hsv[1] < 0.5) {
-            if (hsv[0] <= GREEN_MAX && hsv[0] >= GREEN_MIN) colorSensors.add(Color.GREEN);
-            else colorSensors.add(Color.PURPLE);
-        } else colorSensors.add(Color.NONE);
 
-        if (hsv2[1] < 0.5) {
+        if (hsv[0] <= GREEN_MAX && hsv[0] >= GREEN_MIN) colorSensors.add(Color.GREEN);
+        else if(hsv[0] <= PURPLE_MAX && hsv[0] >= PURPLE_MIN) colorSensors.add(Color.PURPLE);
+        else colorSensors.add(Color.NONE);
+
+
+
             if (hsv2[0] <= GREEN_MAX && hsv2[0] >= GREEN_MIN) colorSensors.add(Color.GREEN);
-            else colorSensors.add(Color.PURPLE);
-        } else colorSensors.add(Color.NONE);
+            else if(hsv2[0] <= PURPLE_MAX && hsv2[0] >= PURPLE_MIN) colorSensors.add(Color.PURPLE);
+            else colorSensors.add(Color.NONE);
 
-        if (hsv3[1] < 0.5) {
-            if (hsv3[0] <= GREEN_MAX && hsv3[0] >= GREEN_MIN) colorSensors.add(Color.GREEN);
-            else colorSensors.add(Color.PURPLE);
-        } else colorSensors.add(Color.NONE);
+
+
+        if (hsv3[0] <= GREEN_MAX && hsv3[0] >= GREEN_MIN) colorSensors.add(Color.GREEN);
+        else if(hsv3[0] <= PURPLE_MAX && hsv3[0] >= PURPLE_MIN) colorSensors.add(Color.PURPLE);
+        else colorSensors.add(Color.NONE);
+
 
         return colorSensors;
 
