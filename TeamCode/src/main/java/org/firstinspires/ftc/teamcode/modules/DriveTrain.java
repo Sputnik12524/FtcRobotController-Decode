@@ -13,6 +13,8 @@ public class DriveTrain {
     public static double POWER;
     public static double direction;
 
+    int power = 1;
+
 
     public DriveTrain(LinearOpMode linearOpMode) {
         this.leftFront = linearOpMode.hardwareMap.get(DcMotor.class, "leftFront");
@@ -27,5 +29,36 @@ public class DriveTrain {
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void motors(){}
+    public void serPower(RobotDirection direction, double power){
+        serPower(power, power, power,power);
+    }
+
+    public enum RobotDirection {FORWARD, BACK, RIGHT, LEFT,FORWARD_LEFT, FORWARD_RIGHT,BACK_LEFT,BACK_RIGHT,STOP}
+    public void setPower (RobotDirection direction, double power){
+        switch (direction){
+            case STOP:
+                setPower(0);
+            case FORWARD:
+                serPower(power);
+                break;
+            case BACK:
+                serPower(-power);
+                break;
+            case LEFT:
+                setPower(-power,power,power,-power);
+                break;
+            case RIGHT:
+                setPower(power,-power,-power,power);
+                break;
+            case FORWARD_LEFT:
+                setPower(power,0,0,power);
+                break;
+            case FORWARD_RIGHT:
+                setPower(0,power,power,0);
+
+        }
     }
 }
