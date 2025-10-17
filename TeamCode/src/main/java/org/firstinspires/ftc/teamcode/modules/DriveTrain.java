@@ -9,11 +9,9 @@ public class DriveTrain {
     private DcMotor rightFront;
     private DcMotor rightBack;
 
-    public static double FORWARD;
-    public static double POWER;
-    public static double direction;
-
-    int power = 1;
+    public static double WHEEL_DIAMETER = 10.1;
+    public static double PULSES = 537.7;
+    public static double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
 
 
     public DriveTrain(LinearOpMode linearOpMode) {
@@ -21,43 +19,150 @@ public class DriveTrain {
         this.leftBack = linearOpMode.hardwareMap.get(DcMotor.class, "leftBack");
         this.rightFront = linearOpMode.hardwareMap.get(DcMotor.class, "rightFront");
         this.rightBack = linearOpMode.hardwareMap.get(DcMotor.class, "rightBack");
+
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void motors(){}
-    public void serPower(RobotDirection direction, double power){
-        serPower(power, power, power,power);
+
+    public void driveToDistanceStraight(double distance, double power) {
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setPower(power);
+        leftBack.setPower(power);
+        rightFront.setPower(power);
+        rightBack.setPower(power);
+
+        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance) {
+        }
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
     }
 
-    public enum RobotDirection {FORWARD, BACK, RIGHT, LEFT,FORWARD_LEFT, FORWARD_RIGHT,BACK_LEFT,BACK_RIGHT,STOP}
-    public void setPower (RobotDirection direction, double power){
-        switch (direction){
-            case STOP:
-                setPower(0);
+    public void driveToDistanceSides(double distance, double power) {
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setPower(power);
+        leftBack.setPower(-power);
+        rightFront.setPower(-power);
+        rightBack.setPower(power);
+
+        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance) {
+        }
+
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public void driveToDistanceRotation(double distance, double power) {
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setPower(-power);
+        leftBack.setPower(-power);
+        rightFront.setPower(power);
+        rightBack.setPower(power);
+
+        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance) {
+        }
+
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public enum RobotDirection {FORWARD, BACK, RIGHT, LEFT, FORWARD_LEFT, FORWARD_RIGHT, BACK_LEFT, BACK_RIGHT, ROTATION_CLOCKWISE, COUNTERCLOCKWISE_ROTATION}
+
+    public void setDTPower(RobotDirection direction, double power, double distance) {
+        switch (direction) {
+
             case FORWARD:
-                serPower(power);
+                driveToDistanceStraight(distance, power);
                 break;
+
             case BACK:
-                serPower(-power);
+                driveToDistanceStraight(distance, -power);
                 break;
+
             case LEFT:
-                setPower(-power,power,power,-power);
+                driveToDistanceSides(distance, -power);
                 break;
+
             case RIGHT:
-                setPower(power,-power,-power,power);
+                driveToDistanceSides(distance, power);
                 break;
+
+            case ROTATION_CLOCKWISE:
+                driveToDistanceRotation(distance, power);
+                break;
+
+            case COUNTERCLOCKWISE_ROTATION:
+                driveToDistanceRotation(distance, -power);
+                break;
+/*
             case FORWARD_LEFT:
-                setPower(power,0,0,power);
+                leftFront.setPower(0);
+                leftBack.setPower(power);
+                rightFront.setPower(power);
+                rightBack.setPower(0);
                 break;
+
             case FORWARD_RIGHT:
-                setPower(0,power,power,0);
+                leftFront.setPower(power);
+                leftBack.setPower(0);
+                rightFront.setPower(0);
+                rightBack.setPower(power);
+                break;
+
+            case BACK_LEFT:
+                leftFront.setPower(-power);
+                leftBack.setPower(0);
+                rightFront.setPower(0);
+                rightBack.setPower(-power);
+                break;
+
+            case BACK_RIGHT:
+                leftFront.setPower(0);
+                leftBack.setPower(-power);
+                rightFront.setPower(-power);
+                rightBack.setPower(0);
+                break;
+ */
 
         }
     }
