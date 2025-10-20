@@ -5,33 +5,46 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake {
-    private DcMotor Catch;
+    private DcMotor catcher;
     private Servo flap;
 
     public static double POWER;
-    public static double MAX;
     public static double OPEN;
     public static double CLOSE;
 
     public Intake(LinearOpMode linearOpMode) {
-        this.Catch = linearOpMode.hardwareMap.get(DcMotor.class, "catch");
+        this.catcher = linearOpMode.hardwareMap.get(DcMotor.class, "catcher");
         this.flap = linearOpMode.hardwareMap.get(Servo.class, "flap");
-        Catch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Catch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void rotation() {
-        if (Catch.getCurrentPosition() == 0) {
-            Catch.setPower(POWER);
-        } else if (Catch.getCurrentPosition() >= MAX) {
-            Catch.setPower(-POWER);
+    public void rotationIn() {
+        if (catcher.getCurrentPosition() == 0) {
+            catcher.setPower(POWER);
+        } else if (catcher.getCurrentPosition() > 0) {
+            catcher.setPower(0);
+            catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
-    public void flap (){
-        if (flap.getPosition() >= 0) {
+
+    public void rotationOut() {
+        if (catcher.getCurrentPosition() == 0) {
+            catcher.setPower(-POWER);
+        } else if (catcher.getCurrentPosition() < 0) {
+            catcher.setPower(0);
+            catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
+
+    public void flapOpenAndClose() {
+        if (flap.getPosition() == CLOSE) {
             flap.setPosition(OPEN);
         } else {
             flap.setPosition(CLOSE);
         }
     }
 }
+
