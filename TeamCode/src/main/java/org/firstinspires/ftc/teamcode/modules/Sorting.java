@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules;
+
 import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import java.util.ArrayList;
 
 public class Sorting {
@@ -26,15 +28,18 @@ public class Sorting {
     public static float[] hsv3 = new float[3];
     public static final double PULSES = 537.7;
     public static final double DEGREES = PULSES / 360;
+
     enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
+
     enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
+
     public static double SPEED = 0.5;
     public static final double OPEN_WALL = 0.57;
     public static final double CLOSE_WALL = 0.34;
     public static final double GREEN_MAX = 160;
     public static final double GREEN_MIN = 135;
     public static final double PURPLE_MAX = 305;
-   public static final double PURPLE_MIN = 220;
+    public static final double PURPLE_MIN = 220;
     SortMotorDriver sortMotorDriver = new SortMotorDriver();
 
     public Sorting(LinearOpMode opMode) {
@@ -67,6 +72,7 @@ public class Sorting {
             }
         }
     }
+
     public void intaker() {
         int i = 0;
         while (getColor().get(2) == Color.NONE) { // 3 датчик нечего не видит
@@ -85,7 +91,7 @@ public class Sorting {
         int a = pos;
         switchWall();
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-            while (DEGREES * 120 <= a ) drumMotor.setPower(SPEED);
+            while (DEGREES * 120 <= a) drumMotor.setPower(SPEED);
             a += 120;
         }
     }
@@ -160,21 +166,25 @@ public class Sorting {
         android.graphics.Color.colorToHSV(color3.toColor(), hsv3);
 
 
-        if (hsv[0] <= GREEN_MAX && hsv[0] >= GREEN_MIN) colorSensors.add(Color.GREEN);
-        else if(hsv[0] <= PURPLE_MAX && hsv[0] >= PURPLE_MIN) colorSensors.add(Color.PURPLE);
-        else colorSensors.add(Color.NONE);
+        if (hsv[0] <= GREEN_MAX && hsv[0] >= GREEN_MIN) {
+            colorSensors.add(Color.GREEN);
+        } else if (hsv[0] <= PURPLE_MAX && hsv[0] >= PURPLE_MIN) {
+            colorSensors.add(Color.PURPLE);
+        } else colorSensors.add(Color.NONE);
 
 
+        if (hsv2[0] <= GREEN_MAX && hsv2[0] >= GREEN_MIN) {
+            colorSensors.add(Color.GREEN);
+        } else if (hsv2[0] <= PURPLE_MAX && hsv2[0] >= PURPLE_MIN) {
+            colorSensors.add(Color.PURPLE);
+        } else colorSensors.add(Color.NONE);
 
-            if (hsv2[0] <= GREEN_MAX && hsv2[0] >= GREEN_MIN) colorSensors.add(Color.GREEN);
-            else if(hsv2[0] <= PURPLE_MAX && hsv2[0] >= PURPLE_MIN) colorSensors.add(Color.PURPLE);
-            else colorSensors.add(Color.NONE);
 
-
-
-        if (hsv3[0] <= GREEN_MAX && hsv3[0] >= GREEN_MIN) colorSensors.add(Color.GREEN);
-        else if(hsv3[0] <= PURPLE_MAX && hsv3[0] >= PURPLE_MIN) colorSensors.add(Color.PURPLE);
-        else colorSensors.add(Color.NONE);
+        if (hsv3[0] <= GREEN_MAX && hsv3[0] >= GREEN_MIN) {
+            colorSensors.add(Color.GREEN);
+        } else if (hsv3[0] <= PURPLE_MAX && hsv3[0] >= PURPLE_MIN) {
+            colorSensors.add(Color.PURPLE);
+        } else colorSensors.add(Color.NONE);
 
 
         return colorSensors;
