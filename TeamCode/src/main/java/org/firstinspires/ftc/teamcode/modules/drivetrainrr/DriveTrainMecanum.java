@@ -1,4 +1,16 @@
-package org.firstinspires.ftc.teamcode.roadrunner;
+package org.firstinspires.ftc.teamcode.modules.drivetrainrr;
+
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.kV;
 
 import androidx.annotation.NonNull;
 
@@ -37,16 +49,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.*;
-import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.DriveConstants.MAX_VEL;
-
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
-public class SampleMecanumDrive extends MecanumDrive {
+public class DriveTrainMecanum extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
@@ -72,7 +79,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private List<Integer> lastEncPositions = new ArrayList<>();
     private List<Integer> lastEncVels = new ArrayList<>();
 
-    public SampleMecanumDrive(HardwareMap hardwareMap) {
+    public DriveTrainMecanum(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
