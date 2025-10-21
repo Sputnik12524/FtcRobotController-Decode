@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -34,6 +31,7 @@ public class Sorting {
     enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
 
     public static double SPEED = 0.5;
+    public static int startPosOfBlades = 0;
     public static final double OPEN_WALL = 0.57;
     public static final double CLOSE_WALL = 0.34;
     public static final double GREEN_MAX = 160;
@@ -74,25 +72,26 @@ public class Sorting {
     }
 
     public void intaker() {
-        int i = 0;
         while (getColor().get(2) == Color.NONE) { // 3 датчик нечего не видит
-            i += 120;
+            startPosOfBlades += 120;
 
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
                 while (timer.milliseconds() < 500) {
                 }
-                while (drumMotor.getCurrentPosition() <= DEGREES * i) drumMotor.setPower(SPEED);
+                while (drumMotor.getCurrentPosition() <= DEGREES * startPosOfBlades)
+                    drumMotor.setPower(SPEED);
             }
+
             timer.reset();
         }
     }
 
     public void shooter(int pos) {
-        int a = pos;
+        int greenArtefactPos = pos;
         switchWall();
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-            while (DEGREES * 120 <= a) drumMotor.setPower(SPEED);
-            a += 120;
+            while (DEGREES * 120 <= greenArtefactPos) drumMotor.setPower(SPEED);
+            greenArtefactPos += 120;
         }
     }
 
