@@ -12,12 +12,14 @@ import java.util.ArrayList;
 
 public class Sorting {
     private final ElapsedTime timer = new ElapsedTime();
+    Intake intake = new Intake();
     private final NormalizedColorSensor colorSensor;
     private final NormalizedColorSensor colorSensor2;
     private final NormalizedColorSensor colorSensor3;
     private final DcMotor drumMotor;
     private final Servo wall;
     public Scan pos;
+    //pos = intake.pos;
     public static final float GAIN = 3F;
     public static float[] hsv = new float[3];
     public static float[] hsv2 = new float[3];
@@ -35,7 +37,7 @@ public class Sorting {
    public static final double PURPLE_MIN = 220;
     SortMotorDriver sortMotorDriver = new SortMotorDriver();
 
-    public Sorting(LinearOpMode opMode, Scan scan) {
+    public Sorting(LinearOpMode opMode) {
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drumMotor");
         this.wall = opMode.hardwareMap.get(Servo.class, "wall");
         drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -47,7 +49,6 @@ public class Sorting {
         colorSensor2.setGain(GAIN);
         colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor3");
         colorSensor3.setGain(GAIN);
-        this.pos = scan;
     }
 
     public class SortMotorDriver extends Thread {
@@ -61,13 +62,13 @@ public class Sorting {
 
             while (!isInterrupted()) {
                 intaker();
-                drumTurner(pos, artefact_pos(getColor()));
+                //drumTurner(pos, artefact_pos(getColor()));
                 shooter(drumMotor.getCurrentPosition());
             }
         }
     }
     public void intaker() {
-        int i = 120;
+        int i = 0;
         while (getColor().get(2) == Color.NONE) { // 3 датчик нечего не видит
             i += 120;
 
@@ -84,7 +85,7 @@ public class Sorting {
         int a = pos;
         switchWall();
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-            while (a <= DEGREES * 120) drumMotor.setPower(SPEED);
+            while (DEGREES * 120 <= a ) drumMotor.setPower(SPEED);
             a += 120;
         }
     }
@@ -97,56 +98,56 @@ public class Sorting {
         }
     }
 
-    public void drumTurner(Scan a, Scan b) {
-        switch (a) {
-            case LEFT: {
-                switch (b) {
-                    case LEFT:
-                        break;
-                    case RIGHT:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                    case BETWEEN:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                }
-                break;
-            }
-            case RIGHT: {
-                switch (b) {
-                    case LEFT:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                    case RIGHT:
-                        break;
-                    case BETWEEN:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                }
-                break;
-            }
-            case BETWEEN: {
-                switch (b) {
-                    case LEFT:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                    case RIGHT:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                    case BETWEEN:
-                        break;
-                }
-                break;
-            }
-
-        }
-    }
+//    public void drumTurner(Scan a, Scan b) {
+//        switch (a) {
+//            case LEFT: {
+//                switch (b) {
+//                    case LEFT:
+//                        break;
+//                    case RIGHT:
+//                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                    case BETWEEN:
+//                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                }
+//                break;
+//            }
+//            case RIGHT: {
+//                switch (b) {
+//                    case LEFT:
+//                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                    case RIGHT:
+//                        break;
+//                    case BETWEEN:
+//                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                }
+//                break;
+//            }
+//            case BETWEEN: {
+//                switch (b) {
+//                    case LEFT:
+//                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                    case RIGHT:
+//                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                    case BETWEEN:
+//                        break;
+//                }
+//                break;
+//            }
+//
+//        }
+//    }
 
     public ArrayList<Color> getColor() {
         ArrayList<Color> colorSensors = new ArrayList<>();
@@ -179,14 +180,14 @@ public class Sorting {
         return colorSensors;
 
     }
-    public Scan artefact_pos(ArrayList<Color> a){
-        Scan position = null;
-        if(a.get(1) == Color.GREEN) position = Scan.LEFT;
-        else if(a.get(0) == Color.GREEN) position = Scan.BETWEEN;
-        else if(a.get(2) == Color.GREEN) position = Scan.RIGHT;
-
-        return position;
-    }
+//    public Scan artefact_pos(ArrayList<Color> a){
+//        Scan position = null;
+//        if(a.get(1) == Color.GREEN) position = Scan.LEFT;
+//        else if(a.get(0) == Color.GREEN) position = Scan.BETWEEN;
+//        else if(a.get(2) == Color.GREEN) position = Scan.RIGHT;
+//
+//        return position;
+//    }
 
 
 }
