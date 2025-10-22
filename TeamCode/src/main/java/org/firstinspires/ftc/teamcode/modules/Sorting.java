@@ -25,20 +25,26 @@ public class Sorting {
     public static float[] hsv3 = new float[3];
     public static final double PULSES = 537.7;
     public static final double DEGREES = PULSES / 360;
+    public static final double K = 0.001;
 
     enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
 
     enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
 
     public static double SPEED = 0.5;
-    public static int startPosOfBlades = 0;
+
+    public static double error;
+    public static int posOfBlades = 0;
     public static final double OPEN_WALL = 0.57;
     public static final double CLOSE_WALL = 0.34;
-    public static final double GREEN_MAX = 160;
-    public static final double GREEN_MIN = 135;
-    public static final double PURPLE_MAX = 305;
-    public static final double PURPLE_MIN = 220;
-    SortMotorDriver sortMotorDriver = new SortMotorDriver();
+    public static final double GREEN_MAX = 185;
+    public static final double GREEN_MIN = 140;
+    public static final double PURPLE_MAX = 245;
+    public static final double PURPLE_MIN = 200;
+    public SortMotorDriver sortMotorDriver = new SortMotorDriver();
+    public SortIntake sortIntaker = new SortIntake();
+    public SortSorting sortSorting = new SortSorting();
+    public SortShooter sortShooter = new SortShooter();
 
     public Sorting(LinearOpMode opMode) {
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drumMotor");
@@ -71,17 +77,54 @@ public class Sorting {
         }
     }
 
+    public class SortShooter extends Thread {
+
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+                shooter(drumMotor.getCurrentPosition());
+            }
+        }
+    }
+
+    public class SortIntake extends Thread {
+
+        @Override
+        public void run() {
+            drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            timer.reset();
+
+            while (!isInterrupted()) {
+                intaker();
+            }
+        }
+    }
+
+    public class SortSorting extends Thread {
+
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+                drumTurner(pos, artefact_pos(getColor()));
+            }
+        }
+    }
+
     public void intaker() {
         while (getColor().get(2) == Color.NONE) { // 3 датчик нечего не видит
-            startPosOfBlades += 120;
+            posOfBlades += 120;
+            error = posOfBlades - drumMotor.getCurrentPosition();
+            double power = error * K;
+
 
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
                 while (timer.milliseconds() < 500) {
                 }
-                while (drumMotor.getCurrentPosition() <= DEGREES * startPosOfBlades)
-                    drumMotor.setPower(SPEED);
+                while (drumMotor.getCurrentPosition() <= DEGREES * posOfBlades)
+                    drumMotor.setPower(power);
             }
-
             timer.reset();
         }
     }
@@ -103,56 +146,56 @@ public class Sorting {
         }
     }
 
-//    public void drumTurner(Scan a, Scan b) {
-//        switch (a) {
-//            case LEFT: {
-//                switch (b) {
-//                    case LEFT:
-//                        break;
-//                    case RIGHT:
-//                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
-//                            drumMotor.setPower(-SPEED);
-//                        break;
-//                    case BETWEEN:
-//                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
-//                            drumMotor.setPower(-SPEED);
-//                        break;
-//                }
-//                break;
-//            }
-//            case RIGHT: {
-//                switch (b) {
-//                    case LEFT:
-//                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
-//                            drumMotor.setPower(-SPEED);
-//                        break;
-//                    case RIGHT:
-//                        break;
-//                    case BETWEEN:
-//                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
-//                            drumMotor.setPower(-SPEED);
-//                        break;
-//                }
-//                break;
-//            }
-//            case BETWEEN: {
-//                switch (b) {
-//                    case LEFT:
-//                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
-//                            drumMotor.setPower(-SPEED);
-//                        break;
-//                    case RIGHT:
-//                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
-//                            drumMotor.setPower(-SPEED);
-//                        break;
-//                    case BETWEEN:
-//                        break;
-//                }
-//                break;
-//            }
-//
-//        }
-//    }
+    public void drumTurner(Scan a, Scan b) {
+        switch (a) {
+            case LEFT: {
+                switch (b) {
+                    case LEFT:
+                        break;
+                    case RIGHT:
+                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
+                            drumMotor.setPower(-SPEED);
+                        break;
+                    case BETWEEN:
+                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
+                            drumMotor.setPower(-SPEED);
+                        break;
+                }
+                break;
+            }
+            case RIGHT: {
+                switch (b) {
+                    case LEFT:
+                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
+                            drumMotor.setPower(-SPEED);
+                        break;
+                    case RIGHT:
+                        break;
+                    case BETWEEN:
+                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
+                            drumMotor.setPower(-SPEED);
+                        break;
+                }
+                break;
+            }
+            case BETWEEN: {
+                switch (b) {
+                    case LEFT:
+                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
+                            drumMotor.setPower(-SPEED);
+                        break;
+                    case RIGHT:
+                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
+                            drumMotor.setPower(-SPEED);
+                        break;
+                    case BETWEEN:
+                        break;
+                }
+                break;
+            }
+
+        }
+    }
 
     public ArrayList<Color> getColor() {
         ArrayList<Color> colorSensors = new ArrayList<>();
@@ -189,14 +232,29 @@ public class Sorting {
         return colorSensors;
 
     }
-//    public Scan artefact_pos(ArrayList<Color> a){
-//        Scan position = null;
-//        if(a.get(1) == Color.GREEN) position = Scan.LEFT;
-//        else if(a.get(0) == Color.GREEN) position = Scan.BETWEEN;
-//        else if(a.get(2) == Color.GREEN) position = Scan.RIGHT;
-//
-//        return position;
-//    }
+
+    public Scan artefact_pos(ArrayList<Color> a) {
+        Scan position = null;
+        if (a.get(1) == Color.GREEN) position = Scan.LEFT;
+        else if (a.get(0) == Color.GREEN) position = Scan.BETWEEN;
+        else if (a.get(2) == Color.GREEN) position = Scan.RIGHT;
+
+        return position;
+    }
+
+    public void drumTele(double power) {
+        drumMotor.setPower(power);
+    }
+
+    public void wallStart() {
+        wall.setPosition(OPEN_WALL);
+    }
+
+    public boolean isIntakeCompleted() {
+        if (getColor().get(2) == Color.NONE) {
+            return false;
+        } else return true;
+    }
 
 
 }
