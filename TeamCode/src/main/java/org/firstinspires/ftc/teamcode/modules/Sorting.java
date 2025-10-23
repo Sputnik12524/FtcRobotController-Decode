@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.modules;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -25,16 +26,17 @@ public class Sorting {
     public static float[] hsv3 = new float[3];
     public static final double PULSES = 537.7;
     public static final double DEGREES = PULSES / 360;
-    public static final double K = 0.001;
+    public static final double Ki = 0.001;
+    public static final double Ks = 0.003;
 
-    enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
+    public enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
 
     enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
 
     public static double SPEED = 0.5;
 
     public static double error;
-    public static int posOfBlades = 0;
+    public static double errorS;
     public static final double OPEN_WALL = 0.57;
     public static final double CLOSE_WALL = 0.34;
     public static final double GREEN_MAX = 185;
@@ -49,15 +51,16 @@ public class Sorting {
     public Sorting(LinearOpMode opMode) {
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drumMotor");
         this.wall = opMode.hardwareMap.get(Servo.class, "wall");
-        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        drumMotor.setDirection(DcMotor.Direction.REVERSE);
-        colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor1");
-        colorSensor.setGain(GAIN);
-        colorSensor2 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor2");
-        colorSensor2.setGain(GAIN);
-        colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor3");
-        colorSensor3.setGain(GAIN);
+        this.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.drumMotor.setDirection(DcMotor.Direction.REVERSE);
+        this.colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor1");
+        this.colorSensor.setGain(GAIN);
+        this.colorSensor2 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor2");
+        this.colorSensor2.setGain(GAIN);
+        this.colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor3");
+        this.colorSensor3.setGain(GAIN);
+        this.drumMotor.setDirection(DcMotorEx.Direction.REVERSE);
     }
 
     public class SortMotorDriver extends Thread {
@@ -113,14 +116,16 @@ public class Sorting {
     }
 
     public void intaker() {
+        int posOfBlades = 0; // это не константа
         while (getColor().get(2) == Color.NONE) { // 3 датчик нечего не видит
+
             posOfBlades += 120;
             error = posOfBlades - drumMotor.getCurrentPosition();
-            double power = error * K;
+            double power = error * Ki;
 
 
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
-                while (timer.milliseconds() < 500) {
+                while (timer.milliseconds() < 350) {
                 }
                 while (drumMotor.getCurrentPosition() <= DEGREES * posOfBlades)
                     drumMotor.setPower(power);
@@ -129,12 +134,18 @@ public class Sorting {
         }
     }
 
-    public void shooter(int pos) {
-        int greenArtefactPos = pos;
+    public void shooter(double pos) {
+        double drumPos = pos;
+
         switchWall();
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-            while (DEGREES * 120 <= greenArtefactPos) drumMotor.setPower(SPEED);
-            greenArtefactPos += 120;
+
+            drumPos += 120;
+            errorS = drumPos - drumMotor.getCurrentPosition();
+            double power = errorS * Ks;
+
+            while (drumMotor.getCurrentPosition() <= drumPos) drumMotor.setPower(power);
+
         }
     }
 
@@ -254,6 +265,18 @@ public class Sorting {
         if (getColor().get(2) == Color.NONE) {
             return false;
         } else return true;
+    }
+
+    public boolean isSortingCompleted(Scan a, Scan b) {
+        if (a == b) {
+            return true;
+        } else return false;
+    }
+
+    public boolean isShooterCompleted() {
+        if (getColor().get(1) == Color.NONE) {
+            return true;
+        } else return false;
     }
 
 
