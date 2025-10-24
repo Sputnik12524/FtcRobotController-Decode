@@ -24,7 +24,7 @@ public class DriveTrainRRTest extends LinearOpMode {
                 .build();
 
         waitForStart();
-
+        if(isStopRequested()) return;
         dt.followTrajectorySequence(tr);
 
     }
