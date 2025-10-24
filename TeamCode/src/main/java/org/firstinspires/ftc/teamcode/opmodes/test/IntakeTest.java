@@ -1,4 +1,28 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
-public class IntakeTest {
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.modules.Intake;
+
+@TeleOp(name = "IntakeTest")
+@Config
+public class IntakeTest extends LinearOpMode {
+
+    Intake intake = new Intake(this);
+
+    @Override
+    public void runOpMode() {
+        waitForStart();
+
+        while (opModeIsActive()) {
+            if (gamepad1.a) {
+                intake.rotationIn();
+            }
+            if (gamepad1.b) {
+                intake.rotationOut();
+            }
+        }
+    }
 }
