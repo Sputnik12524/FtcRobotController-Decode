@@ -4,14 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class DriveTrain {
-    private DcMotor leftFront;
-    private DcMotor leftBack;
-    private DcMotor rightFront;
-    private DcMotor rightBack;
+    private final DcMotor leftFront;
+    private final DcMotor leftBack;
+    private final DcMotor rightFront;
+    private final DcMotor rightBack;
 
-    public static double WHEEL_DIAMETER = 10.1;
-    public static double PULSES = 537.7;
-    public static double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
+    public static final double WHEEL_DIAMETER = 10.1;
+    public static final double PULSES = 537.7;
+    public static final double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
 
 
     public DriveTrain(LinearOpMode linearOpMode) {
@@ -134,35 +134,6 @@ public class DriveTrain {
             case COUNTERCLOCKWISE_ROTATION:
                 driveToDistanceRotation(distance, -power);
                 break;
-/*
-            case FORWARD_LEFT:
-                leftFront.setPower(0);
-                leftBack.setPower(power);
-                rightFront.setPower(power);
-                rightBack.setPower(0);
-                break;
-
-            case FORWARD_RIGHT:
-                leftFront.setPower(power);
-                leftBack.setPower(0);
-                rightFront.setPower(0);
-                rightBack.setPower(power);
-                break;
-
-            case BACK_LEFT:
-                leftFront.setPower(-power);
-                leftBack.setPower(0);
-                rightFront.setPower(0);
-                rightBack.setPower(-power);
-                break;
-
-            case BACK_RIGHT:
-                leftFront.setPower(0);
-                leftBack.setPower(-power);
-                rightFront.setPower(-power);
-                rightBack.setPower(0);
-                break;
- */
 
         }
     }

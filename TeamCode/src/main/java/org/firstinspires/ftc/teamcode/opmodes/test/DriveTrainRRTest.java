@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 
 public class DriveTrainRRTest extends LinearOpMode {
-    private DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
+    private final DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
     @Override
     public void runOpMode(){
         Pose2d startPose = new Pose2d(0,0,0);
