@@ -14,10 +14,9 @@ import javax.imageio.ImageIO;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(800);
+        MeepMeep meepMeep = new MeepMeep(500, 500);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
                         .forward(30)
@@ -30,12 +29,11 @@ public class MeepMeepTesting {
                         .turn(Math.toRadians(90))
                         .build());
 
-       /*I will try to fix it later
         Image img = null;
-        try { img = ImageIO.read(new File("/C://Users//Admin//Downloads//FIELD_DECODE_OFFICIAL.webp")); }
-        catch(IOException e) {}*/
+        try { img = ImageIO.read(new File("C:/Users/Admin/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png")); }
+        catch(IOException e) {}
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
+        meepMeep.setBackground(img)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
