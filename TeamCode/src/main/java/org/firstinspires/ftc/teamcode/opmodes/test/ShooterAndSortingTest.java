@@ -14,34 +14,34 @@ public class ShooterAndSortingTest extends LinearOpMode {
     public void runOpMode() {
         sr = new Sorting(this);
         sr.pos = Sorting.Scan.RIGHT; // для проверки
-        sr.wallStart();
+        sr.wallStarting();
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
 
             if (gamepad1.a) {  //переключение стенки
-                sr.switchWall();
+                sr.switchingWall();
             }
 
             sr.drumTele(gamepad1.left_stick_y);
 
             if (gamepad1.b) { // захват эндгейм
+                sr.sortIntaker.start();
                 while (!sr.isIntakeCompleted()) {
-                    sr.sortIntaker.start();
                 }
                 sr.sortIntaker.interrupt();
             }
 
             if (gamepad1.x) { // сортировка энгейм
+                sr.sortMotorDriver.start();
                 while (!sr.isSortingCompleted(sr.artefact_pos(sr.getColor()), sr.pos)) { // под вопросом будет ли работать
-                    sr.sortMotorDriver.start();
                 }
                 sr.sortMotorDriver.interrupt();
             }
 
             if (gamepad1.y) { // запуск эндгейм
+                sr.sortShooter.start();
                 while (!sr.isShooterCompleted()) {
-                    sr.sortShooter.start();
                 }
                 sr.sortShooter.interrupt();
             }

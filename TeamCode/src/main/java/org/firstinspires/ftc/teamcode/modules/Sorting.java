@@ -1,15 +1,19 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+//import androidx.xr.runtime.Config;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
 
+@Config
 public class Sorting {
     private final ElapsedTime timer = new ElapsedTime();
     Intake intake = new Intake();
@@ -73,9 +77,9 @@ public class Sorting {
             timer.reset();
 
             while (!isInterrupted()) {
-                intaker();
-                //drumTurner(pos, artefact_pos(getColor()));
-                shooter(drumMotor.getCurrentPosition());
+                intakingArtefacts();
+                //sortingArtefacts(pos, artefact_pos(getColor()));
+                shootingArtefacts(drumMotor.getCurrentPosition());
             }
         }
     }
@@ -85,7 +89,7 @@ public class Sorting {
         @Override
         public void run() {
             while (!isInterrupted()) {
-                shooter(drumMotor.getCurrentPosition());
+                shootingArtefacts(drumMotor.getCurrentPosition());
             }
         }
     }
@@ -100,7 +104,7 @@ public class Sorting {
             timer.reset();
 
             while (!isInterrupted()) {
-                intaker();
+                intakingArtefacts();
             }
         }
     }
@@ -110,46 +114,47 @@ public class Sorting {
         @Override
         public void run() {
             while (!isInterrupted()) {
-                drumTurner(pos, artefact_pos(getColor()));
+                sortingArtefacts(pos, artefact_pos(getColor()));
             }
         }
     }
 
-    public void intaker() {
+    public void intakingArtefacts() {
         int posOfBlades = 0; // это не константа
         while (getColor().get(2) == Color.NONE) { // 3 датчик нечего не видит
-
             posOfBlades += 120;
-            error = posOfBlades - drumMotor.getCurrentPosition();
-            double power = error * Ki;
-
 
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
                 while (timer.milliseconds() < 350) {
                 }
-                while (drumMotor.getCurrentPosition() <= DEGREES * posOfBlades)
+                while (drumMotor.getCurrentPosition() <= DEGREES * posOfBlades) {
+                    error = posOfBlades - drumMotor.getCurrentPosition();
+                    double power = error * Ki;
                     drumMotor.setPower(power);
+                }
             }
             timer.reset();
         }
     }
 
-    public void shooter(double pos) {
+    public void shootingArtefacts(double pos) {
         double drumPos = pos;
+        drumPos += 120;
+        switchingWall();
 
-        switchWall();
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-
             drumPos += 120;
-            errorS = drumPos - drumMotor.getCurrentPosition();
-            double power = errorS * Ks;
 
-            while (drumMotor.getCurrentPosition() <= drumPos) drumMotor.setPower(power);
+            while (drumMotor.getCurrentPosition() <= drumPos){
+                errorS = drumPos - drumMotor.getCurrentPosition();
+                double power = errorS * Ks;
+                drumMotor.setPower(power);
+            }
 
         }
     }
 
-    public void switchWall() {
+    public void switchingWall() {
         if (wall.getPosition() == OPEN_WALL) {
             wall.setPosition(CLOSE_WALL);
         } else {
@@ -157,7 +162,7 @@ public class Sorting {
         }
     }
 
-    public void drumTurner(Scan a, Scan b) {
+    public void sortingArtefacts(Scan a, Scan b) {
         switch (a) {
             case LEFT: {
                 switch (b) {
@@ -257,7 +262,7 @@ public class Sorting {
         drumMotor.setPower(power);
     }
 
-    public void wallStart() {
+    public void wallStarting() {
         wall.setPosition(OPEN_WALL);
     }
 
