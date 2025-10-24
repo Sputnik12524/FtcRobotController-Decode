@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+@Config
 
 public class Parking {
     private DcMotor upMotor;
@@ -23,10 +25,9 @@ public class Parking {
         this.upMotor = linearOpMode.hardwareMap.get(DcMotor.class, "upMotor");
         upMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//??  Не уверена сюда ли направление
-        upMotor.setDirection(DcMotor.Direction.FORWARD);
     }
-// Не уверена
+
+    // Не уверена
     public void getUpOrDown() {
         if (upMotor.getCurrentPosition() == MAX_POSITION) {
             upMotor.setTargetPosition(MIN_POSITION);
