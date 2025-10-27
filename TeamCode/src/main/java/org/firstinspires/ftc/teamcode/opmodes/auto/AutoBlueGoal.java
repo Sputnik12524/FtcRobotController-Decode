@@ -6,15 +6,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
-import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name = "AutoRedGoal", group = "Robot")
-public class AutoRedGoal extends LinearOpMode {
+@Autonomous(name = "AutoBlueGoal", group = "Robot")
+public class AutoBlueGoal extends LinearOpMode {
     DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
 
     @Override
     public void runOpMode() {
-        Pose2d startPose = new Pose2d(-49, 49, Math.toRadians(-45));
+        Pose2d startPose = new Pose2d(-47, -45, Math.toRadians(45));
         dt.setPoseEstimate(startPose);
 
         waitForStart();
@@ -22,20 +21,22 @@ public class AutoRedGoal extends LinearOpMode {
         if (isStopRequested()) return;
 
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-29, 25))
-        //scoring
+                .lineTo(new Vector2d(-29, -25))
                 .build());
+        //scoring
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(-11, 27, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-11, -27, Math.toRadians(-90)))
                 .forward(20)
         //intaking
                 .build());
+
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(-29, 25, Math.toRadians(-45)))
-                .build());
+                .lineToLinearHeading(new Pose2d(-29, -25, Math.toRadians(45)))
         //scoring
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(-50, 25, Math.toRadians(0)))
                 .build());
+        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
+                .lineToLinearHeading(new Pose2d(-50, -25, Math.toRadians(0))) //that's parking
+                .build());
+
     }
 }
