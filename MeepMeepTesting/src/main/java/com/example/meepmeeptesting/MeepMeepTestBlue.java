@@ -1,7 +1,6 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.rowlandhall.meepmeep.MeepMeep;
 import org.rowlandhall.meepmeep.roadrunner.DefaultBotBuilder;
@@ -13,17 +12,15 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class MeepMeepTesting {
+public class MeepMeepTestBlue {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(500, 500);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-47, -45, Math.toRadians(45)))
-                        .waitSeconds(1)
-                        .lineToLinearHeading(new Pose2d(-29, -25, Math.toRadians(-90)))
-                        .strafeTo(new Vector2d(-11, -27))
-                        .forward(5)
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 17)
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(62, -7, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(-90)))
                         .build());
+
 
         Image img = null;
         try {
