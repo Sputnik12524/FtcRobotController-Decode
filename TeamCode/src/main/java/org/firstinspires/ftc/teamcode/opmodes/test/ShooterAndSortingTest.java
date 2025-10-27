@@ -8,6 +8,9 @@ import org.firstinspires.ftc.teamcode.modules.Sorting;
 @TeleOp(name = "SortingTest", group = "Robot")
 
 public class ShooterAndSortingTest extends LinearOpMode {
+    /**
+     * Относиться к {@link Sorting}
+     */
     Sorting sr;
 
     @Override
@@ -23,27 +26,33 @@ public class ShooterAndSortingTest extends LinearOpMode {
                 sr.switchingWall();
             }
 
-            sr.drumTele(gamepad1.left_stick_y);
+            sr.drumTele(gamepad1.left_stick_y / 10);
+            sr.shootTele(gamepad1.right_stick_y);
 
-            if (gamepad1.b) { // захват эндгейм
+            if (gamepad1.b) {
                 sr.sortIntaker.start();
                 while (!sr.isIntakeCompleted()) {
                 }
                 sr.sortIntaker.interrupt();
             }
 
-            if (gamepad1.x) { // сортировка энгейм
+            if (gamepad1.x) {
                 sr.sortMotorDriver.start();
                 while (!sr.isSortingCompleted(sr.artefact_pos(sr.getColor()), sr.pos)) { // под вопросом будет ли работать
                 }
                 sr.sortMotorDriver.interrupt();
             }
 
-            if (gamepad1.y) { // запуск эндгейм
+            if (gamepad1.y) {
                 sr.sortShooter.start();
                 while (!sr.isShooterCompleted()) {
                 }
                 sr.sortShooter.interrupt();
+
+
+                if (gamepad1.dpad_right) {
+                    sr.drumTele(1);
+                }
             }
         }
     }

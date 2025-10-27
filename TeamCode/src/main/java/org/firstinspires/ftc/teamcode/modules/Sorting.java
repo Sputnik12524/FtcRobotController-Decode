@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules;
 
-//import androidx.xr.runtime.Config;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -16,14 +14,15 @@ import java.util.ArrayList;
 @Config
 public class Sorting {
     private final ElapsedTime timer = new ElapsedTime();
-    Intake intake = new Intake();
+    Shooter shooter = new Shooter();
     private final NormalizedColorSensor colorSensor;
     private final NormalizedColorSensor colorSensor2;
     private final NormalizedColorSensor colorSensor3;
     private final DcMotor drumMotor;
+    private final DcMotor shootMotor;
     private final Servo wall;
     public Scan pos;
-    //pos = intake.pos;
+    //pos = shooter.pos;
     public static final float GAIN = 3F;
     public static float[] hsv = new float[3];
     public static float[] hsv2 = new float[3];
@@ -53,7 +52,8 @@ public class Sorting {
     public SortShooter sortShooter = new SortShooter();
 
     public Sorting(LinearOpMode opMode) {
-        this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drumMotor");
+        this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drum");
+        this.shootMotor = opMode.hardwareMap.get(DcMotor.class, "shooter");
         this.wall = opMode.hardwareMap.get(Servo.class, "wall");
         this.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -167,13 +167,15 @@ public class Sorting {
             case LEFT: {
                 switch (b) {
                     case LEFT:
+                        while (drumMotor.getCurrentPosition() < DEGREES * 280)
+                            drumMotor.setPower(SPEED);
                         break;
                     case RIGHT:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
+                        while (drumMotor.getCurrentPosition() > DEGREES * 160)
                             drumMotor.setPower(-SPEED);
                         break;
                     case BETWEEN:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
+                        while (drumMotor.getCurrentPosition() > DEGREES * 40)
                             drumMotor.setPower(-SPEED);
                         break;
                 }
@@ -182,13 +184,15 @@ public class Sorting {
             case RIGHT: {
                 switch (b) {
                     case LEFT:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
+                        while (drumMotor.getCurrentPosition() > DEGREES * 40)
                             drumMotor.setPower(-SPEED);
                         break;
                     case RIGHT:
+                        while (drumMotor.getCurrentPosition() < DEGREES * 280)
+                            drumMotor.setPower(SPEED);
                         break;
                     case BETWEEN:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
+                        while (drumMotor.getCurrentPosition() > DEGREES * 160)
                             drumMotor.setPower(-SPEED);
                         break;
                 }
@@ -197,14 +201,16 @@ public class Sorting {
             case BETWEEN: {
                 switch (b) {
                     case LEFT:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 40)
+                        while (drumMotor.getCurrentPosition() > DEGREES * 40)
                             drumMotor.setPower(-SPEED);
                         break;
                     case RIGHT:
-                        while (drumMotor.getCurrentPosition() >= DEGREES * 160)
+                        while (drumMotor.getCurrentPosition() > DEGREES * 160)
                             drumMotor.setPower(-SPEED);
                         break;
                     case BETWEEN:
+                        while (drumMotor.getCurrentPosition() < DEGREES * 280)
+                            drumMotor.setPower(SPEED);
                         break;
                 }
                 break;
@@ -261,27 +267,22 @@ public class Sorting {
     public void drumTele(double power) {
         drumMotor.setPower(power);
     }
+    public void shootTele(double power){shootMotor.setPower(power);}
 
     public void wallStarting() {
         wall.setPosition(OPEN_WALL);
     }
 
     public boolean isIntakeCompleted() {
-        if (getColor().get(2) == Color.NONE) {
-            return false;
-        } else return true;
+        return getColor().get(2) != Color.NONE;
     }
 
     public boolean isSortingCompleted(Scan a, Scan b) {
-        if (a == b) {
-            return true;
-        } else return false;
+        return a == b;
     }
 
     public boolean isShooterCompleted() {
-        if (getColor().get(1) == Color.NONE) {
-            return true;
-        } else return false;
+        return getColor().get(1) == Color.NONE;
     }
 
 

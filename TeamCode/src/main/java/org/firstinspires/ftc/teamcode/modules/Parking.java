@@ -1,4 +1,4 @@
 package org.firstinspires.ftc.teamcode.modules;
 
-public class Parking {
+public class Parking{
 }
