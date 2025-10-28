@@ -47,8 +47,4 @@ public class Intake {
             flap.setPosition(CLOSE);
         }
     }
-
-    public void rotationIn() {
-    }
 }
-
