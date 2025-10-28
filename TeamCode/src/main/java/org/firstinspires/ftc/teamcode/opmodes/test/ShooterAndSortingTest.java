@@ -20,7 +20,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
             if(gamepad1.a) {
                 motor.setPower(power);
             } else if (gamepad1.b) {
-                motor.setPower(power);
+                motor.setPower(-power);
             } else {
                 motor.setPower(0);
             }
