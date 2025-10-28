@@ -23,24 +23,21 @@ public class Intake {
         catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void rotationIn() {
-        if (catcher.getCurrentPosition() == 0) {
-            catcher.setPower(POWER);
-        } else if (catcher.getCurrentPosition() > 0) {
-            catcher.setPower(0);
-            catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
+    public void rotationIn(double time) throws InterruptedException {
+        catcher.setPower(POWER);
+        wait(5);
+        catcher.setPower(0);
+        catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 
-    public void rotationOut() {
-        if (catcher.getCurrentPosition() == 0) {
-            catcher.setPower(-POWER);
-        } else if (catcher.getCurrentPosition() < 0) {
-            catcher.setPower(0);
-            catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
+    public void rotationOut() throws InterruptedException {
+        catcher.setPower(-POWER);
+        wait(5);
+        catcher.setPower(0);
+        catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void flapOpenAndClose() {
@@ -49,6 +46,9 @@ public class Intake {
         } else {
             flap.setPosition(CLOSE);
         }
+    }
+
+    public void rotationIn() {
     }
 }
 

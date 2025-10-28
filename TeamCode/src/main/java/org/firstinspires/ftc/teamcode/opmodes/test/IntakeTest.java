@@ -13,7 +13,7 @@ public class IntakeTest extends LinearOpMode {
     Intake intake = new Intake(this);
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         waitForStart();
 
         while (opModeIsActive()) {
