@@ -11,9 +11,10 @@ public class SimpleTeleOpTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         waitForStart();
 
-        double main = gamepad1.left_stick_y;
+        double main = -gamepad1.left_stick_y;
         double side = gamepad1.left_stick_x;
         double rotate = gamepad1.left_trigger - gamepad1.right_trigger;
 
@@ -21,5 +22,9 @@ public class SimpleTeleOpTest extends LinearOpMode {
 
         dt.setMotorPower(main,side,rotate);
 
+        telemetry.addData("main", main);
+        telemetry.addData("side", side);
+        telemetry.addData("rotate", rotate);
+        telemetry.update();
     }
 }
