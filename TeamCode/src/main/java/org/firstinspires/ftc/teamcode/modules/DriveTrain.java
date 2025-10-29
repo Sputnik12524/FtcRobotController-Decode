@@ -2,12 +2,13 @@ package org.firstinspires.ftc.teamcode.modules;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class DriveTrain {
-    private final DcMotor leftFront;
-    private final DcMotor leftBack;
-    private final DcMotor rightFront;
-    private final DcMotor rightBack;
+    public final DcMotor leftFront;
+    public final DcMotor leftBack;
+    public final DcMotor rightFront;
+    public final DcMotor rightBack;
 
     public static final double WHEEL_DIAMETER = 10.1;
     public static final double PULSES = 537.7;
@@ -20,6 +21,11 @@ public class DriveTrain {
         this.leftBack = linearOpMode.hardwareMap.get(DcMotor.class, "leftBack");
         this.rightFront = linearOpMode.hardwareMap.get(DcMotor.class, "rightFront");
         this.rightBack = linearOpMode.hardwareMap.get(DcMotor.class, "rightBack");
+
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
