@@ -12,6 +12,7 @@ public class DriveTrain {
     public static final double WHEEL_DIAMETER = 10.1;
     public static final double PULSES = 537.7;
     public static final double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
+    public static double multiplier = 1;
 
 
     public DriveTrain(LinearOpMode linearOpMode) {
@@ -107,7 +108,12 @@ public class DriveTrain {
     }
 
     public enum RobotDirection {FORWARD, BACK, RIGHT, LEFT, FORWARD_LEFT, FORWARD_RIGHT, BACK_LEFT, BACK_RIGHT, ROTATION_CLOCKWISE, COUNTERCLOCKWISE_ROTATION}
-
+    public void setMotorPower (double main, double side, double rotation){
+        leftFront.setPower(multiplier * (main + side + rotation));
+        leftBack.setPower(multiplier * (main - side + rotation));
+        rightFront.setPower(multiplier * (main - side - rotation));
+        rightBack.setPower(multiplier * (main + side - rotation));
+    }
     public void setDTPower(RobotDirection direction, double power, double distance) {
         switch (direction) {
 
@@ -136,5 +142,6 @@ public class DriveTrain {
                 break;
 
         }
+
     }
 }
