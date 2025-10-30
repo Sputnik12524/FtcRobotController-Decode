@@ -18,10 +18,10 @@ public class IntakeTest extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.a) {
-                intake.rotationIn();
+                intake.rotateIn();
             }
             if (gamepad1.b) {
-                intake.rotationOut();
+                intake.rotateOut();
             }
         }
     }

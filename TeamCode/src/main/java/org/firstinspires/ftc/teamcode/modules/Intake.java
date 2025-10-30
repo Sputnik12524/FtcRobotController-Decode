@@ -4,6 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.util.Timer;
 
 
 @Config
@@ -16,28 +19,31 @@ public class Intake {
     public static double OPEN;
     public static double CLOSE;
 
+    public static double IN_OUT = 2000;
+
+
+
+
+    ArtifactIntake artifactIntake;
+    LinearOpMode linearOpMode;
+
     public Intake(LinearOpMode linearOpMode) {
+        this.artifactIntake = artifactIntake;
+        this.linearOpMode = linearOpMode;
         this.catcher = linearOpMode.hardwareMap.get(DcMotor.class, "catcher");
         this.flap = linearOpMode.hardwareMap.get(Servo.class, "flap");
-        catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void rotationIn(double time) throws InterruptedException {
+    public void rotateIn() {
         catcher.setPower(POWER);
-        wait(5);
-        catcher.setPower(0);
-        catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
     }
 
-    public void rotationOut() throws InterruptedException {
+    public void rotateOut() {
         catcher.setPower(-POWER);
-        wait(5);
+    }
+
+    public void rotateStop() {
         catcher.setPower(0);
-        catcher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        catcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void flapOpenAndClose() {
@@ -45,6 +51,39 @@ public class Intake {
             flap.setPosition(OPEN);
         } else {
             flap.setPosition(CLOSE);
+        }
+    }
+
+    public void needRotateIn() {
+        artifactIntake.isRotateIn = true;
+    }
+
+    public void needRotateOut() {
+        artifactIntake.isRotateOut = true;
+    }
+
+    public class ArtifactIntake extends Thread {
+        private final ElapsedTime timer = new ElapsedTime();
+        boolean isRotateIn = false;
+        boolean isRotateOut = false;
+
+        public void run() {
+            while (!isInterrupted()) {
+                if (isRotateIn){
+                    timer.reset();
+                    rotateIn();
+                    while (timer.milliseconds() < IN_OUT);
+                    rotateStop();
+                    isRotateIn = false;
+                }
+                if (isRotateOut){
+                    timer.reset();
+                    rotateOut();
+                    while (timer.milliseconds() < IN_OUT);
+                    rotateStop();
+                    isRotateOut = false;
+                }
+            }
         }
     }
 }
