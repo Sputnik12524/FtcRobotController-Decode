@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@TeleOp(name="TeleOp RoadRunner", group="Robot")
+@TeleOp(name="TeleOpRR", group="Tele")
 public class TeleOpRoadRunner extends LinearOpMode {
 
     @Override
