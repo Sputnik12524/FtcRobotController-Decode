@@ -17,7 +17,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
         sr = new Sorting(this);
         sr.pos = Sorting.Scan.RIGHT; // для проверки
         sr.hwallClose();
-        sr.dwallClose();
+        sr.dwallOpen();
 
         waitForStart();
         while (opModeIsActive()) {
@@ -26,53 +26,53 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
 
             sr.drumTele(gamepad1.left_stick_y / 10);
-            sr.shootTele(gamepad1.right_stick_y);
-
-            if (gamepad1.b && !bState) {
-                sr.sortIntaker.start();
-                while (!sr.isIntakeCompleted()) {
-                }
-                sr.sortIntaker.interrupt();
-            }
-
-            if (gamepad1.x && !xState) {
-                sr.sortMotorDriver.start();
-                while (!sr.isSortingCompleted(sr.artefact_pos(sr.getColor()), sr.pos)) { // под вопросом будет ли работать
-                }
-                sr.sortMotorDriver.interrupt();
-            }
-
-            if (gamepad1.y && !yState) {
-                sr.sortShooter.start();
-                while (!sr.isShooterCompleted()) {
-                }
-                sr.sortShooter.interrupt();
-            }
 
 
-            if (gamepad1.dpad_right) {
-                sr.drumTele(1);
+//            if (gamepad1.b && !bState) {
+//                sr.sortIntaker.start();
+//                while (!sr.isIntakeCompleted()) {
+//                }
+//                sr.sortIntaker.interrupt();
+//            }
+//
+//            if (gamepad1.x && !xState) {
+//                sr.sortMotorDriver.start();
+//                while (!sr.isSortingCompleted(sr.artefact_pos(sr.getColor()), sr.pos)) { // под вопросом будет ли работать
+//                }
+//                sr.sortMotorDriver.interrupt();
+//            }
+//
+//            if (gamepad1.y && !yState) {
+//                sr.sortShooter.start();
+//                while (!sr.isShooterCompleted()) {
+//                }
+//                sr.sortShooter.interrupt();
+//            }
 
-            }
-            if(gamepad2.a){
-                sr.turn40();
-            }
-            if (gamepad2.b){
-                sr.turn120();
-            }
-            if(gamepad2.x){
-                sr.simpleIntaking();
-            }
-            if (gamepad2.y){
-                sr.simpleShooting();
-            }
 
-            yState = gamepad2.y;
-            bState = gamepad1.b;
-            xState = gamepad2.x;
+//            if (gamepad1.dpad_right) {
+//                sr.drumTele(1);
+//
+//            }
+//            if(gamepad2.a){
+//                sr.turn40();
+//            }
+//            if (gamepad2.b){
+//                sr.turn120();
+//            }
+//            if(gamepad2.x){
+//                sr.simpleIntaking();
+//            }
+//            if (gamepad2.y){
+//                sr.simpleShooting();
+//            }
+
+//            yState = gamepad2.y;
+//            bState = gamepad1.b;
+//            xState = gamepad2.x;
         }
-        sr.sortIntaker.interrupt();
-        sr.sortShooter.interrupt();
-        sr.sortMotorDriver.interrupt();
+//        sr.sortIntaker.interrupt();
+//        sr.sortShooter.interrupt();
+//        sr.sortMotorDriver.interrupt();
     }
 }

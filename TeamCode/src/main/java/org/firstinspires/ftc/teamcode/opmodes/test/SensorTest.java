@@ -20,23 +20,23 @@ public class SensorTest extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
-            if(gamepad1.a){
-
-                telemetry.addData("A",sorting.look_pos(sorting.getColor(), 0));
-
-            }
-            if(gamepad1.b){
-                telemetry.addData("B",sorting.look_pos(sorting.getColor(), 1));
-
-            }
-            if(gamepad1.x){
-                telemetry.addData("C",sorting.look_pos(sorting.getColor(), 2));
-
-            }
-            if(gamepad1.y){
-                telemetry.addData("Итог",sorting.artefact_pos(sorting.getColor()));
-            }
-            telemetry.update();
+//            if(gamepad1.a){
+//
+//                telemetry.addData("A",sorting.look_pos(sorting.getColor(), 0));
+//
+//            }
+//            if(gamepad1.b){
+//                telemetry.addData("B",sorting.look_pos(sorting.getColor(), 1));
+//
+//            }
+//            if(gamepad1.x){
+//                telemetry.addData("C",sorting.look_pos(sorting.getColor(), 2));
+//
+//            }
+//            if(gamepad1.y){
+//                telemetry.addData("Итог",sorting.artefact_pos(sorting.getColor()));
+//            }
+//            telemetry.update();
         }
     }
 }

@@ -29,7 +29,7 @@ public class ServoTest extends LinearOpMode {
             telemetry.update();
 
             if (gamepad1.a && !aState) {
-                pos += 0.05; //*4,5
+                pos += 0.05;
                 sorting.setDWallPos(pos);
             }
             if (gamepad1.b) {

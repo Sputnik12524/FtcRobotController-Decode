@@ -14,12 +14,11 @@ import java.util.ArrayList;
 @Config
 public class Sorting {
     private final ElapsedTime timer = new ElapsedTime();
-    Shooter shooter = new Shooter();
     private final NormalizedColorSensor colorSensor1;
     private final NormalizedColorSensor colorSensor2;
     private final NormalizedColorSensor colorSensor3;
     public final DcMotor drumMotor;
-    private final DcMotor shootMotor;
+    //private final DcMotor shootMotor;
     public final Servo hwall; // верхняяя сенка
     public final Servo dwall; // нижняя стенка
     public Scan pos;
@@ -29,7 +28,7 @@ public class Sorting {
     public static float[] hsv2 = new float[3];
     public static float[] hsv3 = new float[3];
     public static final double PULSES = 537.7;
-    public static final double DEGREES = PULSES / 360;
+    public static final double DEGREES = 360 / PULSES;
     public static final double Ki = 0.001;
     public static final double Ks = 0.003;
 
@@ -49,14 +48,13 @@ public class Sorting {
     public static final double GREEN_MIN = 140;
     public static final double PURPLE_MAX = 245;
     public static final double PURPLE_MIN = 200;
-    public SortMotorDriver sortMotorDriver = new SortMotorDriver();
-    public SortIntake sortIntaker = new SortIntake();
-    public SortSorting sortSorting = new SortSorting();
-    public SortShooter sortShooter = new SortShooter();
+//    public SortMotorDriver sortMotorDriver = new SortMotorDriver();
+//    public SortIntake sortIntaker = new SortIntake();
+//    public SortSorting sortSorting = new SortSorting();
+//    public SortShooter sortShooter = new SortShooter();
 
     public Sorting(LinearOpMode opMode) {
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drum");
-        this.shootMotor = opMode.hardwareMap.get(DcMotor.class, "shooter");
         this.hwall = opMode.hardwareMap.get(Servo.class, "hwall");
         this.dwall = opMode.hardwareMap.get(Servo.class, "dwall");
         this.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -68,219 +66,208 @@ public class Sorting {
         this.colorSensor2.setGain(GAIN);
         this.colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor3");
         this.colorSensor3.setGain(GAIN);
-       this.drumMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        this.drumMotor.setDirection(DcMotorEx.Direction.REVERSE);
     }
 
 
-    public class SortMotorDriver extends Thread {
 
-        @Override
-        public void run() {
-            drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//    public class SortMotorDriver extends Thread {
+//
+//        @Override
+//        public void run() {
+//            drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//            timer.reset();
+//
+//            while (!isInterrupted()) {
+//                intakingArtefacts();
+//                //sortingArtefacts(pos, artefact_pos(getColor()));
+//                shootingArtefacts(drumMotor.getCurrentPosition());
+//            }
+//        }
+//    }
+//
+//    public class SortShooter extends Thread {
+//
+//        @Override
+//        public void run() {
+//            while (!isInterrupted()) {
+//                shootingArtefacts(drumMotor.getCurrentPosition());
+//            }
+//        }
+//    }
+//
+//    public class SortIntake extends Thread {
+//
+//        @Override
+//        public void run() {
+//            drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//            timer.reset();
+//
+//            while (!isInterrupted()) {
+//                intakingArtefacts();
+//            }
+//        }
+//    }
+//
+//    public class SortSorting extends Thread {
+//
+//        @Override
+//        public void run() {
+//            while (!isInterrupted()) {
+//                sortingArtefacts(pos, artefact_pos(getColor()));
+//            }
+//        }
+//    }
+//
+//
+//    public void intakingArtefacts() {
+//        dwallOpen();
+//        int posOfBlades = 0; // это не константа
+//        while (getColor().get(2) == Color.NONE) { // 3 датчик нечего не видит
+//            posOfBlades += 120;
+//
+//            if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
+//                while (timer.milliseconds() < 350) {
+//                }
+//                while (drumMotor.getCurrentPosition() <= DEGREES * posOfBlades) {
+//                    error = posOfBlades - drumMotor.getCurrentPosition();
+//                    double power = error * Ki;
+//                    drumMotor.setPower(power);
+//                }
+//            }
+//            timer.reset();
+//        }
+//    }
+//
+//    public void shootingArtefacts(double pos) {
+//        turn40();
+//        double drumPos = pos;
+//        dwallClose();
+//        hwallOpen();
+//
+//
+//        while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
+//            drumPos += 120;
+//
+//            while (drumMotor.getCurrentPosition() <= drumPos) {
+//                errorS = drumPos - drumMotor.getCurrentPosition();
+//                double power = errorS * Ks;
+//                drumMotor.setPower(power);
+//            }
+//
+//        }
+//    }
 
-            timer.reset();
-
-            while (!isInterrupted()) {
-                intakingArtefacts();
-                //sortingArtefacts(pos, artefact_pos(getColor()));
-                shootingArtefacts(drumMotor.getCurrentPosition());
-            }
-        }
-    }
-
-    public class SortShooter extends Thread {
-
-        @Override
-        public void run() {
-            while (!isInterrupted()) {
-                shootingArtefacts(drumMotor.getCurrentPosition());
-            }
-        }
-    }
-
-    public class SortIntake extends Thread {
-
-        @Override
-        public void run() {
-            drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            timer.reset();
-
-            while (!isInterrupted()) {
-                intakingArtefacts();
-            }
-        }
-    }
-
-    public class SortSorting extends Thread {
-
-        @Override
-        public void run() {
-            while (!isInterrupted()) {
-                sortingArtefacts(pos, artefact_pos(getColor()));
-            }
-        }
-    }
-
-
-    public void intakingArtefacts() {
-        dwallOpen();
-        int posOfBlades = 0; // это не константа
-        while (getColor().get(2) == Color.NONE) { // 3 датчик нечего не видит
-            posOfBlades += 120;
-
-            if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
-                while (timer.milliseconds() < 350) {
-                }
-                while (drumMotor.getCurrentPosition() <= DEGREES * posOfBlades) {
-                    error = posOfBlades - drumMotor.getCurrentPosition();
-                    double power = error * Ki;
-                    drumMotor.setPower(power);
-                }
-            }
-            timer.reset();
-        }
-    }
-
-    public void shootingArtefacts(double pos) {
-        turn40();
-        double drumPos = pos;
-        dwallClose();
-        hwallOpen();
-
-
-        while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-            drumPos += 120;
-
-            while (drumMotor.getCurrentPosition() <= drumPos) {
-                errorS = drumPos - drumMotor.getCurrentPosition();
-                double power = errorS * Ks;
-                drumMotor.setPower(power);
-            }
-
-        }
-    }
-
-    public void switchingDWall() {
-        if (dwall.getPosition() == HOPEN_WALL) {
-            dwall.setPosition(HCLOSE_WALL);
-        } else {
-            dwall.setPosition(HOPEN_WALL);
-        }
-    }
-
-    public void sortingArtefacts(Scan a, Scan b) {
-        switch (a) {
-            case LEFT: {
-                switch (b) {
-                    case LEFT:
-                        while (drumMotor.getCurrentPosition() < DEGREES * 280)
-                            drumMotor.setPower(SPEED);
-                        break;
-                    case RIGHT:
-                        while (drumMotor.getCurrentPosition() > DEGREES * 160)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                    case BETWEEN:
-                        while (drumMotor.getCurrentPosition() > DEGREES * 40)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                }
-                break;
-            }
-            case RIGHT: {
-                switch (b) {
-                    case LEFT:
-                        while (drumMotor.getCurrentPosition() > DEGREES * 40)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                    case RIGHT:
-                        while (drumMotor.getCurrentPosition() < DEGREES * 280)
-                            drumMotor.setPower(SPEED);
-                        break;
-                    case BETWEEN:
-                        while (drumMotor.getCurrentPosition() > DEGREES * 160)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                }
-                break;
-            }
-            case BETWEEN: {
-                switch (b) {
-                    case LEFT:
-                        while (drumMotor.getCurrentPosition() > DEGREES * 40)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                    case RIGHT:
-                        while (drumMotor.getCurrentPosition() > DEGREES * 160)
-                            drumMotor.setPower(-SPEED);
-                        break;
-                    case BETWEEN:
-                        while (drumMotor.getCurrentPosition() < DEGREES * 280)
-                            drumMotor.setPower(SPEED);
-                        break;
-                }
-                break;
-            }
-
-        }
-    }
-
-    public ArrayList<Color> getColor() {
-        ArrayList<Color> colorSensors = new ArrayList<>();
-
-        NormalizedRGBA color1 = colorSensor1.getNormalizedColors();
-        NormalizedRGBA color2 = colorSensor2.getNormalizedColors();
-        NormalizedRGBA color3 = colorSensor3.getNormalizedColors();
-        android.graphics.Color.colorToHSV(color1.toColor(), hsv);
-        android.graphics.Color.colorToHSV(color2.toColor(), hsv2);
-        android.graphics.Color.colorToHSV(color3.toColor(), hsv3);
-
-
-        if (hsv[0] <= GREEN_MAX && hsv[0] >= GREEN_MIN) {
-            colorSensors.add(Color.GREEN);
-        } else if (hsv[0] <= PURPLE_MAX && hsv[0] >= PURPLE_MIN) {
-            colorSensors.add(Color.PURPLE);
-        } else colorSensors.add(Color.NONE);
-
-
-        if (hsv2[0] <= GREEN_MAX && hsv2[0] >= GREEN_MIN) {
-            colorSensors.add(Color.GREEN);
-        } else if (hsv2[0] <= PURPLE_MAX && hsv2[0] >= PURPLE_MIN) {
-            colorSensors.add(Color.PURPLE);
-        } else colorSensors.add(Color.NONE);
-
-
-        if (hsv3[0] <= GREEN_MAX && hsv3[0] >= GREEN_MIN) {
-            colorSensors.add(Color.GREEN);
-        } else if (hsv3[0] <= PURPLE_MAX && hsv3[0] >= PURPLE_MIN) {
-            colorSensors.add(Color.PURPLE);
-        } else colorSensors.add(Color.NONE);
-
-        return colorSensors;
-    }
-
-    public Scan artefact_pos(ArrayList<Color> a) {
-        Scan position = null;
-        if (a.get(1) == Color.GREEN) position = Scan.LEFT;
-        else if (a.get(0) == Color.GREEN) position = Scan.BETWEEN;
-        else if (a.get(2) == Color.GREEN) position = Scan.RIGHT;
-
-        return position;
-    }
-
-    public boolean look_pos(ArrayList<Color> a, int b) { // для тестов
-        return a.get(b) != Color.NONE;
-    }
+//    public void sortingArtefacts(Scan a, Scan b) {
+//        switch (a) {
+//            case LEFT: {
+//                switch (b) {
+//                    case LEFT:
+//                        while (drumMotor.getCurrentPosition() < DEGREES * 280)
+//                            drumMotor.setPower(SPEED);
+//                        break;
+//                    case RIGHT:
+//                        while (drumMotor.getCurrentPosition() > DEGREES * 160)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                    case BETWEEN:
+//                        while (drumMotor.getCurrentPosition() > DEGREES * 40)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                }
+//                break;
+//            }
+//            case RIGHT: {
+//                switch (b) {
+//                    case LEFT:
+//                        while (drumMotor.getCurrentPosition() > DEGREES * 40)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                    case RIGHT:
+//                        while (drumMotor.getCurrentPosition() < DEGREES * 280)
+//                            drumMotor.setPower(SPEED);
+//                        break;
+//                    case BETWEEN:
+//                        while (drumMotor.getCurrentPosition() > DEGREES * 160)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                }
+//                break;
+//            }
+//            case BETWEEN: {
+//                switch (b) {
+//                    case LEFT:
+//                        while (drumMotor.getCurrentPosition() > DEGREES * 40)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                    case RIGHT:
+//                        while (drumMotor.getCurrentPosition() > DEGREES * 160)
+//                            drumMotor.setPower(-SPEED);
+//                        break;
+//                    case BETWEEN:
+//                        while (drumMotor.getCurrentPosition() < DEGREES * 280)
+//                            drumMotor.setPower(SPEED);
+//                        break;
+//                }
+//                break;
+//            }
+//
+//        }
+//    }
+//
+//    public ArrayList<Color> getColor() {
+//        ArrayList<Color> colorSensors = new ArrayList<>();
+//
+//        NormalizedRGBA color1 = colorSensor1.getNormalizedColors();
+//        NormalizedRGBA color2 = colorSensor2.getNormalizedColors();
+//        NormalizedRGBA color3 = colorSensor3.getNormalizedColors();
+//        android.graphics.Color.colorToHSV(color1.toColor(), hsv);
+//        android.graphics.Color.colorToHSV(color2.toColor(), hsv2);
+//        android.graphics.Color.colorToHSV(color3.toColor(), hsv3);
+//
+//
+//        if (hsv[0] <= GREEN_MAX && hsv[0] >= GREEN_MIN) {
+//            colorSensors.add(Color.GREEN);
+//        } else if (hsv[0] <= PURPLE_MAX && hsv[0] >= PURPLE_MIN) {
+//            colorSensors.add(Color.PURPLE);
+//        } else colorSensors.add(Color.NONE);
+//
+//
+//        if (hsv2[0] <= GREEN_MAX && hsv2[0] >= GREEN_MIN) {
+//            colorSensors.add(Color.GREEN);
+//        } else if (hsv2[0] <= PURPLE_MAX && hsv2[0] >= PURPLE_MIN) {
+//            colorSensors.add(Color.PURPLE);
+//        } else colorSensors.add(Color.NONE);
+//
+//
+//        if (hsv3[0] <= GREEN_MAX && hsv3[0] >= GREEN_MIN) {
+//            colorSensors.add(Color.GREEN);
+//        } else if (hsv3[0] <= PURPLE_MAX && hsv3[0] >= PURPLE_MIN) {
+//            colorSensors.add(Color.PURPLE);
+//        } else colorSensors.add(Color.NONE);
+//
+//        return colorSensors;
+//    }
+//
+//    public Scan artefact_pos(ArrayList<Color> a) {
+//        Scan position = null;
+//        if (a.get(1) == Color.GREEN) position = Scan.LEFT;
+//        else if (a.get(0) == Color.GREEN) position = Scan.BETWEEN;
+//        else if (a.get(2) == Color.GREEN) position = Scan.RIGHT;
+//
+//        return position;
+//    }
+//
+//    public boolean look_pos(ArrayList<Color> a, int b) { // для тестов
+//        return a.get(b) != Color.NONE;
+//    }
 
     public void drumTele(double power) {
         drumMotor.setPower(power);
-    }
-
-    public void shootTele(double power) {
-        shootMotor.setPower(power);
     }
 
     public void hwallClose() {
@@ -299,65 +286,74 @@ public class Sorting {
         dwall.setPosition(DOPEN_WALL);
     }
 
-    public boolean isIntakeCompleted() {
-        return getColor().get(2) != Color.NONE;
-    }
-
-    public boolean isSortingCompleted(Scan a, Scan b) {
-        return a == b;
-    }
-
-    public boolean isShooterCompleted() {
-        return getColor().get(1) == Color.NONE;
-    }
-
     public void setDWallPos(double a) {
         dwall.setPosition(a);
     }
 
-    public void turn40() {
-        int bladesPos = drumMotor.getCurrentPosition();
-        bladesPos -= 40;
-        while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) {
-            drumMotor.setPower(-SPEED);
+    public void autoDrumTurning() {
+        while (timer.seconds() < 5) {
+            drumMotor.setPower(-SPEED); //изменить
         }
+        timer.reset();
     }
 
-    public void turn120() {
-        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        int bladesPos = -120;
-        while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) {
-            drumMotor.setPower(-SPEED);
-        }
-    }
+//    public boolean isIntakeCompleted() {
+//        return getColor().get(2) != Color.NONE;
+//    }
 
-    public void simpleShooting() {
-        dwallClose();
-        hwallOpen();
-        turn40();
-        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        int bladesPos = -120;
-        for (int i = 0; i < 3; i++) {
-            while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) drumMotor.setPower(-SPEED);
-            bladesPos -= 120;
-        }
-    }
+//    public boolean isSortingCompleted(Scan a, Scan b) {
+//        return a == b;
+//    }
 
-    public void simpleIntaking() {
+//    public boolean isShooterCompleted() {
+//        return getColor().get(1) == Color.NONE;
+//    }
 
-        dwallOpen();
 
-        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        int bladesPos = -120;
+//    public void turn40() {
+//        int bladesPos = drumMotor.getCurrentPosition();
+//        bladesPos -= 40;
+//        while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) {
+//            drumMotor.setPower(-SPEED);
+//        }
+//    }
 
-        for (int i = 0; i < 3; i++) {
-            while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) drumMotor.setPower(-SPEED);
-            bladesPos -= 120;
-        }
-    }
+
+//    public void turn120() {
+//        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        int bladesPos = -120;
+//        while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) {
+//            drumMotor.setPower(-SPEED);
+//        }
+//    }
+
+//    public void simpleShooting() {
+//        dwallClose();
+//        hwallOpen();
+//        turn40();
+//        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        int bladesPos = -120;
+//        for (int i = 0; i < 3; i++) {
+//            while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) drumMotor.setPower(-SPEED);
+//            bladesPos -= 120;
+//        }
+//    }
+
+//    public void simpleIntaking() {
+//
+//        dwallOpen();
+//
+//        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        int bladesPos = -120;
+//
+//        for (int i = 0; i < 3; i++) {
+//            while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) drumMotor.setPower(-SPEED);
+//            bladesPos -= 120;
+//        }
+//    }
 
 }
 
