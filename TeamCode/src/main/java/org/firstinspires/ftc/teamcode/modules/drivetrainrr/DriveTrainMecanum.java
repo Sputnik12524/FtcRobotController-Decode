@@ -54,6 +54,7 @@ import java.util.List;
  */
 @Config
 public class DriveTrainMecanum extends MecanumDrive {
+    public static double multiplier = 1;
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
@@ -307,5 +308,11 @@ public class DriveTrainMecanum extends MecanumDrive {
 
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
+    }
+    public void setMotorsPower(double main, double side, double rotation){
+        leftFront.setPower(multiplier * (main + side + rotation));
+        leftBack.setPower(multiplier * (main - side + rotation));
+        rightFront.setPower(multiplier * (main - side - rotation));
+        rightBack.setPower(multiplier * (main + side - rotation));
     }
 }

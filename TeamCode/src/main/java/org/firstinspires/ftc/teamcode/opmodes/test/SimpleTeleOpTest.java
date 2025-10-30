@@ -20,7 +20,7 @@ public class SimpleTeleOpTest extends LinearOpMode {
             double rotate = gamepad1.right_trigger - gamepad1.left_trigger;
 
 
-            dt.setMotorPower(main, side, rotate);
+            dt.setPower(main, side, rotate);
 
             telemetry.addData("main", main);
             telemetry.addData("side", side);

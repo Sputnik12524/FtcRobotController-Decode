@@ -114,7 +114,7 @@ public class DriveTrain {
     }
 
     public enum RobotDirection {FORWARD, BACK, RIGHT, LEFT, FORWARD_LEFT, FORWARD_RIGHT, BACK_LEFT, BACK_RIGHT, ROTATION_CLOCKWISE, COUNTERCLOCKWISE_ROTATION}
-    public void setMotorPower (double main, double side, double rotation){
+    public void setPower (double main, double side, double rotation){
         leftFront.setPower(multiplier * (main + side + rotation));
         leftBack.setPower(multiplier * (main - side + rotation));
         rightFront.setPower(multiplier * (main - side - rotation));

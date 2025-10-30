@@ -4,15 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.modules.DriveTrain;
-
-@TeleOp(name="Hweel TeleOp")
+@TeleOp(name="Wheel TeleOp")
 public class WheelTest extends LinearOpMode {
     DcMotor leftFront;
     DcMotor leftBack;
     DcMotor rightFront;
     DcMotor rightBack;
-    private double SPEED = .5;
+    private final double SPEED = .5;
     @Override
     public void runOpMode() throws InterruptedException {
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
