@@ -3,26 +3,31 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp (group = "Robot")
+import org.firstinspires.ftc.teamcode.modules.Shooter;
+
+@TeleOp(name = "TEST Shooter/Sorting", group = "Test")
 public class ShooterAndSortingTest extends LinearOpMode {
-    DcMotor motor;
-    double power = 1;
+
+    Shooter st;
 
     public void runOpMode() {
-        motor = hardwareMap.get(DcMotor.class, "motor");
+        st = new Shooter(this);
+
+        st.setShortThrow();
 
         waitForStart();
 
         while (opModeIsActive()) {
 
-            if(gamepad1.a) {
-                motor.setPower(power);
-            } else if (gamepad1.b) {
-                motor.setPower(-power);
+            if (gamepad1.a) {
+                st.shoot();
             } else {
-                motor.setPower(0);
+                st.shootStop();
+            }
+
+            if (gamepad1.right_bumper) {
+                st.switchThrowMode();
             }
 
         }
