@@ -6,30 +6,24 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.util.Timer;
-
 
 @Config
 
 public class Intake {
-    private DcMotor catcher;
-    private Servo flap;
+    private final DcMotor catcher;
 
     public static double POWER = 1;
 
     public static double IN_OUT = 2000;
 
 
-
-
     ArtifactIntake artifactIntake;
     LinearOpMode linearOpMode;
 
     public Intake(LinearOpMode linearOpMode) {
-        this.artifactIntake = artifactIntake;
+        artifactIntake = new ArtifactIntake();
         this.linearOpMode = linearOpMode;
         this.catcher = linearOpMode.hardwareMap.get(DcMotor.class, "catcher");
-        this.flap = linearOpMode.hardwareMap.get(Servo.class, "flap");
     }
 
     public void rotateIn() {
