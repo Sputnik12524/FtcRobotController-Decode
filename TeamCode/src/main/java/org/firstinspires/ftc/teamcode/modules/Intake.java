@@ -15,9 +15,7 @@ public class Intake {
     private DcMotor catcher;
     private Servo flap;
 
-    public static double POWER;
-    public static double OPEN;
-    public static double CLOSE;
+    public static double POWER = 1;
 
     public static double IN_OUT = 2000;
 
@@ -46,13 +44,6 @@ public class Intake {
         catcher.setPower(0);
     }
 
-    public void flapOpenAndClose() {
-        if (flap.getPosition() == CLOSE) {
-            flap.setPosition(OPEN);
-        } else {
-            flap.setPosition(CLOSE);
-        }
-    }
 
     public void needRotateIn() {
         artifactIntake.isRotateIn = true;
