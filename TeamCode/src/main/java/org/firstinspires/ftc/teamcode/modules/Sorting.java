@@ -15,12 +15,13 @@ import java.util.ArrayList;
 public class Sorting {
     private final ElapsedTime timer = new ElapsedTime();
     Shooter shooter = new Shooter();
-    private final NormalizedColorSensor colorSensor;
+    private final NormalizedColorSensor colorSensor1;
     private final NormalizedColorSensor colorSensor2;
     private final NormalizedColorSensor colorSensor3;
-    private final DcMotor drumMotor;
+    public final DcMotor drumMotor;
     private final DcMotor shootMotor;
-    private final Servo wall;
+    public final Servo hwall; // верхняяя сенка
+    public final Servo dwall; // нижняя стенка
     public Scan pos;
     //pos = shooter.pos;
     public static final float GAIN = 3F;
@@ -40,8 +41,10 @@ public class Sorting {
 
     public static double error;
     public static double errorS;
-    public static final double OPEN_WALL = 0.57;
-    public static final double CLOSE_WALL = 0.34;
+    public static final double HOPEN_WALL = 0.65;
+    public static final double HCLOSE_WALL = 0;
+    public static final double DOPEN_WALL = 0.2;
+    public static final double DCLOSE_WALL = 0;
     public static final double GREEN_MAX = 185;
     public static final double GREEN_MIN = 140;
     public static final double PURPLE_MAX = 245;
@@ -54,18 +57,20 @@ public class Sorting {
     public Sorting(LinearOpMode opMode) {
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drum");
         this.shootMotor = opMode.hardwareMap.get(DcMotor.class, "shooter");
-        this.wall = opMode.hardwareMap.get(Servo.class, "wall");
+        this.hwall = opMode.hardwareMap.get(Servo.class, "hwall");
+        this.dwall = opMode.hardwareMap.get(Servo.class, "dwall");
         this.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.drumMotor.setDirection(DcMotor.Direction.REVERSE);
-        this.colorSensor = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor1");
-        this.colorSensor.setGain(GAIN);
+        this.colorSensor1 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor1");
+        this.colorSensor1.setGain(GAIN);
         this.colorSensor2 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor2");
         this.colorSensor2.setGain(GAIN);
         this.colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor3");
         this.colorSensor3.setGain(GAIN);
-        this.drumMotor.setDirection(DcMotorEx.Direction.REVERSE);
+       this.drumMotor.setDirection(DcMotorEx.Direction.REVERSE);
     }
+
 
     public class SortMotorDriver extends Thread {
 
@@ -119,7 +124,9 @@ public class Sorting {
         }
     }
 
+
     public void intakingArtefacts() {
+        dwallOpen();
         int posOfBlades = 0; // это не константа
         while (getColor().get(2) == Color.NONE) { // 3 датчик нечего не видит
             posOfBlades += 120;
@@ -138,14 +145,16 @@ public class Sorting {
     }
 
     public void shootingArtefacts(double pos) {
+        turn40();
         double drumPos = pos;
-        drumPos += 120;
-        switchingWall();
+        dwallClose();
+        hwallOpen();
+
 
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
             drumPos += 120;
 
-            while (drumMotor.getCurrentPosition() <= drumPos){
+            while (drumMotor.getCurrentPosition() <= drumPos) {
                 errorS = drumPos - drumMotor.getCurrentPosition();
                 double power = errorS * Ks;
                 drumMotor.setPower(power);
@@ -154,11 +163,11 @@ public class Sorting {
         }
     }
 
-    public void switchingWall() {
-        if (wall.getPosition() == OPEN_WALL) {
-            wall.setPosition(CLOSE_WALL);
+    public void switchingDWall() {
+        if (dwall.getPosition() == HOPEN_WALL) {
+            dwall.setPosition(HCLOSE_WALL);
         } else {
-            wall.setPosition(OPEN_WALL);
+            dwall.setPosition(HOPEN_WALL);
         }
     }
 
@@ -222,7 +231,7 @@ public class Sorting {
     public ArrayList<Color> getColor() {
         ArrayList<Color> colorSensors = new ArrayList<>();
 
-        NormalizedRGBA color1 = colorSensor.getNormalizedColors();
+        NormalizedRGBA color1 = colorSensor1.getNormalizedColors();
         NormalizedRGBA color2 = colorSensor2.getNormalizedColors();
         NormalizedRGBA color3 = colorSensor3.getNormalizedColors();
         android.graphics.Color.colorToHSV(color1.toColor(), hsv);
@@ -250,9 +259,7 @@ public class Sorting {
             colorSensors.add(Color.PURPLE);
         } else colorSensors.add(Color.NONE);
 
-
         return colorSensors;
-
     }
 
     public Scan artefact_pos(ArrayList<Color> a) {
@@ -264,13 +271,32 @@ public class Sorting {
         return position;
     }
 
+    public boolean look_pos(ArrayList<Color> a, int b) { // для тестов
+        return a.get(b) != Color.NONE;
+    }
+
     public void drumTele(double power) {
         drumMotor.setPower(power);
     }
-    public void shootTele(double power){shootMotor.setPower(power);}
 
-    public void wallStarting() {
-        wall.setPosition(OPEN_WALL);
+    public void shootTele(double power) {
+        shootMotor.setPower(power);
+    }
+
+    public void hwallClose() {
+        hwall.setPosition(HCLOSE_WALL);
+    }
+
+    public void dwallClose() {
+        dwall.setPosition(DCLOSE_WALL);
+    }
+
+    public void hwallOpen() {
+        hwall.setPosition(HOPEN_WALL);
+    }
+
+    public void dwallOpen() {
+        dwall.setPosition(DOPEN_WALL);
     }
 
     public boolean isIntakeCompleted() {
@@ -285,6 +311,53 @@ public class Sorting {
         return getColor().get(1) == Color.NONE;
     }
 
+    public void setDWallPos(double a) {
+        dwall.setPosition(a);
+    }
+
+    public void turn40() {
+        int bladesPos = drumMotor.getCurrentPosition();
+        bladesPos -= 40;
+        while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) {
+            drumMotor.setPower(-SPEED);
+        }
+    }
+
+    public void turn120() {
+        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        int bladesPos = -120;
+        while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) {
+            drumMotor.setPower(-SPEED);
+        }
+    }
+
+    public void simpleShooting() {
+        dwallClose();
+        hwallOpen();
+        turn40();
+        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        int bladesPos = -120;
+        for (int i = 0; i < 3; i++) {
+            while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) drumMotor.setPower(-SPEED);
+            bladesPos -= 120;
+        }
+    }
+
+    public void simpleIntaking() {
+
+        dwallOpen();
+
+        drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        int bladesPos = -120;
+
+        for (int i = 0; i < 3; i++) {
+            while (drumMotor.getCurrentPosition() > bladesPos * DEGREES) drumMotor.setPower(-SPEED);
+            bladesPos -= 120;
+        }
+    }
 
 }
 
