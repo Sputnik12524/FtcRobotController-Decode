@@ -13,8 +13,8 @@ public class Shooter {
     private final Servo cover;
 
     public static double POWER = 1;
-    public static double SHORT_THROW = 0.3;
-    public static double LONG_THROW = 1;
+    public static double SHORT_THROW = 0.1;
+    public static double LONG_THROW = 0.2;
     private boolean isItShortThrow = false;
 
     public Shooter(LinearOpMode opMode) {
