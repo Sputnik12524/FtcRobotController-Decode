@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -40,14 +41,16 @@ public class Sorting {
 
     public static double error;
     public static double errorS;
-    public static final double HOPEN_WALL = 0.65;
-    public static final double HCLOSE_WALL = 0;
-    public static final double DOPEN_WALL = 0.2;
-    public static final double DCLOSE_WALL = 0;
-    public static final double GREEN_MAX = 185;
-    public static final double GREEN_MIN = 140;
-    public static final double PURPLE_MAX = 245;
-    public static final double PURPLE_MIN = 200;
+    public static double HOPEN_WALL = 0;
+    public static double HCLOSE_WALL = 0.25;
+    public static double DOPEN_WALL = 0;
+    public static double DCLOSE_WALL = 0.65;
+    public static double GREEN_MAX = 185;
+    public static double GREEN_MIN = 140;
+    public static double PURPLE_MAX = 245;
+    public static double PURPLE_MIN = 200;
+
+    public static double POWER = -0.4;
 //    public SortMotorDriver sortMotorDriver = new SortMotorDriver();
 //    public SortIntake sortIntaker = new SortIntake();
 //    public SortSorting sortSorting = new SortSorting();
@@ -66,7 +69,6 @@ public class Sorting {
         this.colorSensor2.setGain(GAIN);
         this.colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor3");
         this.colorSensor3.setGain(GAIN);
-        this.drumMotor.setDirection(DcMotorEx.Direction.REVERSE);
     }
 
 
@@ -268,8 +270,8 @@ public class Sorting {
         drumMotor.setPower(0);
     }
 
-    public void drumTele(double power) {
-        drumMotor.setPower(power);
+    public void drumTele() {
+        drumMotor.setPower(POWER);
     }
 
     public void hwallClose() {
