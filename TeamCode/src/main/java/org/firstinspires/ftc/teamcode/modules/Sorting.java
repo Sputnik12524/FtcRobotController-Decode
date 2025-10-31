@@ -70,7 +70,6 @@ public class Sorting {
     }
 
 
-
 //    public class SortMotorDriver extends Thread {
 //
 //        @Override
@@ -162,7 +161,7 @@ public class Sorting {
 //        }
 //    }
 
-//    public void sortingArtefacts(Scan a, Scan b) {
+    //    public void sortingArtefacts(Scan a, Scan b) {
 //        switch (a) {
 //            case LEFT: {
 //                switch (b) {
@@ -265,6 +264,9 @@ public class Sorting {
 //    public boolean look_pos(ArrayList<Color> a, int b) { // для тестов
 //        return a.get(b) != Color.NONE;
 //    }
+    public void drumStop() {
+        drumMotor.setPower(0);
+    }
 
     public void drumTele(double power) {
         drumMotor.setPower(power);
@@ -290,12 +292,20 @@ public class Sorting {
         dwall.setPosition(a);
     }
 
-    public void autoDrumTurning(double POWER) {
+    public void autoDrumTurningIn(double POWER) {
         while (timer.seconds() < 5) {
             drumMotor.setPower(-POWER); //изменить
         }
         timer.reset();
     }
+    public void autoDrumTurningOut(double POWER) {
+        while (timer.seconds() < 5) {
+            drumMotor.setPower(POWER); //изменить
+        }
+        timer.reset();
+    }
+
+
 
 //    public boolean isIntakeCompleted() {
 //        return getColor().get(2) != Color.NONE;
