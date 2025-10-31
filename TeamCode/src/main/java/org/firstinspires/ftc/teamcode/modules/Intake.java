@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -24,6 +23,7 @@ public class Intake {
         artifactIntake = new ArtifactIntake();
         this.linearOpMode = linearOpMode;
         this.catcher = linearOpMode.hardwareMap.get(DcMotor.class, "catcher");
+        catcher.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void rotateIn() {

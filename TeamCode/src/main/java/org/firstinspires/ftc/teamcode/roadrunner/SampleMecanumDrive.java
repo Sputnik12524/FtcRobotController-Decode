@@ -29,6 +29,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants;
+import org.firstinspires.ftc.teamcode.modules.drivetrainrr.ThreeWheelLocalizer;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceRunner;
@@ -51,7 +52,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 60/58.2677;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -67,7 +68,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;
 
-    private IMU imu;
+   // private IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
     private List<Integer> lastEncPositions = new ArrayList<>();
@@ -88,14 +89,14 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
-        imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
-        imu.initialize(parameters);
+     //   imu = hardwareMap.get(IMU.class, "imu");
+     //   IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+    //            DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
+    //    imu.initialize(parameters);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        leftRear = hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightRear = hardwareMap.get(DcMotorEx.class, "rightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
@@ -118,11 +119,17 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         // TODO: reverse any motors using DcMotor.setDirection()
 
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        leftRear.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        rightRear.setDirection(DcMotor.Direction.REVERSE);
+
+
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        // setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+        setLocalizer(new ThreeWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,
@@ -192,6 +199,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void update() {
         updatePoseEstimate();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
+
         if (signal != null) setDriveSignal(signal);
     }
 
@@ -284,12 +292,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        return 0;
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        return.0;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
