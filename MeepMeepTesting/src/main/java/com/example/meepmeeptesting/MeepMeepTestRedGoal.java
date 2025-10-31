@@ -12,14 +12,14 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class MeepMeepTestBlueGoal {
+public class MeepMeepTestRedGoal {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(500, 500);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 17)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-48, -48, Math.toRadians(45)))
-                        .lineToLinearHeading(new Pose2d(-24, -23, 45))
-                        .lineToLinearHeading(new Pose2d(-12, -27, -90))
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-48, 48, Math.toRadians(-45)))
+                        .lineToLinearHeading(new Pose2d(-23, 25, -45))
+                        .lineToLinearHeading(new Pose2d(-11, 32, 90))
                         .build());
 
 
