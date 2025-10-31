@@ -290,9 +290,9 @@ public class Sorting {
         dwall.setPosition(a);
     }
 
-    public void autoDrumTurning() {
+    public void autoDrumTurning(double POWER) {
         while (timer.seconds() < 5) {
-            drumMotor.setPower(-SPEED); //изменить
+            drumMotor.setPower(-POWER); //изменить
         }
         timer.reset();
     }
