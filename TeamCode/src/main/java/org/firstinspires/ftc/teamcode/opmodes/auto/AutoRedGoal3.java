@@ -9,12 +9,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
 @Autonomous(name = "RED Goal 3 Artifacts", group = "AutoRed")
-@Disabled
 public class AutoRedGoal3 extends LinearOpMode {
-    DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
 
     @Override
     public void runOpMode() {
+        DriveTrainMecanum dt = new DriveTrainMecanum(this.hardwareMap);
         Pose2d startPose = new Pose2d(-49, 49, Math.toRadians(-45));
         dt.setPoseEstimate(startPose);
 

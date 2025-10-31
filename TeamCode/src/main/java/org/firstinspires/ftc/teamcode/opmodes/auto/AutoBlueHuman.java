@@ -9,10 +9,10 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
 @Autonomous(name = "BLUE Human 3 Artifact", group = "AutoBlue")
 public class AutoBlueHuman extends LinearOpMode {
-    DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
 
     @Override
     public void runOpMode() {
+        DriveTrainMecanum dt = new DriveTrainMecanum(this.hardwareMap);
         Pose2d startPose = new Pose2d(62, -10, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
 
