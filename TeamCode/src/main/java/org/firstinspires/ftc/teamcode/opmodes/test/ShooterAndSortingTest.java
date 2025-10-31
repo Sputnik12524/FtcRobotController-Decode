@@ -3,10 +3,12 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 
-@TeleOp(name = "TEST Shooter/Sorting", group = "Test")
+@TeleOp(name = "TEST Shooter/Sorting AND INTAKE", group = "Test")
 public class ShooterAndSortingTest extends LinearOpMode {
+    Intake in;
     Sorting sr;
     boolean bState = false;
     boolean xState = false;
@@ -14,6 +16,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        in = new Intake(this);
         sr = new Sorting(this);
         sr.pos = Sorting.Scan.RIGHT; // для проверки
         sr.hwallClose();
@@ -21,55 +24,31 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
+
+            if (gamepad1.a) {
+                in.rotateIn(1);
+                sr.autoDrumTurningIn(0.5);
+            } else {
+                in.rotateStop();
+                sr.drumStop();
+            }
+            if (gamepad1.b) {
+                in.rotateIn(1);
+                sr.autoDrumTurningIn(0.6);
+            } else {
+                in.rotateStop();
+                sr.drumStop();
+            }
+            if (gamepad1.y) {
+                in.rotateIn(1);
+                sr.autoDrumTurningIn(0.7);
+            } else {
+                in.rotateStop();
+                sr.drumStop();
+            }
             telemetry.addData("Позиция сортировки", sr.drumMotor.getCurrentPosition());
             telemetry.addData("Позиция стенки", sr.hwall.getController());
-
-
-            sr.drumTele(gamepad1.left_stick_y / 10);
-
-
-//            if (gamepad1.b && !bState) {
-//                sr.sortIntaker.start();
-//                while (!sr.isIntakeCompleted()) {
-//                }
-//                sr.sortIntaker.interrupt();
-//            }
-//
-//            if (gamepad1.x && !xState) {
-//                sr.sortMotorDriver.start();
-//                while (!sr.isSortingCompleted(sr.artefact_pos(sr.getColor()), sr.pos)) { // под вопросом будет ли работать
-//                }
-//                sr.sortMotorDriver.interrupt();
-//            }
-//
-//            if (gamepad1.y && !yState) {
-//                sr.sortShooter.start();
-//                while (!sr.isShooterCompleted()) {
-//                }
-//                sr.sortShooter.interrupt();
-//            }
-
-
-//            if (gamepad1.dpad_right) {
-//                sr.drumTele(1);
-//
-//            }
-//            if(gamepad2.a){
-//                sr.turn40();
-//            }
-//            if (gamepad2.b){
-//                sr.turn120();
-//            }
-//            if(gamepad2.x){
-//                sr.simpleIntaking();
-//            }
-//            if (gamepad2.y){
-//                sr.simpleShooting();
-//            }
-
-//            yState = gamepad2.y;
-//            bState = gamepad1.b;
-//            xState = gamepad2.x;
+            telemetry.update();
         }
 //        sr.sortIntaker.interrupt();
 //        sr.sortShooter.interrupt();
