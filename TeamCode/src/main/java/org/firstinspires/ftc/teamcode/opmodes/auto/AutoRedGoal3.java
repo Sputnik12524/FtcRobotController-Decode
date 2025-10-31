@@ -23,11 +23,11 @@ public class AutoRedGoal3 extends LinearOpMode {
         if (isStopRequested()) return;
 
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-29, 25))
+                .lineTo(new Vector2d(-23, 25))
         //scoring
                 .build());
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(-7, 27, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-11, 32, Math.toRadians(90)))
                 .build());
 
     }
