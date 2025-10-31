@@ -13,16 +13,16 @@ public class AutoBlueHuman extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Pose2d startPose = new Pose2d(-47, -45, Math.toRadians(45));
+        Pose2d startPose = new Pose2d(62, -10, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
 
         waitForStart();
 
         if (isStopRequested()) return;
-        dt.turn(Math.toRadians(30));
-        //запуск
+        //съезд с линии синий зоны к артефактам.
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(-90))).build());
+                .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(-90)))
+                .build());
 
     }
 }
