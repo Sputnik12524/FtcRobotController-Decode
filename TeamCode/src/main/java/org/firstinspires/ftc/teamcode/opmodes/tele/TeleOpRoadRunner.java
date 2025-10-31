@@ -6,13 +6,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@TeleOp(name="TeleOpRR", group="Tele")
+@TeleOp(name = "TeleOpRR", group = "Tele")
 public class TeleOpRoadRunner extends LinearOpMode {
 
     Shooter st;
     Intake in;
+    Sorting sorting;
     /// Intake
     boolean isRotateIn = false;
     boolean isRotateOut = false;
@@ -26,6 +28,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        sorting = new Sorting(this);
         st = new Shooter(this);
         in = new Intake(this);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
@@ -39,32 +42,40 @@ public class TeleOpRoadRunner extends LinearOpMode {
         // DRIVETRAIN
         dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
 
-        // INTAKE
+        // INTAKE and SORTING
         if (gamepad1.a && !isRotateIn && !stateA1) {
+            // потом удалить скорость
             in.rotateIn();
+            sorting.autoDrumTurningIn(0.6);
             isRotateIn = true;
             isRotateOut = false;
         } else if (gamepad1.a && isRotateIn && !stateA1) {
+            sorting.drumStop();
             in.rotateStop();
             isRotateIn = false;
         }
 
         if (gamepad1.b && !isRotateOut && !stateB1) {
             in.rotateOut();
+            sorting.autoDrumTurningOut(0.6);
             isRotateOut = true;
             isRotateIn = false;
         } else if (gamepad1.b && isRotateOut && !stateB1) {
+            sorting.drumStop();
             in.rotateStop();
             isRotateOut = false;
         }
         stateA1 = gamepad1.a;
         stateB1 = gamepad1.b;
 
-        // SHOOTER
+        // SHOOTER and SORTING
         if (gamepad2.a && !isShooting && !stateA2) {
             st.shoot();
+            sleep(500);
+            sorting.autoDrumTurningIn(0.6);
             isShooting = true;
         } else if (gamepad2.a && isShooting && !stateA2) {
+            sorting.drumStop();
             st.shootStop();
             isShooting = false;
         }
@@ -72,6 +83,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
     }
+
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }
