@@ -21,7 +21,7 @@ public class Shooter {
         shooter = opMode.hardwareMap.get(DcMotor.class, "shooter");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
 
-        shooter.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void shoot() {

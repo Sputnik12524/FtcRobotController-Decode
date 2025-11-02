@@ -22,6 +22,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean isRotateOut = false;
     boolean stateA1 = false;
     boolean stateB1 = false;
+    boolean stateX = false;
+
+    boolean isOpen = false;
 
     /// Shooter
     boolean isShooting = false;
@@ -70,6 +73,15 @@ public class TeleOpRoadRunner extends LinearOpMode {
 //            }
             stateA1 = gamepad1.a;
 //            stateB1 = gamepad1.b;
+
+            if (gamepad2.x && !isOpen && !stateX) {
+                sorting.dwallOpen();
+                isOpen = true;
+            } else if (gamepad2.x && isOpen && !stateX) {
+                sorting.dwallClose();
+                isOpen = false;
+            }
+            stateX = gamepad2.x;
 
             // SHOOTER and SORTING
             if (gamepad2.a && !isShooting && !stateA2) {

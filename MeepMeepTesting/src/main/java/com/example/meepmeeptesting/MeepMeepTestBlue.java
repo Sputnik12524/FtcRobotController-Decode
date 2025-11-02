@@ -25,7 +25,7 @@ public class MeepMeepTestBlue {
 
         Image img = null;
         try {
-            img = ImageIO.read(new File("C:\\Users\\Sputnik MSI laptop 1\\Downloads\\324f5ccd-53dc-4872-ba37-648e96fb7d47.tmp"));
+            img = ImageIO.read(new File("C:\\Users\\admin\\Downloads\\decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));
         } catch (IOException e) {
         }
 

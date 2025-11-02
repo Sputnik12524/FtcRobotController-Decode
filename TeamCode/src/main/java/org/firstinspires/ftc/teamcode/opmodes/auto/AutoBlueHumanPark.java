@@ -6,21 +6,20 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "RED Human 3 Artifact", group = "AutoRed")
-public class AutoRedHuman extends LinearOpMode {
+@Autonomous(name = "BLUE Human Park", group = "0")
+public class AutoBlueHumanPark extends LinearOpMode {
 
     @Override
     public void runOpMode() {
         DriveTrainMecanum dt = new DriveTrainMecanum(this.hardwareMap);
-        Pose2d startPose = new Pose2d(61, 7, Math.toRadians(45));
+        Pose2d startPose = new Pose2d(62, -10, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
 
         waitForStart();
 
         if (isStopRequested()) return;
-        //съезд с красной зоны к артефактам
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(36, 30, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(180)))
                 .build());
 
     }

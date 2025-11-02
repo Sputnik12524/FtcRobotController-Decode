@@ -18,17 +18,17 @@ public class MeepMeepTesting {
         MeepMeep meepMeep = new MeepMeep(500, 500);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-49, 49, Math.toRadians(-45)))
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-49, -49, Math.toRadians(45)))
                         .waitSeconds(5)
-                        .lineTo(new Vector2d(-29, 25))
-                        .waitSeconds(5)
+                        .lineToLinearHeading(new Pose2d(-36, -15, Math.toRadians(-120)))
+                        /*.waitSeconds(5)
                         .lineToLinearHeading(new Pose2d(-11, 27, Math.toRadians(90)))
                         .waitSeconds(5)
                         .forward(20)
                         .lineToLinearHeading(new Pose2d(-29,25, Math.toRadians(-45)))
                         .waitSeconds(5)
                         .lineToLinearHeading(new Pose2d(-50,25, Math.toRadians(0)))
-                        .waitSeconds(10)
+                        .waitSeconds(10)*/
                         .build());
 
         Image img = null;
