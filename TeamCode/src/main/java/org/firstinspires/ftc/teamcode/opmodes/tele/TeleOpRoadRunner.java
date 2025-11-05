@@ -22,9 +22,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean isRotateOut = false;
     boolean stateA1 = false;
     boolean stateB1 = false;
-    boolean stateX = false;
-
-    boolean isOpen = false;
 
     /// Shooter
     boolean isShooting = false;
@@ -49,6 +46,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             // DRIVETRAIN
             dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
 
+
             // INTAKE and SORTING
             if (gamepad1.a && !isRotateIn && !stateA1) {
                 sorting.dwallOpen();
@@ -72,22 +70,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
             }
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
-            if (gamepad2.x && !isOpen && !stateX) {
-                sorting.dwallOpen();
-                isOpen = true;
-            } else if (gamepad2.x && isOpen && !stateX) {
-                sorting.dwallClose();
-                isOpen = false;
-            }
-            stateX = gamepad2.x;
 
             // SHOOTER and SORTING
             if (gamepad2.a && !isShooting && !stateA2) {
                 sorting.dwallClose();
                 sorting.hwallOpen();
                 st.shoot();
-                while (timer.milliseconds() < 500) {
-                }
+                while(timer.milliseconds() < 500) {}
                 isShooting = true;
             } else if (gamepad2.a && isShooting && !stateA2) {
                 st.shootStop();
