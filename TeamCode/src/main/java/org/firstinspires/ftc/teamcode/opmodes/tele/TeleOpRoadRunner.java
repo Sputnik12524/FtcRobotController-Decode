@@ -55,25 +55,23 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 sorting.hwallClose();
                 in.rotateIn();
                 isRotateIn = true;
-                //isRotateOut = false;
+                isRotateOut = false;
             } else if (gamepad1.a && isRotateIn && !stateA1) {
                 in.rotateStop();
                 isRotateIn = false;
             }
 
 
-
-//            if (gamepad1.b && !isRotateOut && !stateB1) {
-//                in.rotateOut();
-//                isRotateOut = true;
-//                isRotateIn = false;
-//            } else if (gamepad1.b && isRotateOut && !stateB1) {
-//                in.rotateStop();
-//                isRotateOut = false;
-//            }
+            if (gamepad1.b && !isRotateOut && !stateB1) {
+                in.rotateOut();
+                isRotateOut = true;
+                isRotateIn = false;
+            } else if (gamepad1.b && isRotateOut && !stateB1) {
+                in.rotateStop();
+                isRotateOut = false;
+            }
             stateA1 = gamepad1.a;
-//            stateB1 = gamepad1.b;
-
+            stateB1 = gamepad1.b;
             if (gamepad2.x && !isOpen && !stateX) {
                 sorting.dwallOpen();
                 isOpen = true;
@@ -88,7 +86,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 sorting.dwallClose();
                 sorting.hwallOpen();
                 st.shoot();
-                while(timer.milliseconds() < 500){}
+                while (timer.milliseconds() < 500) {
+                }
                 isShooting = true;
             } else if (gamepad2.a && isShooting && !stateA2) {
                 st.shootStop();

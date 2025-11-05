@@ -12,14 +12,14 @@ public class AutoRedGoalPark extends LinearOpMode {
     @Override
     public void runOpMode() {
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
-        Pose2d startPose = new Pose2d(49, -49, Math.toRadians(-45));
+        Pose2d startPose = new Pose2d(-49, 49, Math.toRadians(-45));
         dt.setPoseEstimate(startPose);
 
         waitForStart();
 
         if (isStopRequested()) return;
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-36, 18, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-55, 14, Math.toRadians(90)))
                 .build());
 
     }

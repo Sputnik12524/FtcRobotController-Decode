@@ -18,7 +18,6 @@ public class AutoRedHumanPark extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-        //съезд с красной зоны к артефактам
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(36, 30, Math.toRadians(180)))
                 .build());
