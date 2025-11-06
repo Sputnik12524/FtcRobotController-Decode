@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 
 public class Intake {
+
     private final DcMotor catcher;
 
     public static double POWER = 1;

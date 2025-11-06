@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.modules.Sorting;
 public class ShooterAndSortingTest extends LinearOpMode {
     Intake in;
     Sorting sr;
-    boolean bState = false;
+    boolean aState = false;
     boolean xState = false;
     boolean yState = false;
 
@@ -21,13 +21,17 @@ public class ShooterAndSortingTest extends LinearOpMode {
         sr.pos = Sorting.Scan.RIGHT; // для проверки
         sr.hwallClose();
         sr.dwallOpen();
+        sr.regulator.start();
 
         waitForStart();
         while (opModeIsActive()) {
+            telemetry.addData("Позиция сортировки", sr.drumMotor.getCurrentPosition());
+            telemetry.addData("Позиция верхней стенки", sr.hwall.getPosition());
+            telemetry.addData("Позиция нижней стенки", sr.dwall.getPosition());
 
-            if (gamepad1.a) {
+            if (gamepad1.a && aState) {
                 in.rotateIn();
-                sr.drumTele();
+                sr.intakingArtefacts();
             } else {
                 in.rotateStop();
                 sr.drumStop();
@@ -46,13 +50,12 @@ public class ShooterAndSortingTest extends LinearOpMode {
                 sr.dwallClose();
             }
 
-            telemetry.addData("Позиция сортировки", sr.drumMotor.getCurrentPosition());
-            telemetry.addData("Позиция стенки", sr.hwall.getController());
+
             telemetry.update();
+            aState = gamepad1.a;
         }
-//        sr.sortIntaker.interrupt();
-//        sr.sortShooter.interrupt();
-//        sr.sortMotorDriver.interrupt();
+        sr.regulator.interrupt();
+
     }
 }
 
