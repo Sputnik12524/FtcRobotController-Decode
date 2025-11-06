@@ -30,8 +30,11 @@ public class MeepMeepTest {
                         .build());
 
 
-        Image img = ImageIO.read(new File("C:/Users/user/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));
-
+        Image img = null;
+        try {
+            img = ImageIO.read(new File("C:/Users/Sputnik MSI laptop 1/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));
+        } catch (IOException e) {
+        }
 
         meepMeep.setBackground(img)
                 .setDarkMode(true)
