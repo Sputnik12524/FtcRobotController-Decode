@@ -32,6 +32,9 @@ public class Sorting {
     public static final double DEGREES = 360 / PULSES;
     public static final double Ki = 0.001;
     public static final double Ks = 0.003;
+    private double k = 0.001;
+    private static double target = 0;
+
 
     public enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
 
@@ -39,8 +42,8 @@ public class Sorting {
 
     public static double SPEED = 0.5;
 
-    public static double error;
     public static double errorS;
+
     public static double HOPEN_WALL = 0;
     public static double HCLOSE_WALL = 0.25;
     public static double DOPEN_WALL = 0;
@@ -51,6 +54,8 @@ public class Sorting {
     public static double PURPLE_MIN = 200;
 
     public static double POWER = -0.4;
+
+    public Turn120 turn120 = new Turn120();
 //    public SortMotorDriver sortMotorDriver = new SortMotorDriver();
 //    public SortIntake sortIntaker = new SortIntake();
 //    public SortSorting sortSorting = new SortSorting();
@@ -300,6 +305,7 @@ public class Sorting {
         }
         timer.reset();
     }
+
     public void autoDrumTurningOut(double POWER) {
         while (timer.seconds() < 5) {
             drumMotor.setPower(POWER); //изменить
@@ -307,6 +313,29 @@ public class Sorting {
         timer.reset();
     }
 
+     public void setTarget120() {
+        target = target + 120;
+    }
+
+
+    public class Turn120 extends Thread {
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+                double error = target - drumMotor.getCurrentPosition() * DEGREES;
+                double power = error * k;
+                drumMotor.setPower(power);
+            }
+        }
+    }
+    /* они же крутят долго, чтобы шарики вылетели все, а если через такое делать то оно будет только по ступенькам двигаться и такого эффекта не получится
+    ну гг
+    гг х2
+    там оно же еще будет постепенно крутиться
+    типа с нарастабщей скоростью
+    поэтому фигли оно разгонится
+    убраться в техзоне
+     */
 
 
 //    public boolean isIntakeCompleted() {

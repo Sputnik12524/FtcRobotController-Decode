@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 
+@Autonomous(name="TEST RR Custom", group = "Test")
 public class DriveTrainRRTest extends LinearOpMode {
     private final DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
     @Override
@@ -24,7 +26,7 @@ public class DriveTrainRRTest extends LinearOpMode {
                 .build();
 
         waitForStart();
-
+        if(isStopRequested()) return;
         dt.followTrajectorySequence(tr);
 
     }

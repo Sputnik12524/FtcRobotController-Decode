@@ -30,16 +30,13 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceRunner;
@@ -54,8 +51,9 @@ import java.util.List;
  */
 @Config
 public class DriveTrainMecanum extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static double multiplier = 1;
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0.00001, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(1, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -69,11 +67,10 @@ public class DriveTrainMecanum extends MecanumDrive {
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
 
     private TrajectoryFollower follower;
-//TODO: check will final motors' work!
     private final DcMotorEx leftFront, leftBack, rightBack, rightFront;
     private List<DcMotorEx> motors;
 
-    private final IMU imu;
+    //private final IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
     private List<Integer> lastEncPositions = new ArrayList<>();
@@ -94,14 +91,14 @@ public class DriveTrainMecanum extends MecanumDrive {
         }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
-        imu = hardwareMap.get(IMU.class, "imu");
+      /*  imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
-        imu.initialize(parameters);
+        imu.initialize(parameters);*/
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftBack = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightBack = hardwareMap.get(DcMotorEx.class, "rightRear");
+        leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         motors = Arrays.asList(leftFront, leftBack, rightBack, rightFront);
@@ -122,13 +119,18 @@ public class DriveTrainMecanum extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
+
         // TODO: reverse any motors using DcMotor.setDirection()
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        // setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+        setLocalizer(new ThreeWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,
@@ -290,12 +292,12 @@ public class DriveTrainMecanum extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        return 0;
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        return .0;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
@@ -307,5 +309,12 @@ public class DriveTrainMecanum extends MecanumDrive {
 
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
+    }
+
+    public void setMotorsPower(double main, double side, double rotation) {
+        leftFront.setPower(multiplier * (main + side + rotation));
+        leftBack.setPower(multiplier * (main - side + rotation));
+        rightFront.setPower(multiplier * (main - side - rotation));
+        rightBack.setPower(multiplier * (main + side - rotation));
     }
 }

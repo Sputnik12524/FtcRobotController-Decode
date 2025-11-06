@@ -120,7 +120,7 @@ public class TrajectorySequenceRunner {
             double now = clock.seconds();
             boolean isNewTransition = currentSegmentIndex != lastSegmentIndex;
 
-       //     currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
+            currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
 
             if (isNewTransition) {
                 currentSegmentStartTime = now;

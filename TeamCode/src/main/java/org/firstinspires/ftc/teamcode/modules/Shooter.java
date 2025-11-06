@@ -3,25 +3,26 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 public class Shooter {
 
-    private final DcMotor shooter;
+    public final DcMotor shooter;
     private final Servo cover;
 
     public static double POWER = 1;
-    public static double SHORT_THROW = 0.3;
-    public static double LONG_THROW = 1;
+    public static double SHORT_THROW = 0.1;
+    public static double LONG_THROW = 0.2;
     private boolean isItShortThrow = false;
 
     public Shooter(LinearOpMode opMode) {
-        shooter = opMode.hardwareMap.get(DcMotor.class, "shooter");
+        shooter = opMode.hardwareMap.get(DcMotorEx.class, "shooter");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
 
-        shooter.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void shoot() {

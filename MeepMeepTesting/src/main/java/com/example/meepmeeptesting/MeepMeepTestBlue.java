@@ -1,7 +1,6 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.rowlandhall.meepmeep.MeepMeep;
 import org.rowlandhall.meepmeep.roadrunner.DefaultBotBuilder;
@@ -13,27 +12,20 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class MeepMeepTesting {
+public class MeepMeepTestBlue {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(500, 500);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 17)
                 .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(62, -10, Math.toRadians(180)))
-                        .waitSeconds(5)
-                        .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(180)))
-                        /*.waitSeconds(5)
-                        .lineToLinearHeading(new Pose2d(-11, 27, Math.toRadians(90)))
-                        .waitSeconds(5)
-                        .forward(20)
-                        .lineToLinearHeading(new Pose2d(-29,25, Math.toRadians(-45)))
-                        .waitSeconds(5)
-                        .lineToLinearHeading(new Pose2d(-50,25, Math.toRadians(0)))
-                        .waitSeconds(10)*/
+                        .waitSeconds(4)
+                        .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(-90)))
                         .build());
+
 
         Image img = null;
         try {
-            img = ImageIO.read(new File("C:/Users/Admin/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));
+            img = ImageIO.read(new File("C:\\Users\\admin\\Downloads\\decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));
         } catch (IOException e) {
         }
 
