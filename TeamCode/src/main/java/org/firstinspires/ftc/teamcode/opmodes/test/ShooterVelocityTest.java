@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 
@@ -14,6 +15,7 @@ import java.io.IOException;
 public class ShooterVelocityTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
+        ElapsedTime timer = new ElapsedTime();
         Shooter sh = new Shooter(this);
 
 
@@ -34,8 +36,9 @@ public class ShooterVelocityTest extends LinearOpMode {
                 sh.shootStop();
             }
             try {
-                writer.write(Double.toString(sh.shooter.getVelocity()) + '\n');
-            } catch (IOException e) {
+                writer.write(timer.milliseconds() + ' ' + Double.toString(sh.shooter.getVelocity()) + '\n');
+            } catch (IOException e)
+            {
 
             }
             telemetry.addData("Shooter Motor Velocity:", sh.shooter.getVelocity());

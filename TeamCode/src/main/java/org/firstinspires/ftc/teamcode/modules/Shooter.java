@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 public class Shooter {
@@ -17,6 +18,7 @@ public class Shooter {
     public static double SHORT_THROW = 0.1;
     public static double LONG_THROW = 0.2;
     private boolean isItShortThrow = false;
+   public ContinuousShooter continuousShooter = new ContinuousShooter();
 
     public Shooter(LinearOpMode opMode) {
         shooter = opMode.hardwareMap.get(DcMotorEx.class, "shooter");
@@ -50,6 +52,20 @@ public class Shooter {
         } else {
             cover.setPosition(SHORT_THROW);
             isItShortThrow = true;
+        }
+    }
+
+    public class ContinuousShooter extends Thread {
+        private final ElapsedTime timer = new ElapsedTime();
+
+        @Override
+        public void run() {
+            if (!isInterrupted()) {
+                timer.reset();
+                shooter.setPower(POWER);
+                while (timer.milliseconds() < 10000) {}
+                shooter.setPower(0);
+            }
         }
     }
 }

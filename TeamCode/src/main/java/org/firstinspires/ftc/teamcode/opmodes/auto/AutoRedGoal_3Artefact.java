@@ -28,10 +28,12 @@ public class AutoRedGoal_3Artefact extends LinearOpMode {
 
         waitForStart();
         if (isStopRequested()) return;
+        shooter.continuousShooter.start();
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-56, -22, 90))
                 .build());
-        shooter.shoot();
+        //после будет по времени))
         sorting.autoDrumTurningIn(0.4);
+        shooter.continuousShooter.interrupt();
     }
 }
