@@ -9,12 +9,14 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-@TeleOp(name="Shooter", group="Test")
+@TeleOp(name = "Shooter", group = "Test")
 @Disabled
 public class ShooterVelocityTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Shooter sh = new Shooter(this);
+
+
         FileWriter writer = null;
         try {
             writer = new FileWriter("ShooterTest.txt", false); //false - файл перезаписывается при запуске программыит
@@ -23,19 +25,23 @@ public class ShooterVelocityTest extends LinearOpMode {
         }
 
         waitForStart();
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
+
+
             if (gamepad1.a) {
                 sh.shoot();
             } else {
                 sh.shootStop();
             }
             try {
-                writer.write(Double.toString(sh.shooter.getPower()) + '\n');
+                writer.write(Double.toString(sh.shooter.getVelocity()) + '\n');
             } catch (IOException e) {
 
             }
+            telemetry.addData("Shooter Motor Velocity:", sh.shooter.getVelocity());
+
+            telemetry.addData("Shooter Motor Power:", sh.shooter.getPower());
+            telemetry.update();
         }
-        telemetry.addData("Shooter Motor Power:", sh.shooter.getPower());
-        telemetry.update();
     }
 }
