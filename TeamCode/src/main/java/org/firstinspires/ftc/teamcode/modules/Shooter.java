@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 public class Shooter {
 
-    private final DcMotor shooter;
+    public final DcMotor shooter;
     private final Servo cover;
 
     public static double POWER = 1;

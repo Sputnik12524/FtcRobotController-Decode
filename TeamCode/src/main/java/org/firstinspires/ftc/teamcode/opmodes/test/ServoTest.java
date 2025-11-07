@@ -1,53 +1,50 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 
-@TeleOp(name = "ServoTest", group = "Robot")
-public class ServoTest extends LinearOpMode {
-    public double pos = 0;
-    public boolean aState = false;
-    //0.65, 0 - открытие серва (верхняя)
-    // 0.2, 0 - открытое, закрытое положение (нижняя)
+@TeleOp(name = "TEST ServoTest", group = "Test")
+public class  ServoTest extends LinearOpMode {
+    Sorting sr;
 
     @Override
     public void runOpMode() {
 
-        Sorting sorting = new Sorting(this);
-
-        sorting.setDWallPos(0);
-        telemetry.addLine("Start");
+        sr = new Sorting(this);
 
 
+        sr.target = 0;// для проверки
+
+        sr.regulatorSorting.start();
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashtele = dashboard.getTelemetry();
         waitForStart();
-        while (opModeIsActive() && !isStopRequested()) {
-            telemetry.addData("Стенка", sorting.dwall.getPosition());
+        while (opModeIsActive()) {
+            telemetry.addData("Позиция сортировки", sr.drumMotor.getCurrentPosition() * sr.DEGREES);
+
             telemetry.update();
 
-            if (gamepad1.a && !aState) {
-                pos += 0.05;
-                sorting.setDWallPos(pos);
-            }
-            if (gamepad1.b) {
-                pos -= 0.001;
-                sorting.setDWallPos(pos);
-            }
-            if (gamepad1.x) {
-                sorting.setDWallPos(0.65);
+            if (gamepad1.a) {
+                sr.target += 40;
             }
 
+            if(gamepad1.b){
+                sr.target += 120;
+            }
 
-            aState = gamepad1.a;
-
+            if(gamepad1.x){
+                sr.target += 10;
+            }
 
         }
+        sr.regulatorSorting.interrupt();
+
     }
 }
-
-
-
 
