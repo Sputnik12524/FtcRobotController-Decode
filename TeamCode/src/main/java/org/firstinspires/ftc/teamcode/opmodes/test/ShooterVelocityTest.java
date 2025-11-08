@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
+import android.os.Environment;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,16 +19,18 @@ import java.io.IOException;
 public class ShooterVelocityTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
+        String directoryPath = Environment.getExternalStorageDirectory().getPath() + "/FIRST/";
         ElapsedTime timer = new ElapsedTime();
         Shooter sh = new Shooter(this);
 
 
-////        FileWriter writer = null;
-//        try {
-//            writer = new FileWriter("ShooterTest.txt", false); //false - файл перезаписывается при запуске программыит
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-     //   }
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(directoryPath + "ShooterTest.csv", false); //false - файл перезаписывается при запуске программыит
+            writer.write("time_ms,velocity\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         FtcDashboard dash = FtcDashboard.getInstance();
         Telemetry dashTele = dash.getTelemetry();
         waitForStart();
@@ -38,12 +42,11 @@ public class ShooterVelocityTest extends LinearOpMode {
             } else {
                 sh.shootStop();
             }
-//            try {
-//           //     writer.write(timer.milliseconds() + ' ' + Double.toString(sh.shooter.getVelocity()) + '\n');
-//            } catch (IOException e)
-//            {
+            try {
+                writer.write(timer.milliseconds() + ',' + Double.toString(-sh.shooter.getVelocity()) + '\n');
+            } catch (IOException e) {
 
-     //       }
+            }
             dashTele.addData("Shooter Motor Velo in degrees", sh.shooter.getVelocity());
 
             telemetry.addData("Shooter Motor Velocity:", sh.shooter.getVelocity());
