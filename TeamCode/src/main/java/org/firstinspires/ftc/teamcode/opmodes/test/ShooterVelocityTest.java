@@ -19,7 +19,7 @@ import java.io.IOException;
 public class ShooterVelocityTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        String directoryPath = Environment.getExternalStorageDirectory().getPath() + "/FIRST/";
+        String directoryPath = "/sdcard/FIRST/";
         ElapsedTime timer = new ElapsedTime();
         Shooter sh = new Shooter(this);
 
@@ -47,9 +47,9 @@ public class ShooterVelocityTest extends LinearOpMode {
             } catch (IOException e) {
 
             }
-            dashTele.addData("Shooter Motor Velo in degrees", sh.shooter.getVelocity());
+            dashTele.addData("Shooter Motor Velo in degrees", -sh.shooter.getVelocity());
 
-            telemetry.addData("Shooter Motor Velocity:", sh.shooter.getVelocity());
+            telemetry.addData("Shooter Motor Velocity:", -sh.shooter.getVelocity());
 
             dashTele.addData("power", sh.shooter.getPower());
 
