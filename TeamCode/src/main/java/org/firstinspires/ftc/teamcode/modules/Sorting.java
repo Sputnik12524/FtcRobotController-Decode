@@ -32,15 +32,17 @@ public class Sorting {
     public static float[] hsv3 = new float[3];
     public static double PULSES = 537.7;
     public static double DEGREES = 360 / PULSES;
-    public static double k = 0.0001;
+    public static double k = 0.0004;
     public static double target = 0;
+
     public enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
+
     enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
 
-    public static double HOPEN_WALL = 0;
-    public static double HCLOSE_WALL = 0.25;
-    public static double DOPEN_WALL = 0;
-    public static double DCLOSE_WALL = 0.65;
+    public static double HOPEN_WALL = 0.65;
+    public static double HCLOSE_WALL = 0;
+    public static double DOPEN_WALL = 0.25;
+    public static double DCLOSE_WALL = 0;
     public static double GREEN_MAX = 185;
     public static double GREEN_MIN = 140;
     public static double PURPLE_MAX = 245;
@@ -53,7 +55,6 @@ public class Sorting {
         this.verticalWall = opMode.hardwareMap.get(Servo.class, "verticalWall");
         this.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.drumMotor.setDirection(DcMotor.Direction.REVERSE);
         this.colorSensor1 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor1");
         this.colorSensor1.setGain(GAIN);
         this.colorSensor2 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor2");
@@ -77,12 +78,15 @@ public class Sorting {
     public void intakingArtefacts() {
         verticalWallOpen();
         do {
+            timer.reset();
+            while (timer.milliseconds() < 2000) ;
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
-                while (timer.milliseconds() < 350);
+                timer.reset();
+                while (timer.milliseconds() < 2000) ;
                 target += 120;
             }
         } while (getColor().get(2) == Color.NONE); // 3 датчик нечего не видит
-        timer.reset();
+
     }
 
     public void shootingArtefacts() {
@@ -93,7 +97,7 @@ public class Sorting {
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
             while (timer.milliseconds() < 500) {
             }
-            target -= 120;
+            target += 120;
         }
         timer.reset();
     }
@@ -188,6 +192,7 @@ public class Sorting {
 
         return position;
     }
+
     public void drumStop() {
         drumMotor.setPower(0);
     }
@@ -219,6 +224,8 @@ public class Sorting {
     public void turnOut120() {
         target -= 120;
     }
+
+
 
 }
 

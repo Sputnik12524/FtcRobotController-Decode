@@ -33,23 +33,23 @@ public class ShooterAndSortingTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             telemetry.addData("Позиция сортировки", sr.drumMotor.getCurrentPosition() * sr.DEGREES);
-            telemetry.addData("Позиция верхней стенки", sr.horizontalWall.getPosition());
-            telemetry.addData("Позиция нижней стенки", sr.verticalWall.getPosition());
+            telemetry.addData("Позиция горизонтальной стенки", sr.horizontalWall.getPosition());
+            telemetry.addData("Позиция вертикальной стенки", sr.verticalWall.getPosition());
             telemetry.update();
 
-            if (gamepad1.a && aState) {
+            if (gamepad1.a && !aState) {
                 sr.intakingArtefacts();
             }
 
-            if(gamepad1.b && bState){
+            if(gamepad1.b && !bState){
                 sr.sortingArtefacts(sr.artefact_pos(sr.getColor()), sr.pos);
             }
 
-            if(gamepad1.x && xState){
+            if(gamepad1.x && !xState){
                 sr.shootingArtefacts();
             }
 
-            if(gamepad1.y && yState){
+            if(gamepad1.y && !yState){
                 sr.turn40();
             }
 
