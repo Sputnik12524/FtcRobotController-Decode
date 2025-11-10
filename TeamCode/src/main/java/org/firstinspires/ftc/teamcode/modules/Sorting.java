@@ -36,7 +36,7 @@ public class Sorting {
     private static double target = 0;
 
 
-    public enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
+    public enum Scan {LEFT, RIGHT, BETWEEN, NONE} // расположение зеленого арфтефакта
 
     enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
 
@@ -313,7 +313,7 @@ public class Sorting {
         timer.reset();
     }
 
-     public void setTarget120() {
+    public void setTarget120() {
         target = target + 120;
     }
 
@@ -382,7 +382,7 @@ public class Sorting {
 //        }
 //    }
 
-//    public void simpleIntaking() {
+    //    public void simpleIntaking() {
 //
 //        dwallOpen();
 //
@@ -395,7 +395,17 @@ public class Sorting {
 //            bladesPos -= 120;
 //        }
 //    }
-
+    public Scan aprilTagToScan(int id) {
+        Scan res = Scan.NONE;
+        if (id == 21) {
+            res = Scan.LEFT;
+        } else if (id == 22) {
+            res = Scan.BETWEEN;
+        } else if (id == 23) {
+            res = Scan.RIGHT;
+        }
+        return res;
+    }
 }
 
 
