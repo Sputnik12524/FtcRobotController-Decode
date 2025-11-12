@@ -47,4 +47,9 @@ public class Limelight {
         }
         return id;
     }
+    //либо
+    public int getSingleTagID(){
+        LLResultTypes.FiducialResult fr = limelightResult().getFiducialResults().get(0);
+        return fr.getFiducialId(); //хз пусть так будет надо протестить
+    }
 }
