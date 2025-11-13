@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "BLUE Human Park", group = "0")
+@Autonomous(name = "BLUE Human Park", group = "BluePark")
 public class AutoBlueHumanPark extends LinearOpMode {
 
     @Override

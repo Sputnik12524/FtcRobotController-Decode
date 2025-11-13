@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
 @Autonomous(name = "RED Goal 3+3 Artifacts", group = "AutoRed")
-@Disabled
 public class AutoRedGoal extends LinearOpMode {
     DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
 
