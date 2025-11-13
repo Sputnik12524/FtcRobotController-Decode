@@ -15,6 +15,8 @@ public class ShooterAndSortingTest extends LinearOpMode {
     boolean bState = false;
     boolean xState = false;
     boolean yState = false;
+    boolean isShooting = false;
+    boolean stateB1 = false;
 
     @Override
     public void runOpMode() {
@@ -27,17 +29,27 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            if (gamepad1.b) {
+            if (gamepad1.b && !isShooting && !stateB1) {
                 shooter.shoot();
-            } else {
+                isShooting = true;
+            } else if (gamepad1.b && isShooting && !stateB1) {
                 shooter.shootStop();
+                isShooting = false;
             }
+
+
+            stateB1 = gamepad1.b;
+
             if (gamepad1.a) {
-                in.rotateIn();
                 sr.drumTele();
             } else {
-                in.rotateStop();
                 sr.drumStop();
+            }
+
+            if (gamepad1.y) {
+                in.rotateIn();
+            } else {
+                in.rotateStop();
             }
 
             if (gamepad1.dpad_up) {
@@ -57,9 +69,10 @@ public class ShooterAndSortingTest extends LinearOpMode {
             telemetry.addData("Позиция стенки", sr.hwall.getController());
             telemetry.update();
         }
+    }
 //        sr.sortIntaker.interrupt();
 //        sr.sortShooter.interrupt();
 //        sr.sortMotorDriver.interrupt();
-    }
 }
+
 
