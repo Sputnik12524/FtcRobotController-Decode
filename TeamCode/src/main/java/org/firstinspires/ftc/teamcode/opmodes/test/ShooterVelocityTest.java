@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.File;
 
 @TeleOp(name = "Shooter", group = "Test")
 public class ShooterVelocityTest extends LinearOpMode {
@@ -45,7 +46,12 @@ public class ShooterVelocityTest extends LinearOpMode {
             try {
                 writer.write(timer.milliseconds() + ',' + Double.toString(-sh.shooter.getVelocity()) + '\n');
             } catch (IOException e) {
-
+                throw new RuntimeException(e);
+            }
+            try {
+                writer.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
             dashTele.addData("Shooter Motor Velo in degrees", -sh.shooter.getVelocity());
 
@@ -57,6 +63,9 @@ public class ShooterVelocityTest extends LinearOpMode {
 
             telemetry.addData("Shooter Motor Power:", sh.shooter.getPower());
             telemetry.update();
+            telemetry.addData("File Path", directoryPath + "ShooterTest.cvs");
+            telemetry.addData("File exists", new File(directoryPath + "ShooterTest.cvs").exists());
+
         }
     }
 }

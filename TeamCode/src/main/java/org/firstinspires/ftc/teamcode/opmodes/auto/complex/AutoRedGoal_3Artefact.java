@@ -36,7 +36,6 @@ public class AutoRedGoal_3Artefact extends LinearOpMode {
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
                 .lineToLinearHeading(new Pose2d(-56, -22, 90))
                 .build());
-        //после будет по времени))
         sorting.autoDrumTurningIn(0.4);
         shooter.continuousShooter.interrupt();
     }

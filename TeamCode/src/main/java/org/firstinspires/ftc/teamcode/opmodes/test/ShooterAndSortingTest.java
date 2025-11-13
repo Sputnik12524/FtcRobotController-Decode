@@ -4,10 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 
 @TeleOp(name = "TEST Shooter/Sorting/Intake", group = "Test")
 public class ShooterAndSortingTest extends LinearOpMode {
+    Shooter shooter;
     Intake in;
     Sorting sr;
     boolean bState = false;
@@ -16,15 +18,20 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        shooter = new Shooter(this);
         in = new Intake(this);
         sr = new Sorting(this);
         sr.pos = Sorting.Scan.RIGHT; // для проверки
-        sr.hwallClose();
-        sr.dwallOpen();
+        sr.hwallOpen();
+        sr.dwallClose();
 
         waitForStart();
         while (opModeIsActive()) {
-
+            if (gamepad1.b) {
+                shooter.shoot();
+            } else {
+                shooter.shootStop();
+            }
             if (gamepad1.a) {
                 in.rotateIn();
                 sr.drumTele();

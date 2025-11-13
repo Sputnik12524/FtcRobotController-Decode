@@ -63,8 +63,8 @@ public class Sorting {
 
     public Sorting(LinearOpMode opMode) {
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drum");
-        this.hwall = opMode.hardwareMap.get(Servo.class, "horizontalWall");
-        this.dwall = opMode.hardwareMap.get(Servo.class, "verticalWall");
+        this.hwall = opMode.hardwareMap.get(Servo.class, "hwall");
+        this.dwall = opMode.hardwareMap.get(Servo.class, "dwall");
         this.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.drumMotor.setDirection(DcMotor.Direction.REVERSE);
