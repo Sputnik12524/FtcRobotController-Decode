@@ -33,7 +33,8 @@ public class Sorting {
     public static double k = 0.002;
     public static double target = 0;
 
-    public enum Scan {LEFT, RIGHT, BETWEEN} // расположение зеленого арфтефакта
+
+    public enum Scan {LEFT, RIGHT, BETWEEN, NONE} // расположение зеленого арфтефакта
 
     enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
 
@@ -246,7 +247,17 @@ public class Sorting {
         target -= 120;
     }
 
-
+      public Scan aprilTagToScan(int id) {
+        Scan res = Scan.NONE;
+        if (id == 21) {
+            res = Scan.LEFT;
+        } else if (id == 22) {
+            res = Scan.BETWEEN;
+        } else if (id == 23) {
+            res = Scan.RIGHT;
+        }
+        return res;
+    }
 
 }
 

@@ -10,18 +10,22 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 @Config
 public class IntakeTest extends LinearOpMode {
 
-    Intake intake = new Intake(this);
-
     @Override
     public void runOpMode() throws InterruptedException {
+        Intake intake = new Intake(this);
+
         waitForStart();
 
         while (opModeIsActive()) {
             if (gamepad1.a) {
                 intake.rotateIn();
+            } else {
+                intake.rotateStop();
             }
             if (gamepad1.b) {
                 intake.rotateOut();
+            } else {
+                intake.rotateStop();
             }
         }
     }

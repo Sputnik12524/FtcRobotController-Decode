@@ -10,7 +10,8 @@ import org.firstinspires.ftc.teamcode.modules.Sorting;
 
 @TeleOp(name = "TEST Shooter/Sorting/Intake", group = "Test")
 public class ShooterAndSortingTest extends LinearOpMode {
-
+    Shooter shooter;
+    Intake in;
     Sorting sr;
 
     //Shooter st;
@@ -18,11 +19,13 @@ public class ShooterAndSortingTest extends LinearOpMode {
     boolean bState = false;
     boolean xState = false;
     boolean yState = false;
-    boolean a2State = false;
-    boolean b2State = false;
+    boolean isShooting = false;
+    boolean stateB1 = false;
 
     @Override
     public void runOpMode() {
+        shooter = new Shooter(this);
+        in = new Intake(this);
         sr = new Sorting(this);
 
         sr.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -94,4 +97,5 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
     }
 }
+
 
