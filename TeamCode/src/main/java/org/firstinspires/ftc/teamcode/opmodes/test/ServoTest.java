@@ -14,20 +14,22 @@ import org.firstinspires.ftc.teamcode.modules.Sorting;
 public class  ServoTest extends LinearOpMode {
     Sorting sr;
 
-
-
     boolean aState = false;
     boolean bState = false;
     boolean xState = false;
     boolean yState = false;
-    double i = 0;
+
+    double i =0;
 
     @Override
     public void runOpMode() {
 
         sr = new Sorting(this);
 
-        sr.verticalWall.setPosition(0);
+        sr.horizontalWallClose();
+        sr.verticalWallClose();
+
+
         sr.target = 0;// для проверки
 
         sr.regulatorSorting.start();
@@ -38,21 +40,27 @@ public class  ServoTest extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Позиция сортировки", sr.drumMotor.getCurrentPosition() * sr.DEGREES);
             telemetry.addData("Позиция вертикальной стенки", sr.verticalWall.getPosition());
+            telemetry.addData("Позиция горизонтальной стенки", sr.horizontalWall.getPosition());
+            telemetry.addData("Положение сортировки", sr.artefact_pos(sr.getColor()));
 
 
             telemetry.update();
 
-            if (gamepad1.a) {
+            if (gamepad1.a && !aState) {
                 i+= 0.05;
-                sr.verticalWall.setPosition(i);
+                sr.horizontalWall.setPosition(i);
             }
 
+//            if (gamepad1.a && !aState) {
+//                sr.target += 5;
+//            }
+
             if(gamepad1.b && !bState){
-                sr.target += 120;
+                sr.target += 40;
             }
 
             if(gamepad1.x && !xState){
-                sr.target += 10;
+                sr.target += 120;
             }
 
             aState = gamepad1.a;
