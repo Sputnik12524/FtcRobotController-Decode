@@ -18,7 +18,7 @@ public class AutoBlueGoal3 extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(this.hardwareMap);
         Limelight ll = new Limelight(this);
         Shooter sh = new Shooter(this);
-        Sorting sort = new Sorting(this);
+        Sorting sort = new Sorting(this, ll);
 
         Pose2d startPose = new Pose2d(-49, -49, Math.toRadians(45));
 

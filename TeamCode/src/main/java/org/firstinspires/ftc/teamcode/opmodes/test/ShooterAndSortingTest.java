@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 
@@ -13,10 +14,13 @@ public class ShooterAndSortingTest extends LinearOpMode {
     Shooter shooter;
     Intake in;
     Sorting sr;
+    Limelight ll;
 
     //Shooter st;
     boolean aState = false;
     boolean bState = false;
+    boolean a2State = false;
+    boolean b2State = false;
     boolean xState = false;
     boolean yState = false;
     boolean isShooting = false;
@@ -25,8 +29,9 @@ public class ShooterAndSortingTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         shooter = new Shooter(this);
+        ll = new Limelight(this);
         in = new Intake(this);
-        sr = new Sorting(this);
+        sr = new Sorting(this,ll);
 
         sr.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sr.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -41,8 +46,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
             telemetry.addData("Позиция сортировки", sr.drumMotor.getCurrentPosition() * sr.DEGREES);
             telemetry.addData("Положение сортировки", sr.artefact_pos(sr.getColor()));
             telemetry.addData("Цвета в сортировке", sr.printGetColor(sr.getColor()));
-//            telemetry.addData("Позиция горизонтальной стенки", sr.horizontalWall.getPosition());
-//            telemetry.addData("Позиция вертикальной стенки", sr.verticalWall.getPosition());
+
 
             telemetry.update();
 

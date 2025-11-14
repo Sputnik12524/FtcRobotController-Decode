@@ -9,6 +9,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 @Config
 public class Sorting {
@@ -17,13 +20,14 @@ public class Sorting {
     //Shooter shooter;
 
     private NormalizedColorSensor colorSensor1;
+
     private NormalizedColorSensor colorSensor2;
     private NormalizedColorSensor colorSensor3;
     public DcMotor drumMotor;
     public Servo horizontalWall; // верхняяя сенка
     public Servo verticalWall; // нижняя стенка
     public Scan pos;
-    //pos = shooter.pos;
+    public int scanId;
     public static float GAIN = 2.4F;
     public static float[] hsv = new float[3];
     public static float[] hsv2 = new float[3];
@@ -48,7 +52,8 @@ public class Sorting {
     public static double PURPLE_MIN = 210;
     public Regulator regulatorSorting = new Regulator();
 
-    public Sorting(LinearOpMode opMode) { // Shooter shooter
+    public Sorting(LinearOpMode opMode, Limelight ll) {
+        scanId = ll.getTagID();
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drum");
         this.horizontalWall = opMode.hardwareMap.get(Servo.class, "horizontalWall");
         this.verticalWall = opMode.hardwareMap.get(Servo.class, "verticalWall");
@@ -61,6 +66,7 @@ public class Sorting {
         this.colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor3");
         this.colorSensor3.setGain(GAIN);
     }
+
 
     public class Regulator extends Thread {
         @Override
@@ -80,7 +86,7 @@ public class Sorting {
             while (timer.milliseconds() < 800) ;
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
                 timer.reset();
-                while (timer.milliseconds() < 500) ;
+                while (timer.milliseconds() < 250) ;
                 target += 120;
             }
         } while (getColor().get(2) == Color.NONE); // 3 датчик нечего не видит
@@ -94,75 +100,116 @@ public class Sorting {
         horizontalWallOpen();
 
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-            while (timer.milliseconds() < 500) {
-            }
+            while (timer.milliseconds() < 250) ;
+
             target += 120;
         }
         timer.reset();
     }
 
 
-
-    public void sortingArtefacts(Scan a, Scan b) { //shooter.b
-        //turn40();
-        verticalWallOpen();
-        while (timer.milliseconds() < 500) ;
-        timer.reset();
-
-        this.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        target = 0;
-
-        while (timer.milliseconds() < 2000) ;
-
-        switch (a) {
-            case LEFT: {
-                switch (b) {
-                    case LEFT:
-                        target = 40;
-                        break;
-                    case RIGHT:
-                        target = 160;
-                        break;
-                    case BETWEEN:
-                        target = 280;
-                        break;
-                }
-                break;
+    private static final Map<Scan, Function<Scan, Integer>> map = new HashMap<Scan, Function<Scan, Integer>>() {{
+        put(Scan.LEFT, (inRobot) -> {
+            switch (inRobot) {
+                case LEFT:
+                    return 40;
+                case RIGHT:
+                    return 160;
+                case BETWEEN:
+                    return 280;
+                default:
+                    return 0;
             }
-            case RIGHT: {
-                switch (b) {
-                    case LEFT:
-                        target = 280;
-                        break;
-                    case RIGHT:
-                        target = 40;
-                        break;
-                    case BETWEEN:
-                        target = 160;
-                        break;
-                }
-                break;
+        });
+        put(Scan.RIGHT, (inRobot) -> {
+            switch (inRobot) {
+                case LEFT:
+                    return 280;
+                case RIGHT:
+                    return 40;
+                case BETWEEN:
+                    return 160;
+                default:
+                    return 0;
             }
-            case BETWEEN: {
-                switch (b) {
-                    case LEFT:
-                        target = 160;
-                        break;
-                    case RIGHT:
-                        target = 280;
-                        break;
-                    case BETWEEN:
-                        target = 40;
-                        break;
-                }
-                break;
+        });
+        put(Scan.BETWEEN, (inRobot) -> {
+            switch (inRobot) {
+                case LEFT:
+                    return 160;
+                case RIGHT:
+                    return 280;
+                case BETWEEN:
+                    return 40;
+                default:
+                    return 0;
             }
+        });
+    }};
 
-        }
-        timer.reset();
+    public void sortingArtefacts(Scan inRobot, Scan needed) {
+        target = map.get(needed).apply(inRobot);
     }
+
+//        public void sortingArtefacts (Scan a, Scan b){ //shooter.b
+//            //turn40();
+//            verticalWallOpen();
+//            while (timer.milliseconds() < 500) ;
+//            timer.reset();
+//
+//            this.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            this.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//            target = 0;
+//
+//
+//            switch (a) {
+//                case LEFT: {
+//                    switch (b) {
+//                        case LEFT:
+//                            target = 40;
+//                            break;
+//                        case RIGHT:
+//                            target = 160;
+//                            break;
+//                        case BETWEEN:
+//                            target = 280;
+//                            break;
+//                    }
+//                    break;
+//                }
+//                case RIGHT: {
+//                    switch (b) {
+//                        case LEFT:
+//                            target = 280;
+//                            break;
+//                        case RIGHT:
+//                            target = 40;
+//                            break;
+//                        case BETWEEN:
+//                            target = 160;
+//                            break;
+//                    }
+//                    break;
+//                }
+//                case BETWEEN: {
+//                    switch (b) {
+//                        case LEFT:
+//                            target = 160;
+//                            break;
+//                        case RIGHT:
+//                            target = 280;
+//                            break;
+//                        case BETWEEN:
+//                            target = 40;
+//                            break;
+//                    }
+//                    break;
+//                }
+//
+//            }
+//            timer.reset();
+//        }
 
     public ArrayList<Color> getColor() {
         ArrayList<Color> colorSensors = new ArrayList<>();
@@ -202,14 +249,14 @@ public class Sorting {
         Scan position = null;
         if (a.get(1) == Color.GREEN) position = Scan.LEFT;
         else if (a.get(2) == Color.GREEN) position = Scan.RIGHT;
-        else  position = Scan.BETWEEN; //(a.get(0) == Color.GREEN)
+        else position = Scan.BETWEEN; //(a.get(0) == Color.GREEN)
 
         return position;
     }
 
-    public String printGetColor(ArrayList<Color> a){
+    public String printGetColor(ArrayList<Color> a) {
         String res = "";
-        for (int i = 0; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             res += a.get(i) + " ";
         }
         return res;
@@ -247,7 +294,7 @@ public class Sorting {
         target -= 120;
     }
 
-      public Scan aprilTagToScan(int id) {
+    public Scan aprilTagToScan(int id) {
         Scan res = Scan.NONE;
         if (id == 21) {
             res = Scan.LEFT;

@@ -23,8 +23,8 @@ public class AutoRedGoal_3Artefact extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(this.hardwareMap);
         Pose2d startPose = new Pose2d(-48, 50, 130);
         dt.setPoseEstimate(startPose);
-        sorting.dwallOpen();
-        sorting.hwallClose();
+        sorting.verticalWallOpen();
+        sorting.horizontalWallClose();
 
         waitForStart();
         if (isStopRequested()) return;

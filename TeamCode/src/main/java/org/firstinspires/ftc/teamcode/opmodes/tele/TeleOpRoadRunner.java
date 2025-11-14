@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
@@ -16,6 +17,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     Shooter st;
     Intake in;
     Sorting sorting;
+    Limelight ll;
     ElapsedTime timer;
     /// Intake
     boolean isRotateIn = false;
@@ -27,18 +29,20 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean isShooting = false;
     boolean stateA2 = false;
 
+    /// Sorting
+    boolean stateB2 = false;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
+        ll = new Limelight(this);
         timer = new ElapsedTime();
-        sorting = new Sorting(this);
+        sorting = new Sorting(this, ll);
         st = new Shooter(this);
         in = new Intake(this);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         PoseStorage.currentPose = dt.getPoseEstimate();
         dt.setPoseEstimate(PoseStorage.currentPose);
-
-        st.setShortThrow();
 
         waitForStart();
 
@@ -49,8 +53,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             // INTAKE and SORTING
             if (gamepad1.a && !isRotateIn && !stateA1) {
-                sorting.dwallOpen();
-                sorting.hwallClose();
+                sorting.intakingArtefacts();
                 in.rotateIn();
                 isRotateIn = true;
                 isRotateOut = false;
@@ -59,7 +62,23 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 isRotateIn = false;
             }
 
+            // SORTING
+            if (gamepad2.b && !stateB2) {
+                sorting.sortingArtefacts(sorting.artefact_pos(sorting.getColor()), sorting.aprilTagToScan(sorting.scanId));
+            }
 
+            // SHOOTER and SORTING
+            if (gamepad2.a && !isShooting && !stateA2) {
+                st.shoot();
+                while (timer.milliseconds() < 500) ;
+                sorting.shootingArtefacts();
+                isShooting = true;
+            } else if (gamepad2.a && isShooting && !stateA2) {
+                st.shootStop();
+                isShooting = false;
+            }
+
+            //IF TROUBLES
             if (gamepad1.b && !isRotateOut && !stateB1) {
                 in.rotateOut();
                 isRotateOut = true;
@@ -68,30 +87,12 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 in.rotateStop();
                 isRotateOut = false;
             }
+
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
-
-            // SHOOTER and SORTING
-            if (gamepad2.a && !isShooting && !stateA2) {
-                sorting.dwallClose();
-                sorting.hwallOpen();
-                st.shoot();
-                while(timer.milliseconds() < 500) {}
-                isShooting = true;
-            } else if (gamepad2.a && isShooting && !stateA2) {
-                st.shootStop();
-                isShooting = false;
-            }
             stateA2 = gamepad2.a;
-
-            if (gamepad2.b) {
-                sorting.drumTele();
-            } else {
-                sorting.drumStop();
-            }
-
+            stateB2 = gamepad2.b;
         }
-
     }
 
     public static class PoseStorage {
