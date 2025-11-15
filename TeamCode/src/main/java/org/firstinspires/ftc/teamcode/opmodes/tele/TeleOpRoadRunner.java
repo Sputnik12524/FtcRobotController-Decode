@@ -31,10 +31,12 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
     /// Sorting
     boolean stateB2 = false;
+    boolean stateY = false;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         ll = new Limelight(this);
         timer = new ElapsedTime();
         sorting = new Sorting(this, ll);
@@ -43,6 +45,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         PoseStorage.currentPose = dt.getPoseEstimate();
         dt.setPoseEstimate(PoseStorage.currentPose);
+        //sorting.regulatorSorting.start();
 
         waitForStart();
 
@@ -54,11 +57,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
             // INTAKE and SORTING
             if (gamepad1.a && !isRotateIn && !stateA1) {
                 sorting.intakingArtefacts();
+                sorting.intaker.start();
                 in.rotateIn();
                 isRotateIn = true;
                 isRotateOut = false;
             } else if (gamepad1.a && isRotateIn && !stateA1) {
                 in.rotateStop();
+                sorting.intaker.interrupt();
                 isRotateIn = false;
             }
 
@@ -69,11 +74,20 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             // SHOOTER and SORTING
             if (gamepad2.a && !isShooting && !stateA2) {
-                st.shoot();
-                while (timer.milliseconds() < 500) ;
+                sorting.shootingArtefacts();
+                sorting.shooter.start();
+                st.shootByPower(1);
+                isShooting = true;
+            } else if (gamepad2.y && isShooting && !stateA2) {
+                sorting.shooter.interrupt();
+                st.shootStop();
+                isShooting = false;
+            }
+            if (gamepad2.y && !isShooting && !stateY) {
+                st.shootByPower(0.76);
                 sorting.shootingArtefacts();
                 isShooting = true;
-            } else if (gamepad2.a && isShooting && !stateA2) {
+            } else if (gamepad2.y && isShooting && !stateY) {
                 st.shootStop();
                 isShooting = false;
             }
@@ -88,14 +102,26 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 isRotateOut = false;
             }
 
+
+//            if(gamepad2.x){
+//                sorting.drumTele();
+//            }
+//            else{
+//                sorting.drumTeleStop();
+//            }
+
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
             stateA2 = gamepad2.a;
             stateB2 = gamepad2.b;
+            }
         }
-    }
+
+
+
 
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }
+
 }
