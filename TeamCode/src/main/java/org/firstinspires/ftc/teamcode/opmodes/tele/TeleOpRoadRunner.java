@@ -31,7 +31,14 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
     /// Sorting
     boolean stateB2 = false;
-    boolean stateY = false;
+    boolean stateDown = false;
+
+    boolean stateRight = false;
+    boolean stateUp = false;
+
+    public static double POWER_LOWEST = 0.76;
+    public static double POWER_MIDDLE = 0.8;
+    public static double POWER_HIGHEST = 0.85;
 
 
     @Override
@@ -84,12 +91,32 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 isShooting = false;
             }
 
-            //стрельба с ближней
-            if (gamepad2.y && !isShooting && !stateY) {
+            //стрельба с ближней 0.76
+            if (gamepad2.dpad_down && !isShooting && !stateDown) {
                 sorting.wallForShooting();
-                st.shootByPower(0.76);
+                st.shootByPower(POWER_LOWEST);
                 isShooting = true;
-            } else if (gamepad2.y && isShooting && !stateY) {
+            } else if (gamepad2.dpad_down && isShooting && !stateDown) {
+                st.shootStop();
+                isShooting = false;
+            }
+
+            //стрельба с ближней 0.8
+            if (gamepad2.dpad_right && !isShooting && !stateRight) {
+                sorting.wallForShooting();
+                st.shootByPower(POWER_MIDDLE);
+                isShooting = true;
+            } else if (gamepad2.dpad_right && isShooting && !stateRight) {
+                st.shootStop();
+                isShooting = false;
+            }
+
+            //стрельба с ближней 0.85
+            if (gamepad2.dpad_up && !isShooting && !stateUp) {
+                sorting.wallForShooting();
+                st.shootByPower(POWER_HIGHEST);
+                isShooting = true;
+            } else if (gamepad2.dpad_up && isShooting && !stateUp) {
                 st.shootStop();
                 isShooting = false;
             }
@@ -115,7 +142,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateB1 = gamepad1.b;
             stateA2 = gamepad2.a;
             stateB2 = gamepad2.b;
-            stateY = gamepad2.y;
+            stateDown = gamepad2.dpad_down;
+            stateRight = gamepad2.dpad_right;
+            stateUp = gamepad2.dpad_up;
         }
     }
 
