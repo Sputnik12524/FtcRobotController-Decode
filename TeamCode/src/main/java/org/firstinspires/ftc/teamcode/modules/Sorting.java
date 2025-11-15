@@ -36,6 +36,7 @@ public class Sorting {
     public static double DEGREES = 360 / PULSES;
     public static double k = 0.002;
     public static double target = 0;
+    public static double POWER = 0.8;
 
 
     public enum Scan {LEFT, RIGHT, BETWEEN, NONE} // расположение зеленого арфтефакта
@@ -51,6 +52,8 @@ public class Sorting {
     public static double PURPLE_MAX = 245;
     public static double PURPLE_MIN = 210;
     public Regulator regulatorSorting = new Regulator();
+    public Intaker intaker = new Intaker();
+    public Shooter shooter = new Shooter();
 
     public Sorting(LinearOpMode opMode, Limelight ll) {
         scanId = ll.getTagID();
@@ -79,32 +82,51 @@ public class Sorting {
         }
     }
 
+    public class Intaker extends Thread{
+        @Override
+        public void run(){
+            while(!isInterrupted()){
+                intakingArtefacts();
+            }
+        }
+    }
+
+    public class Shooter extends Thread{
+        @Override
+        public void run(){
+            while(!isInterrupted()){
+                shootingArtefacts();
+            }
+        }
+    }
+
     public void intakingArtefacts() {
         verticalWallOpen();
-        do {
-            timer.reset();
-            while (timer.milliseconds() < 800) ;
-            if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
-                timer.reset();
-                while (timer.milliseconds() < 250) ;
-                target += 120;
-            }
-        } while (getColor().get(2) == Color.NONE); // 3 датчик нечего не видит
+        horizontalWallClose();
+//        do {
+//            timer.reset();
+//            while (timer.milliseconds() < 800) ;
+//            if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
+//                timer.reset();
+//                while (timer.milliseconds() < 250) ;
+//                target += 120;
+//            }
+//        } while (getColor().get(2) == Color.NONE); // 3 датчик нечего не видит
 
     }
 
 
     public void shootingArtefacts() {
-        //turn40();
+        //turn40(); // comment by Nikita
         verticalWallClose();
         horizontalWallOpen();
 
-        while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-            while (timer.milliseconds() < 250) ;
-
-            target += 120;
-        }
-        timer.reset();
+//        while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
+//            while (timer.milliseconds() < 250) ;
+//
+//            target += 120;
+//        }
+//        timer.reset();
     }
 
 
@@ -148,7 +170,12 @@ public class Sorting {
     }};
 
     public void sortingArtefacts(Scan inRobot, Scan needed) {
-        target = map.get(needed).apply(inRobot);
+        if (needed != null) {
+            if (inRobot == null) {
+                inRobot = Scan.BETWEEN;
+            }
+            target = map.get(needed).apply(inRobot);
+        }
     }
 
 //        public void sortingArtefacts (Scan a, Scan b){ //shooter.b
@@ -305,6 +332,20 @@ public class Sorting {
         }
         return res;
     }
+
+    public void drumTeleGo() {
+        drumMotor.setPower(POWER);
+    }
+
+    public void drumTeleStop() {
+        drumMotor.setPower(0);
+    }
+
+
+    public void drumTele() {
+        drumMotor.setPower(POWER);
+    }
+
 
 }
 
