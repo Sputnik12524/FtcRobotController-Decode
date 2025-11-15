@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 
@@ -19,11 +20,12 @@ public class  ServoTest extends LinearOpMode {
     boolean yState = false;
 
     double i =0;
+    private org.firstinspires.ftc.teamcode.modules.Limelight Limelight;
 
     @Override
     public void runOpMode() {
 
-        sr = new Sorting(this);
+        sr = new Sorting(this, Limelight);
 
         sr.horizontalWallClose();
         sr.verticalWallClose();

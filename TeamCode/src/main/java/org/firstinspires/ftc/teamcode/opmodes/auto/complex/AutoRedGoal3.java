@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 @Autonomous(name = "RED Goal 3 Artifacts", group = "AutoRed")
 public class AutoRedGoal3 extends LinearOpMode {
     Sorting sort;
+    private org.firstinspires.ftc.teamcode.modules.Limelight Limelight;
 
     @Override
     public void runOpMode() {
@@ -19,7 +20,7 @@ public class AutoRedGoal3 extends LinearOpMode {
         Shooter  sh = new Shooter(this);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         Limelight ll = new Limelight(this);
-        sort = new Sorting(this,ll );
+        sort = new Sorting(this, Limelight );
 
         Pose2d startPose = new Pose2d(-48, 50, Math.toRadians(-45));
         dt.setPoseEstimate(startPose);
@@ -44,7 +45,7 @@ public class AutoRedGoal3 extends LinearOpMode {
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
                 .lineToLinearHeading(new Pose2d(7, 27, Math.toRadians(90)))
                 .build());
-        sort.intakingArtefacts();GIgit
+        sort.intakingArtefacts();
         sh.continuousShooter.interrupt();
 
     }

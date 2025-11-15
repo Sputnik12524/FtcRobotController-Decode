@@ -82,27 +82,26 @@ public class Sorting {
         }
     }
 
-    public class Intaker extends Thread{
+    public class Intaker extends Thread {
         @Override
-        public void run(){
-            while(!isInterrupted()){
+        public void run() {
+            while (!isInterrupted()) {
                 intakingArtefacts();
             }
         }
     }
 
-    public class Shooter extends Thread{
+    public class Shooter extends Thread {
         @Override
-        public void run(){
-            while(!isInterrupted()){
+        public void run() {
+            while (!isInterrupted()) {
                 shootingArtefacts();
             }
         }
     }
 
     public void intakingArtefacts() {
-        verticalWallOpen();
-        horizontalWallClose();
+        wallForIntaking();
 //        do {
 //            timer.reset();
 //            while (timer.milliseconds() < 800) ;
@@ -118,8 +117,7 @@ public class Sorting {
 
     public void shootingArtefacts() {
         //turn40(); // comment by Nikita
-        verticalWallClose();
-        horizontalWallOpen();
+        wallForShooting();
 
 //        while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
 //            while (timer.milliseconds() < 250) ;
@@ -334,7 +332,7 @@ public class Sorting {
     }
 
     public void drumTeleGo() {
-        drumMotor.setPower(POWER);
+        drumMotor.setPower(0.2);
     }
 
     public void drumTeleStop() {
@@ -342,8 +340,27 @@ public class Sorting {
     }
 
 
-    public void drumTele() {
-        drumMotor.setPower(POWER);
+    public void wallForShooting() {
+        verticalWallClose();
+        horizontalWallOpen();
+    }
+
+    public void wallForIntaking() {
+        verticalWallOpen();
+        horizontalWallClose();
+    }
+
+    public void autoTurning() {
+        wallForShooting();
+
+        for (int i = 0; i < 3; i++) {
+            timer.reset();
+            while (drumMotor.getCurrentPosition() < 125) {
+                drumMotor.setPower(POWER);
+            }
+            while (timer.milliseconds() < 1500) ;
+        }
+
     }
 
 

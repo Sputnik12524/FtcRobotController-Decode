@@ -20,7 +20,7 @@ public class MeepMeepTestRedGoal {
                 .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-48, 48, Math.toRadians(-45)))
                         .lineToLinearHeading(new Pose2d(0, 0, 110))
                         .waitSeconds(3)
-                        .lineToLinearHeading(new Pose2d(-56, -2,90))
+                        .turn(Math.toRadians(-50))
                         .build());
 
 

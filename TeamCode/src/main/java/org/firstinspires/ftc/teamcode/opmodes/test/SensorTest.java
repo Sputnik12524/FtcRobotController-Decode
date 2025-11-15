@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 
 @TeleOp(name = "SensorTest", group = "Test")
 public class SensorTest extends LinearOpMode {
+    private com.qualcomm.robotcore.eventloop.opmode.LinearOpMode LinearOpMode;
+    private org.firstinspires.ftc.teamcode.modules.Limelight Limelight;
     //private final DcMotor shooter;
 
     //color sensor 1 в порте 1;
@@ -15,7 +18,7 @@ public class SensorTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Sorting sorting = new Sorting(this);
+       Sorting sorting = new Sorting(this, Limelight);
         telemetry.addLine("Начало");
 
         waitForStart();

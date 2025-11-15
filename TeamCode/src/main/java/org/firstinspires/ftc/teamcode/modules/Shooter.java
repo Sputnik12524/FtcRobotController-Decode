@@ -14,7 +14,7 @@ public class Shooter {
     public final DcMotorEx shooter;
     private final Servo cover;
 
-    public static double POWER = 0.83;
+    public static double POWER = 1; // было 0.83
     public static double SHORT_THROW = 0.1;
     public static double LONG_THROW = 0.2;
     private boolean isItShortThrow = false;
@@ -27,7 +27,11 @@ public class Shooter {
         shooter.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
-    public void shoot() {
+    public void shootByPower(double POWER) {
+        shooter.setPower(POWER);
+    }
+
+    public void shoot(){
         shooter.setPower(POWER);
     }
 
@@ -53,6 +57,10 @@ public class Shooter {
             cover.setPosition(SHORT_THROW);
             isItShortThrow = true;
         }
+    }
+
+    public void setPower(double power){
+        POWER = power;
     }
 
     public class ContinuousShooter extends Thread {
