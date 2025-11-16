@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.complex;
+package org.firstinspires.ftc.teamcode.opmodes.auto.disabled;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -24,7 +24,7 @@ public class AutoRedGoal_3Artefact extends LinearOpMode {
         limeLight = new Limelight(this);
         timer = new ElapsedTime();
         shooter = new Shooter(this);
-        sort = new Sorting(this, limeLight);
+        sort = new Sorting(this);
         DriveTrainMecanum dt = new DriveTrainMecanum(this.hardwareMap);
         Pose2d startPose = new Pose2d(-48, 50, 130);
         dt.setPoseEstimate(startPose);
