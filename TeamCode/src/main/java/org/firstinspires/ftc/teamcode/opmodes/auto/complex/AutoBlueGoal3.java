@@ -24,6 +24,7 @@ public class AutoBlueGoal3 extends LinearOpMode {
 
         dt.setPoseEstimate(startPose);
         ll.startOrStopLL(false);
+        sort.wallForShooting();
 
         waitForStart();
 
@@ -36,7 +37,7 @@ public class AutoBlueGoal3 extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-29, -25, Math.toRadians(170)))
                 .build());
 
-        sort.aprilTagToScan(ll.getTagID()); //сорян дшпш возможно бред написала
+       /// sort.aprilTagToScan(ll.getTagID()); //сорян дшпш возможно бред написала
         sleep(1000);
         dt.turn(Math.toRadians(45));
         sleep(1000);
@@ -45,6 +46,7 @@ public class AutoBlueGoal3 extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-7, -27, Math.toRadians(90)))
                 .build());
         ll.startOrStopLL(true);
+        sort.autoTurning();
         sh.continuousShooter.interrupt();
     }
 
