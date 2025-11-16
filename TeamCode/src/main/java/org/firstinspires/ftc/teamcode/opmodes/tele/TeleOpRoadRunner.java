@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@TeleOp(name = "TeleOpRR", group = "Tele")
+@TeleOp(name = "TeleOpRR", group = "0")
 public class TeleOpRoadRunner extends LinearOpMode {
 
     Shooter st;

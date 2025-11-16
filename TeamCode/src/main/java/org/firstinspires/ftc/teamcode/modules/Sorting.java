@@ -26,6 +26,7 @@ public class Sorting {
     public DcMotor drumMotor;
     public Servo horizontalWall; // верхняяя сенка
     public Servo verticalWall; // нижняя стенка
+    public Limelight limelight;
     public Scan pos;
     public int scanId;
     public static float GAIN = 2.4F;
@@ -56,7 +57,7 @@ public class Sorting {
     public Shooter shooter = new Shooter();
 
     public Sorting(LinearOpMode opMode, Limelight ll) {
-        scanId = ll.getTagID();
+        //scanId = ll.getTagID();
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drum");
         this.horizontalWall = opMode.hardwareMap.get(Servo.class, "horizontalWall");
         this.verticalWall = opMode.hardwareMap.get(Servo.class, "verticalWall");
@@ -102,15 +103,14 @@ public class Sorting {
 
     public void intakingArtefacts() {
         wallForIntaking();
-//        do {
-//            timer.reset();
-//            while (timer.milliseconds() < 800) ;
-//            if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
-//                timer.reset();
-//                while (timer.milliseconds() < 250) ;
-//                target += 120;
-//            }
-//        } while (getColor().get(2) == Color.NONE); // 3 датчик нечего не видит
+        do {
+           while (timer.milliseconds() < 800) ;
+            if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
+                timer.reset();
+                while (timer.milliseconds() < 250) ;
+                target += 120;
+            }
+        } while (getColor().get(2) == Color.NONE); // 3 датчик нечего не видит
 
     }
 
@@ -119,12 +119,12 @@ public class Sorting {
         //turn40(); // comment by Nikita
         wallForShooting();
 
-//        while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-//            while (timer.milliseconds() < 250) ;
-//
-//            target += 120;
-//        }
-//        timer.reset();
+        while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
+            while (timer.milliseconds() < 250) ;
+
+            target += 120;
+        }
+        timer.reset();
     }
 
 
@@ -355,11 +355,12 @@ public class Sorting {
 
         for (int i = 0; i < 3; i++) {
             timer.reset();
-            while (drumMotor.getCurrentPosition() < 125) {
+            while (drumMotor.getCurrentPosition() < 125*DEGREES) {
                 drumMotor.setPower(POWER);
             }
             while (timer.milliseconds() < 1500) ;
-        }
+            drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);        }
 
     }
 

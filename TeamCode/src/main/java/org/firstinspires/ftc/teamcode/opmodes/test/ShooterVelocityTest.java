@@ -27,7 +27,7 @@ public class ShooterVelocityTest extends LinearOpMode {
 
         FileWriter writer = null;
         try {
-            writer = new FileWriter(directoryPath + "ShooterTest.csv", false); //false - файл перезаписывается при запуске программыит
+            writer = new FileWriter(directoryPath + "ShooterTest.csv");
             writer.write("time_ms,velocity\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -36,23 +36,18 @@ public class ShooterVelocityTest extends LinearOpMode {
         Telemetry dashTele = dash.getTelemetry();
         waitForStart();
         while (opModeIsActive()) {
-
-
             if (gamepad1.a) {
                 sh.shoot();
             } else {
                 sh.shootStop();
             }
             try {
-                writer.write(timer.milliseconds() + ',' + Double.toString(-sh.shooter.getVelocity()) + '\n');
+                writer.write(timer.milliseconds() + "," + -sh.shooter.getVelocity() + "\n");
+                writer.flush();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            try {
-                writer.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+
             dashTele.addData("Shooter Motor Velo in degrees", -sh.shooter.getVelocity());
 
             telemetry.addData("Shooter Motor Velocity:", -sh.shooter.getVelocity());
@@ -63,8 +58,6 @@ public class ShooterVelocityTest extends LinearOpMode {
 
             telemetry.addData("Shooter Motor Power:", sh.shooter.getPower());
             telemetry.update();
-            telemetry.addData("File Path", directoryPath + "ShooterTest.cvs");
-            telemetry.addData("File exists", new File(directoryPath + "ShooterTest.cvs").exists());
 
         }
     }
