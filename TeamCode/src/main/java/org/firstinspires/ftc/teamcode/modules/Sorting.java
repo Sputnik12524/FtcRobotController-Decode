@@ -56,8 +56,8 @@ public class Sorting {
     public Intaker intaker = new Intaker();
     public Shooter shooter = new Shooter();
 
-    public Sorting(LinearOpMode opMode, Limelight ll) {
-        //scanId = ll.getTagID();
+    public Sorting(LinearOpMode opMode) {
+
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drum");
         this.horizontalWall = opMode.hardwareMap.get(Servo.class, "horizontalWall");
         this.verticalWall = opMode.hardwareMap.get(Servo.class, "verticalWall");
@@ -104,20 +104,20 @@ public class Sorting {
     public void intakingArtefacts() {
         wallForIntaking();
         do {
-           while (timer.milliseconds() < 800) ;
+            while (timer.milliseconds() < 800) ;
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
                 timer.reset();
                 while (timer.milliseconds() < 250) ;
                 target += 120;
             }
         } while (getColor().get(2) == Color.NONE); // 3 датчик нечего не видит
-
     }
 
 
     public void shootingArtefacts() {
         //turn40(); // comment by Nikita
         wallForShooting();
+        while (timer.milliseconds() < 2000) ;
 
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
             while (timer.milliseconds() < 250) ;
@@ -126,7 +126,6 @@ public class Sorting {
         }
         timer.reset();
     }
-
 
     private static final Map<Scan, Function<Scan, Integer>> map = new HashMap<Scan, Function<Scan, Integer>>() {{
         put(Scan.LEFT, (inRobot) -> {
@@ -335,6 +334,11 @@ public class Sorting {
         drumMotor.setPower(0.2);
     }
 
+    public void drumTeleGoRevers() {
+        drumMotor.setPower(-0.1);
+    }
+
+
     public void drumTeleStop() {
         drumMotor.setPower(0);
     }
@@ -355,12 +359,14 @@ public class Sorting {
 
         for (int i = 0; i < 3; i++) {
             timer.reset();
-            while (drumMotor.getCurrentPosition() < 125*DEGREES) {
-                drumMotor.setPower(POWER);
+            drumMotor.setPower(POWER);
+            while (drumMotor.getCurrentPosition() < 125 * DEGREES) {
             }
-            while (timer.milliseconds() < 1500) ;
+            drumStop();
+            while (timer.milliseconds() < 3000) ;
             drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);        }
+            drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
 
     }
 

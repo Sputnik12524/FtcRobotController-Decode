@@ -18,11 +18,10 @@ public class MeepMeepTesting {
         MeepMeep meepMeep = new MeepMeep(500, 500);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-49, -49, Math.toRadians(45)))
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(61, 10, Math.toRadians(180)))
                         .waitSeconds(5)
-                        .lineToLinearHeading(new Pose2d(-29, -25, Math.toRadians(170)))
-                        .turn(Math.toRadians(45))
-                        .lineToLinearHeading(new Pose2d(-7, -27, Math.toRadians(90)))
+                        .lineToLinearHeading(new Pose2d(59, 10, Math.toRadians(-190)))
+
 
                         /*.waitSeconds(5)
                         .lineToLinearHeading(new Pose2d(-11, 27, Math.toRadians(90)))

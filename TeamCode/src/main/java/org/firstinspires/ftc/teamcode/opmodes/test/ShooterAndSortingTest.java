@@ -11,110 +11,25 @@ import org.firstinspires.ftc.teamcode.modules.Sorting;
 
 @TeleOp(name = "TEST Shooter/Sorting/Intake", group = "Test")
 public class ShooterAndSortingTest extends LinearOpMode {
-    Shooter shooter;
+    Shooter sh;
     Intake in;
     Sorting sr;
     Limelight ll;
 
-    //Shooter st;
-    boolean aState = false;
-    boolean bState = false;
-    boolean a2State = false;
-    boolean b2State = false;
-    boolean xState = false;
-    boolean yState = false;
-    boolean isShooting = false;
-    boolean stateB1 = false;
-
     @Override
     public void runOpMode() {
-        shooter = new Shooter(this);
+        sh = new Shooter(this);
         ll = new Limelight(this);
         in = new Intake(this);
-        sr = new Sorting(this,ll);
+        sr = new Sorting(this);
 
         sr.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sr.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        sr.pos = Sorting.Scan.RIGHT; // для проверки
-        sr.horizontalWallOpen();
-        sr.verticalWallClose();
-       // sr.regulatorSorting.start();
-
         waitForStart();
         while (opModeIsActive()) {
-            telemetry.addData("Позиция сортировки", sr.drumMotor.getCurrentPosition() * sr.DEGREES);
-            telemetry.addData("Положение сортировки", sr.artefact_pos(sr.getColor()));
-            telemetry.addData("Цвета в сортировке", sr.printGetColor(sr.getColor()));
-            telemetry.update();
 
-            if (gamepad1.b){
-                shooter.shootByPower(1);
-            } else {
-                shooter.shootStop();
-            }
-            if (gamepad1.x){
-                shooter.shootByPower(0.76);
-            }shooter.shootStop();
-
-            if (gamepad1.a){
-                sr.drumTeleGo();
-                in.rotateIn();
-            } else {
-                sr.drumTeleStop();
-                in.rotateStop();
-            }
-
-
-//            if (gamepad1.a && !aState) {
-//                sr.intakingArtefacts();
-//            }
-//
-//            /*if (gamepad1.b && !bState) {
-//                sr.sortingArtefacts(sr.artefact_pos(sr.getColor()), sr.pos);
-//            } */
-//
-//            if (gamepad1.x && !xState) {
-//                sr.shootingArtefacts();
-//            }
-//
-//            if (gamepad1.y && !yState) {
-//                sr.turn40();
-//            }
-//
-//            if (gamepad2.a && a2State) {
-//                sr.turnIn120();
-//            }
-//
-//            if (gamepad2.b && b2State) {
-//                sr.turnOut120();
-//            }
-//
-//
-//            if (gamepad1.dpad_up) {
-//                sr.horizontalWallOpen();
-//            }
-//
-//            if (gamepad1.dpad_down) {
-//                sr.horizontalWallClose();
-//            }
-//            if (gamepad1.dpad_left) {
-//                sr.verticalWallOpen();
-//            }
-//            if (gamepad1.dpad_right) {
-//                sr.verticalWallClose();
-//            }
-//
-//
-//            aState = gamepad1.a;
-//            bState = gamepad1.b;
-//            xState = gamepad1.x;
-//            yState = gamepad1.y;
-//            a2State = gamepad2.a;
-//            b2State = gamepad2.b;
         }
-       // sr.regulatorSorting.interrupt();
-
     }
 }
 

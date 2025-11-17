@@ -12,37 +12,43 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 @Autonomous(name = "BLUE Human 3 Artifacts", group = "0")
 public class AutoBlueHuman3 extends LinearOpMode {
 
-
     @Override
     public void runOpMode() {
+
         Shooter sh = new Shooter(this);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         Limelight ll = new Limelight(this);
-        Sorting sort = new Sorting(this);
+        Sorting st = new Sorting(this);
 
         Pose2d startPose = new Pose2d(62, -10, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
-        sort.wallForShooting();
+        st.wallForShooting();
 
         waitForStart();
         if (isStopRequested()) return;
+        sleep(10000);
         sh.continuousShooter.start();
-        sh.setPower(0.76);
+        sh.setPower(0.9);
 
+
+        ///st.aprilTagToScan(ll.getTagID()); //сорян дшпш возможно бред написала
+        sleep(1000);
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-27, 5, Math.toRadians(140)))
+                .lineToLinearHeading(new Pose2d(59, -10, Math.toRadians(200)))
                 .build());
+        sleep(3000);
 
-
-        ///sort.aprilTagToScan(ll.getTagID()); //сорян дшпш возможно бред написала
-        sleep(1000);
-        dt.turn(Math.toRadians(65));
-        sleep(1000);
 //        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
 //                .lineToLinearHeading(new Pose2d(7, 27, Math.toRadians(90)))
 //                .build());
-        sort.autoTurning();
+        st.autoTurning();
         sh.continuousShooter.interrupt();
+        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(180)))
+                .build());
+
 
     }
+
+
 }

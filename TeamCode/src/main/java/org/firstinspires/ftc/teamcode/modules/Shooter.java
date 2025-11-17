@@ -71,7 +71,7 @@ public class Shooter {
             if (!isInterrupted()) {
                 timer.reset();
                 shooter.setPower(POWER);
-                while (timer.milliseconds() < 10000) {}
+                while (timer.milliseconds() < 23000) {}
                 shooter.setPower(0);
             }
         }

@@ -18,7 +18,7 @@ public class SensorTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-       Sorting sorting = new Sorting(this, Limelight);
+       Sorting sorting = new Sorting(this);
         telemetry.addLine("Начало");
 
         waitForStart();

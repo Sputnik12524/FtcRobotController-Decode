@@ -20,12 +20,12 @@ public class  ServoTest extends LinearOpMode {
     boolean yState = false;
 
     double i =0;
-    private org.firstinspires.ftc.teamcode.modules.Limelight Limelight;
+    private Limelight limelight;
 
     @Override
     public void runOpMode() {
 
-        sr = new Sorting(this, Limelight);
+        sr = new Sorting(this);
 
         sr.horizontalWallClose();
         sr.verticalWallClose();
