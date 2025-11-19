@@ -44,8 +44,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateUp2 = false;
 
     public static double POWER_LOWEST = 0.76;
-    public static double POWER_MIDDLE = 0.8;
-    public static double POWER_HIGHEST = 0.85;
 
 
     @Override

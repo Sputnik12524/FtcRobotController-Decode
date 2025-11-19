@@ -44,9 +44,6 @@ public class AutoRedGoal3 extends LinearOpMode {
         dt.turn(Math.toRadians(-50));
         sleep(1000);
 
-//        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-//                .lineToLinearHeading(new Pose2d(7, 27, Math.toRadians(90)))
-//                .build());
         st.autoTurning();
         sh.continuousShooter.interrupt();
         telemetry.update();

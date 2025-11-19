@@ -15,10 +15,7 @@ import java.util.function.Function;
 
 @Config
 public class Sorting {
-    private ElapsedTime timer = new ElapsedTime();
-
-    //Shooter shooter;
-
+    private final ElapsedTime timer = new ElapsedTime();
     private NormalizedColorSensor colorSensor1;
 
     private NormalizedColorSensor colorSensor2;
@@ -53,10 +50,11 @@ public class Sorting {
     public static double PURPLE_MAX = 245;
     public static double PURPLE_MIN = 210;
     public Regulator regulatorSorting = new Regulator();
-    public Intaker intaker = new Intaker();
-    public Shooter shooter = new Shooter();
+    public SortIntaker sortIntaker = new SortIntaker();
+    public SortShooter sortShooter = new SortShooter();
 
     public Sorting(LinearOpMode opMode) {
+
 
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drum");
         this.horizontalWall = opMode.hardwareMap.get(Servo.class, "horizontalWall");
@@ -83,7 +81,7 @@ public class Sorting {
         }
     }
 
-    public class Intaker extends Thread {
+    public class SortIntaker extends Thread {
         @Override
         public void run() {
             while (!isInterrupted()) {
@@ -92,7 +90,7 @@ public class Sorting {
         }
     }
 
-    public class Shooter extends Thread {
+    public class SortShooter extends Thread {
         @Override
         public void run() {
             while (!isInterrupted()) {
@@ -175,65 +173,6 @@ public class Sorting {
         }
     }
 
-//        public void sortingArtefacts (Scan a, Scan b){ //shooter.b
-//            //turn40();
-//            verticalWallOpen();
-//            while (timer.milliseconds() < 500) ;
-//            timer.reset();
-//
-//            this.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            this.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//
-//            target = 0;
-//
-//
-//            switch (a) {
-//                case LEFT: {
-//                    switch (b) {
-//                        case LEFT:
-//                            target = 40;
-//                            break;
-//                        case RIGHT:
-//                            target = 160;
-//                            break;
-//                        case BETWEEN:
-//                            target = 280;
-//                            break;
-//                    }
-//                    break;
-//                }
-//                case RIGHT: {
-//                    switch (b) {
-//                        case LEFT:
-//                            target = 280;
-//                            break;
-//                        case RIGHT:
-//                            target = 40;
-//                            break;
-//                        case BETWEEN:
-//                            target = 160;
-//                            break;
-//                    }
-//                    break;
-//                }
-//                case BETWEEN: {
-//                    switch (b) {
-//                        case LEFT:
-//                            target = 160;
-//                            break;
-//                        case RIGHT:
-//                            target = 280;
-//                            break;
-//                        case BETWEEN:
-//                            target = 40;
-//                            break;
-//                    }
-//                    break;
-//                }
-//
-//            }
-//            timer.reset();
-//        }
 
     public ArrayList<Color> getColor() {
         ArrayList<Color> colorSensors = new ArrayList<>();
@@ -360,17 +299,13 @@ public class Sorting {
         for (int i = 0; i < 3; i++) {
             timer.reset();
             drumMotor.setPower(POWER);
-            while (drumMotor.getCurrentPosition() < 125 * DEGREES) {
-            }
+            while (drumMotor.getCurrentPosition() < 125 * DEGREES) ;
             drumStop();
             while (timer.milliseconds() < 3000) ;
             drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-
     }
-
-
 }
 
 
