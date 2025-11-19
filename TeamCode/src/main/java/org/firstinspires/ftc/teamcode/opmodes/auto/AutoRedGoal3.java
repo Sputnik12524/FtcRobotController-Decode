@@ -21,10 +21,13 @@ public class AutoRedGoal3 extends LinearOpMode {
         Limelight ll = new Limelight(this);
         Sorting st = new Sorting(this);
         VoltageSensor sensor = hardwareMap.voltageSensor.iterator().next();
+        Thread main = Thread.currentThread();
 
         Pose2d startPose = new Pose2d(-48, 50, Math.toRadians(-45));
         dt.setPoseEstimate(startPose);
         st.wallForShooting();
+        st.regulatorSorting.start();
+
 
         waitForStart();
         if (isStopRequested()) return;
@@ -40,12 +43,28 @@ public class AutoRedGoal3 extends LinearOpMode {
 
 
         ///st.aprilTagToScan(ll.getTagID()); //сорян дшпш возможно бред написала
+        st.sortingArtefacts(st.artefact_pos(st.getColor()), st.aprilTagToScan(ll.tagId));
+        try {
+            main.join(1500);
+        } catch (InterruptedException e) {
+            st.exception = String.valueOf(e);
+        }
+
         sleep(1000);
         dt.turn(Math.toRadians(-50));
         sleep(1000);
 
-        st.autoTurning();
+        st.sortShooter.start();
+
+        try {
+            main.join();
+        } catch (InterruptedException e) {
+            st.exception = String.valueOf(e);
+        }
+
         sh.continuousShooter.interrupt();
+        st.regulatorSorting.interrupt();
+        st.sortShooter.interrupt();
         telemetry.update();
 
     }

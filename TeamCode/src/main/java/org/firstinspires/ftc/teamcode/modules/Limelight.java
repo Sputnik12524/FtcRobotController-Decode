@@ -11,6 +11,7 @@ import java.util.List;
 public class Limelight {
     public Limelight3A limelight3A;
     LinearOpMode opMode;
+   public int tagId = 0; // добавил проверить
 
     public Limelight(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -45,7 +46,9 @@ public class Limelight {
         } else {
             opMode.telemetry.addData("Error, no data available", limelightStatus());
         }
+        tagId = id;
         return id;
+
     }
     //либо
     public int getSingleTagID(){

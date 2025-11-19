@@ -17,15 +17,16 @@ import java.util.function.Function;
 public class Sorting {
     private final ElapsedTime timer = new ElapsedTime();
     private NormalizedColorSensor colorSensor1;
-
     private NormalizedColorSensor colorSensor2;
     private NormalizedColorSensor colorSensor3;
     public DcMotor drumMotor;
     public Servo horizontalWall; // верхняяя сенка
     public Servo verticalWall; // нижняя стенка
+
     public Limelight limelight;
-    public Scan pos;
+    public String exception;
     public int scanId;
+    public boolean sortComplete = false;
     public static float GAIN = 2.4F;
     public static float[] hsv = new float[3];
     public static float[] hsv2 = new float[3];
@@ -35,12 +36,8 @@ public class Sorting {
     public static double k = 0.002;
     public static double target = 0;
     public static double POWER = 0.8;
-
-
     public enum Scan {LEFT, RIGHT, BETWEEN, NONE} // расположение зеленого арфтефакта
-
     enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
-
     public static double HOPEN_WALL = 0.65;
     public static double HCLOSE_WALL = 0;
     public static double VOPEN_WALL = 0.25;
@@ -54,8 +51,6 @@ public class Sorting {
     public SortShooter sortShooter = new SortShooter();
 
     public Sorting(LinearOpMode opMode) {
-
-
         this.drumMotor = opMode.hardwareMap.get(DcMotor.class, "drum");
         this.horizontalWall = opMode.hardwareMap.get(Servo.class, "horizontalWall");
         this.verticalWall = opMode.hardwareMap.get(Servo.class, "verticalWall");
@@ -93,7 +88,7 @@ public class Sorting {
     public class SortShooter extends Thread {
         @Override
         public void run() {
-            while (!isInterrupted()) {
+            while (!isInterrupted() && isShooterCompleted()) {
                 shootingArtefacts();
             }
         }
@@ -104,8 +99,6 @@ public class Sorting {
         do {
             while (timer.milliseconds() < 800) ;
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
-                timer.reset();
-                while (timer.milliseconds() < 250) ;
                 target += 120;
             }
         } while (getColor().get(2) == Color.NONE); // 3 датчик нечего не видит
@@ -114,13 +107,12 @@ public class Sorting {
 
     public void shootingArtefacts() {
         //turn40(); // comment by Nikita
+        timer.reset();
         wallForShooting();
-        while (timer.milliseconds() < 2000) ;
-
-        while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефакт
-            while (timer.milliseconds() < 250) ;
-
+        while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефактa
+            timer.reset();
             target += 120;
+            while (timer.milliseconds() < 2000);
         }
         timer.reset();
     }
@@ -165,18 +157,19 @@ public class Sorting {
     }};
 
     public void sortingArtefacts(Scan inRobot, Scan needed) {
+        target = 0;
         if (needed != null) {
             if (inRobot == null) {
                 inRobot = Scan.BETWEEN;
             }
             target = map.get(needed).apply(inRobot);
         }
+        sortComplete = true;
     }
 
 
     public ArrayList<Color> getColor() {
         ArrayList<Color> colorSensors = new ArrayList<>();
-
         NormalizedRGBA color1 = colorSensor1.getNormalizedColors();
         NormalizedRGBA color2 = colorSensor2.getNormalizedColors();
         NormalizedRGBA color3 = colorSensor3.getNormalizedColors();
@@ -257,6 +250,8 @@ public class Sorting {
         target -= 120;
     }
 
+    public boolean isShooterCompleted(){return (artefact_pos(getColor()) == null);}
+
     public Scan aprilTagToScan(int id) {
         Scan res = Scan.NONE;
         if (id == 21) {
@@ -307,6 +302,3 @@ public class Sorting {
         }
     }
 }
-
-
-
