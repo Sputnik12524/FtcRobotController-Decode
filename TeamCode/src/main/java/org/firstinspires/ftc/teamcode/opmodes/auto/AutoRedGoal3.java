@@ -20,7 +20,6 @@ public class AutoRedGoal3 extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         Limelight ll = new Limelight(this);
         Sorting st = new Sorting(this);
-        VoltageSensor sensor = hardwareMap.voltageSensor.iterator().next();
         Thread main = Thread.currentThread();
 
         Pose2d startPose = new Pose2d(-48, 50, Math.toRadians(-45));

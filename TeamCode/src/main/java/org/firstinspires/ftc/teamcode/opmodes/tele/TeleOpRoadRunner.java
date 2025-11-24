@@ -45,6 +45,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
     public static double POWER_LOWEST = 0.76;
 
+    public static double POWER_HIGHEST = 1;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -57,7 +59,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         PoseStorage.currentPose = dt.getPoseEstimate();
         dt.setPoseEstimate(PoseStorage.currentPose);
-        //sorting.regulatorSorting.start();
 
         waitForStart();
 
@@ -80,7 +81,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             // SHOOTER and SORTING стрельба с дальней
             if (gamepad2.a && !isShooting && !stateA2) {
                 st.wallForShooting();
-                sh.shootByPower(1);
+                sh.shootByPower(POWER_HIGHEST);
                 isShooting = true;
             } else if (gamepad2.a && isShooting && !stateA2) {
                 sh.shootStop();

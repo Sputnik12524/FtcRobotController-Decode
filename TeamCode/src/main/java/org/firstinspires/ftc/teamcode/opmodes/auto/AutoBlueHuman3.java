@@ -50,9 +50,6 @@ public class AutoBlueHuman3 extends LinearOpMode {
                 .build());
         sleep(3000);
 
-//        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-//                .lineToLinearHeading(new Pose2d(7, 27, Math.toRadians(90)))
-//                .build());
         st.sortShooter.start();
 
         try {

@@ -88,7 +88,7 @@ public class Sorting {
     public class SortShooter extends Thread {
         @Override
         public void run() {
-            while (!isInterrupted() && isShooterCompleted()) {
+            while (!isInterrupted() || !isShooterCompleted()) {
                 shootingArtefacts();
             }
         }
@@ -106,7 +106,6 @@ public class Sorting {
 
 
     public void shootingArtefacts() {
-        //turn40(); // comment by Nikita
         timer.reset();
         wallForShooting();
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефактa
@@ -205,7 +204,7 @@ public class Sorting {
         Scan position = null;
         if (a.get(1) == Color.GREEN) position = Scan.LEFT;
         else if (a.get(2) == Color.GREEN) position = Scan.RIGHT;
-        else position = Scan.BETWEEN; //(a.get(0) == Color.GREEN)
+        else if (a.get(0) == Color.GREEN) position = Scan.BETWEEN;
 
         return position;
     }

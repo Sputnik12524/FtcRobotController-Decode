@@ -20,7 +20,6 @@ public class AutoBlueGoal3 extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         Limelight ll = new Limelight(this);
         Sorting st = new Sorting(this);
-        VoltageSensor sensor = hardwareMap.voltageSensor.iterator().next();
         Thread main = Thread.currentThread();
 
 
@@ -59,7 +58,7 @@ public class AutoBlueGoal3 extends LinearOpMode {
         }
 
         sh.continuousShooter.interrupt();
-        st.regulatorSorting.interrupt();
+        st.sortShooter.interrupt();
         st.regulatorSorting.interrupt();
 
     }
