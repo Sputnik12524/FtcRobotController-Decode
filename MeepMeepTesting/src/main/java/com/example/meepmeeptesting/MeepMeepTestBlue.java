@@ -24,10 +24,9 @@ public class MeepMeepTestBlue {
 
 
         Image img = null;
-        try {
-            img = ImageIO.read(new File("C:\\Users\\admin\\Downloads\\decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));
-        } catch (IOException e) {
-        }
+        try{img = ImageIO.read(new File("C:/Users/Admin/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));}
+        catch (IOException e){}
+
 
         meepMeep.setBackground(img)
                 .setDarkMode(true)

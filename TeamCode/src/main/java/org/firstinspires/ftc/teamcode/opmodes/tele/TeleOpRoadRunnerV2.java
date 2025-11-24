@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@TeleOp(name = "TeleOpRR", group = "0")
-public class TeleOpRoadRunner extends LinearOpMode {
+@TeleOp(name = "TeleOpRRV2", group = "0")
+public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
     Shooter sh;
     Intake in;
@@ -45,8 +45,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
     public static double POWER_LOWEST = 0.76;
 
-    public static double POWER_HIGHEST = 1;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -59,6 +57,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         PoseStorage.currentPose = dt.getPoseEstimate();
         dt.setPoseEstimate(PoseStorage.currentPose);
+        st.regulatorSorting.start();
 
         waitForStart();
 
@@ -69,49 +68,14 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             // INTAKE and SORTING
             if (gamepad1.a && !isRotateIn && !stateA1) {
-                st.wallForIntaking();
                 in.rotateIn();
+                st.sortShooter.start();
                 isRotateIn = true;
                 isRotateOut = false;
             } else if (gamepad1.a && isRotateIn && !stateA1) {
+                st.sortShooter.interrupt();
                 in.rotateStop();
                 isRotateIn = false;
-            }
-
-            // SHOOTER and SORTING стрельба с дальней
-            if (gamepad2.a && !isShooting && !stateA2) {
-                st.wallForShooting();
-                sh.shootByPower(POWER_HIGHEST);
-                isShooting = true;
-            } else if (gamepad2.a && isShooting && !stateA2) {
-                sh.shootStop();
-                isShooting = false;
-            }
-
-            //стрельба с ближней 0.76
-            if (gamepad2.y && !isShooting && !stateY2) {
-                st.wallForShooting();
-                sh.shootByPower(POWER_LOWEST);
-                isShooting = true;
-            } else if (gamepad2.y && isShooting && !stateY2) {
-                sh.shootStop();
-                isShooting = false;
-            }
-
-            // увеличение мощности при стрельбе
-            if (gamepad2.dpad_up && isShooting && !stateUp2) {
-                st.wallForShooting();
-                POWER_LOWEST += 0.05;
-                sh.shootByPower(POWER_LOWEST);
-                isShooting = true;
-            }
-
-            // уменьшение мощности при стрельбе
-            if (gamepad2.dpad_down && isShooting && !stateDown2) {
-                st.wallForShooting();
-                POWER_LOWEST -= 0.05;
-                sh.shootByPower(POWER_LOWEST);
-                isShooting = true;
             }
 
             //IF TROUBLES
@@ -124,19 +88,34 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 isRotateOut = false;
             }
 
-
-            if (gamepad2.x) {
-                st.drumTeleGo();
-            } else {
-                st.drumTeleStop();
+            //стрельба с дальней (1.00)
+            if (gamepad2.a && !isShooting && !stateA2) {
+                st.sortShooter.start();
+                sh.shootByPower(1);
+                isShooting = true;
+            } else if (gamepad2.a && isShooting && !stateA2) {
+                st.sortShooter.interrupt();
+                sh.shootStop();
+                isShooting = false;
             }
 
-            if (gamepad2.dpad_left) {
-                st.drumTeleGoRevers();
-            } else {
-                st.drumStop();
+            //стрельба с ближней (0.76)
+            if (gamepad2.y && !isShooting && !stateY2) {
+                st.wallForShooting();
+                sh.shootByPower(POWER_LOWEST);
+                isShooting = true;
+            } else if (gamepad2.y && isShooting && !stateY2) {
+                sh.shootStop();
+                isShooting = false;
             }
 
+            // СКАНИРОВАНИЕ
+            if (gamepad1.y && stateY1) ll.getTagID();
+
+            //СОРТИРОВКА
+            if (gamepad2.b && stateB2) {
+                st.sortingArtefacts(st.artefact_pos(st.getColor()), st.aprilTagToScan(ll.tagId));
+            }
 
             if (gamepad2.b && !isOpen && !stateB2) {
                 st.horizontalWallOpen();
@@ -146,28 +125,28 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 isOpen = false;
             }
 
-        stateA1 = gamepad1.a;
-        stateB1 = gamepad1.b;
-        stateA2 = gamepad2.a;
-        stateB2 = gamepad2.b;
-        stateY2 = gamepad2.y;
-        stateY1 = gamepad1.y;
-        stateDown2 = gamepad2.dpad_down;
-        stateRight2 = gamepad2.dpad_right;
-        stateUp2 = gamepad2.dpad_up;
-        stateDown1 = gamepad1.dpad_down;
-        stateRight1 = gamepad1.dpad_right;
-        stateUp1 = gamepad1.dpad_up;
-        stateLeft1 = gamepad1.dpad_left;
-        stateLeft2 = gamepad2.dpad_left;
-        telemetry.addData("Power shooter", sh.shooter.getPower());
-        telemetry.update();
+            stateA1 = gamepad1.a;
+            stateB1 = gamepad1.b;
+            stateA2 = gamepad2.a;
+            stateB2 = gamepad2.b;
+            stateY2 = gamepad2.y;
+            stateY1 = gamepad1.y;
+            stateDown2 = gamepad2.dpad_down;
+            stateRight2 = gamepad2.dpad_right;
+            stateUp2 = gamepad2.dpad_up;
+            stateDown1 = gamepad1.dpad_down;
+            stateRight1 = gamepad1.dpad_right;
+            stateUp1 = gamepad1.dpad_up;
+            stateLeft1 = gamepad1.dpad_left;
+            stateLeft2 = gamepad2.dpad_left;
+            telemetry.addData("Power shooter", sh.shooter.getPower());
+            telemetry.addData("Статус сортировки", st.sortComplete);
+            telemetry.update();
+        }
     }
-}
 
 
-public static class PoseStorage {
-    public static Pose2d currentPose = new Pose2d();
-}
-
+    public static class PoseStorage {
+        public static Pose2d currentPose = new Pose2d();
+    }
 }

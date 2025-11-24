@@ -17,15 +17,15 @@ public class MeepMeepTestBlueGoal {
         MeepMeep meepMeep = new MeepMeep(500, 500);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 17)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-48, -48, Math.toRadians(45)))
-                        .lineToLinearHeading(new Pose2d(-24, -23, 45))
-                        .lineToLinearHeading(new Pose2d(-12, -27, -90))
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-48, 50, Math.toRadians(130)))
+                        .waitSeconds(2)
+                        .lineToLinearHeading(new Pose2d(-56, -22, 90))
                         .build());
 
 
         Image img = null;
         try {
-            img = ImageIO.read(new File("C:\\Users\\Sputnik MSI laptop 1\\Downloads\\324f5ccd-53dc-4872-ba37-648e96fb7d47.tmp"));
+            img = ImageIO.read(new File("C:/Users/Sputnik MSI laptop 1/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));
         } catch (IOException e) {
         }
 

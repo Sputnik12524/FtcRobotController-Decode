@@ -29,9 +29,12 @@ public class MeepMeepTest {
                         .turn(Math.toRadians(90))
                         .build());
 
+
         Image img = null;
-        try { img = ImageIO.read(new File("C:/Users/user/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png")); }
-        catch(IOException e) {}
+        try {
+            img = ImageIO.read(new File("C:/Users/Sputnik MSI laptop 1/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));
+        } catch (IOException e) {
+        }
 
         meepMeep.setBackground(img)
                 .setDarkMode(true)
