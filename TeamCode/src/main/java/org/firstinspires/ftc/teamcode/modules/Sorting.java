@@ -36,8 +36,11 @@ public class Sorting {
     public static double k = 0.002;
     public static double target = 0;
     public static double POWER = 0.8;
+
     public enum Scan {LEFT, RIGHT, BETWEEN, NONE} // расположение зеленого арфтефакта
+
     enum Color {GREEN, PURPLE, NONE} //возможные цвета артефактов
+
     public static double HOPEN_WALL = 0.65;
     public static double HCLOSE_WALL = 0;
     public static double VOPEN_WALL = 0.25;
@@ -111,7 +114,7 @@ public class Sorting {
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефактa
             timer.reset();
             target += 120;
-            while (timer.milliseconds() < 2000);
+            while (timer.milliseconds() < 2000) ;
         }
         timer.reset();
     }
@@ -249,7 +252,9 @@ public class Sorting {
         target -= 120;
     }
 
-    public boolean isShooterCompleted(){return (artefact_pos(getColor()) == null);}
+    public boolean isShooterCompleted() {
+        return (artefact_pos(getColor()) == null);
+    }
 
     public Scan aprilTagToScan(int id) {
         Scan res = Scan.NONE;

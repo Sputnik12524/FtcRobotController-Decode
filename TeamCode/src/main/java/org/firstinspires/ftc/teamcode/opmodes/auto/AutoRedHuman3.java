@@ -33,7 +33,7 @@ public class AutoRedHuman3 extends LinearOpMode {
         sh.setPower(1);
 
 
-        ///st.aprilTagToScan(ll.getTagID()); //сорян дшпш возможно бред написала
+        ///st.aprilTagToScan(ll.getTagID());
         st.sortingArtefacts(st.artefact_pos(st.getColor()), st.aprilTagToScan(ll.tagId));
         try {
             main.join(1500);
