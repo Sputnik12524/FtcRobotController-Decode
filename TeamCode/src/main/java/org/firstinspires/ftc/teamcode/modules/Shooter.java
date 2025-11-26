@@ -17,6 +17,9 @@ public class Shooter {
     public static double POWER = 1; // было 0.83
     public static double SHORT_THROW = 0.1;
     public static double LONG_THROW = 0.2;
+    public static double target;
+    public static double error;
+
     private boolean isItShortThrow = false;
    public ContinuousShooter continuousShooter = new ContinuousShooter();
 
@@ -37,6 +40,10 @@ public class Shooter {
 
     public void shootStop() {
         shooter.setPower(0);
+    }
+
+    public void setVelocity () {
+        shooter.setVelocity(5000);
     }
 
     public void setLongThrow() {
@@ -61,6 +68,11 @@ public class Shooter {
 
     public void setPower(double power){
         POWER = power;
+    }
+
+    public void shooterRegulator(){
+        target = POWER - shooter.getCurrentPosition();
+        shooter.setPower(error * target);
     }
 
     public class ContinuousShooter extends Thread {
