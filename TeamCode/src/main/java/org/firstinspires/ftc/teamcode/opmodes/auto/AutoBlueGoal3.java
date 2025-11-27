@@ -37,6 +37,8 @@ public class AutoBlueGoal3 extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-27, 5, Math.toRadians(140)))
                 .build());
 
+        ll.getTagID();
+
         st.sortingArtefacts(st.artefact_pos(st.getColor()), st.aprilTagToScan(ll.tagId));
         try {
             main.join(1500);

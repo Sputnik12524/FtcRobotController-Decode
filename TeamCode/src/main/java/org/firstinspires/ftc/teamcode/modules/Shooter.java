@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Shooter {
 
     public final DcMotorEx shooter;
+    public final DcMotor shooter2;
     private final Servo cover;
 
     public static double POWER = 1; // было 0.83
@@ -22,6 +23,9 @@ public class Shooter {
 
     public Shooter(LinearOpMode opMode) {
         shooter = opMode.hardwareMap.get(DcMotorEx.class, "shooter");
+        shooter2 = opMode.hardwareMap.get(DcMotorEx.class, "shooter2");
+
+
         cover = opMode.hardwareMap.get(Servo.class, "cover");
 
         shooter.setDirection(DcMotorSimple.Direction.FORWARD);

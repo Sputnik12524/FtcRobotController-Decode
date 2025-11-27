@@ -35,7 +35,7 @@ public class AutoBlueHuman3 extends LinearOpMode {
         sh.setPower(0.9);
 
 
-        ///st.aprilTagToScan(ll.getTagID());
+        ll.getTagID();
 
         st.sortingArtefacts(st.artefact_pos(st.getColor()), st.aprilTagToScan(ll.tagId));
         try {

@@ -109,6 +109,22 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                 isShooting = false;
             }
 
+            // увеличение мощности при стрельбе
+            if (gamepad2.dpad_up && isShooting && !stateUp2) {
+                st.wallForShooting();
+                POWER_LOWEST += 0.05;
+                sh.shootByPower(-POWER_LOWEST);
+                isShooting = true;
+            }
+
+            // уменьшение мощности при стрельбе
+            if (gamepad2.dpad_down && isShooting && !stateDown2) {
+                st.wallForShooting();
+                POWER_LOWEST -= 0.05;
+                sh.shootByPower(-POWER_LOWEST);
+                isShooting = true;
+            }
+
             // СКАНИРОВАНИЕ
             if (gamepad1.y && stateY1) ll.getTagID();
 
