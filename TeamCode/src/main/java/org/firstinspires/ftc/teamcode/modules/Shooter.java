@@ -33,7 +33,7 @@ public class Shooter {
 
         cover = opMode.hardwareMap.get(Servo.class, "cover");
 
-        shooter.setDirection(DcMotorSimple.Direction.FORWARD);
+        //shooter.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void shootByPower(double POWER) {
