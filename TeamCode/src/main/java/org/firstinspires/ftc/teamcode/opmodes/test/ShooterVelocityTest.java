@@ -43,7 +43,6 @@ public class ShooterVelocityTest extends LinearOpMode {
             }
             try {
                 writer.write(timer.milliseconds() + "," + -sh.shooter.getVelocity() + "\n");
-                writer.flush();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -59,6 +58,11 @@ public class ShooterVelocityTest extends LinearOpMode {
             telemetry.addData("Shooter Motor Power:", sh.shooter.getPower());
             telemetry.update();
 
+        }
+        try {
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
