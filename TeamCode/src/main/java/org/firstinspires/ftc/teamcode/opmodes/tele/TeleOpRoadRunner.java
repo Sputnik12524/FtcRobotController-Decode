@@ -43,7 +43,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateRight2 = false;
     boolean stateUp2 = false;
 
-    public static double POWER_LOWEST = 0.76;
+    public static double POWER_LOWEST = 0.1;
 
     public static double POWER_HIGHEST = 1;
 
@@ -81,20 +81,24 @@ public class TeleOpRoadRunner extends LinearOpMode {
             // SHOOTER and SORTING стрельба с дальней
             if (gamepad2.a && !isShooting && !stateA2) {
                 st.wallForShooting();
-                sh.shootByPower(POWER_HIGHEST);
+                sh.shootByPower(-POWER_HIGHEST);
+                sh.shooter2.setPower(POWER_HIGHEST);
                 isShooting = true;
             } else if (gamepad2.a && isShooting && !stateA2) {
                 sh.shootStop();
+                sh.shooter2.setPower(0);
                 isShooting = false;
             }
 
             //стрельба с ближней 0.76
             if (gamepad2.y && !isShooting && !stateY2) {
                 st.wallForShooting();
-                sh.shootByPower(POWER_LOWEST);
+                sh.shootByPower(-POWER_LOWEST);
+                sh.shooter2.setPower(POWER_HIGHEST);
                 isShooting = true;
             } else if (gamepad2.y && isShooting && !stateY2) {
                 sh.shootStop();
+                sh.shooter2.setPower(0);
                 isShooting = false;
             }
 
@@ -102,7 +106,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             if (gamepad2.dpad_up && isShooting && !stateUp2) {
                 st.wallForShooting();
                 POWER_LOWEST += 0.05;
-                sh.shootByPower(POWER_LOWEST);
+                sh.shootByPower(-POWER_LOWEST);
                 isShooting = true;
             }
 
@@ -110,7 +114,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             if (gamepad2.dpad_down && isShooting && !stateDown2) {
                 st.wallForShooting();
                 POWER_LOWEST -= 0.05;
-                sh.shootByPower(POWER_LOWEST);
+                sh.shootByPower(-POWER_LOWEST);
                 isShooting = true;
             }
 

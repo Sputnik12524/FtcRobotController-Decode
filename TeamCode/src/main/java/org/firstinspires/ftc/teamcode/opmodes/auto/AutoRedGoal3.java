@@ -41,7 +41,7 @@ public class AutoRedGoal3 extends LinearOpMode {
                 .build());
 
 
-        ///st.aprilTagToScan(ll.getTagID());
+        ll.getTagID();
         st.sortingArtefacts(st.artefact_pos(st.getColor()), st.aprilTagToScan(ll.tagId));
         try {
             main.join(1500);
