@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -32,12 +33,14 @@ public class Shooter {
         shooterUp = opMode.hardwareMap.get(DcMotorEx.class, "shooter2");
 
         cover = opMode.hardwareMap.get(Servo.class, "cover");
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterUp.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //shooter.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void shootByPower(double POWER) {
-        shooter.setPower(POWER);
+        shooterUp.setPower(POWER);
     }
 
     public void shoot(){
@@ -50,9 +53,8 @@ public class Shooter {
         shooterUp.setPower(0);
     }
 
-    public void setVelocity (double TURNOVER) {
-        shooter.setVelocity(TURNOVER, AngleUnit.DEGREES);
-        shooterUp.setVelocity(TURNOVER, AngleUnit.DEGREES);
+    public void setVelocityUp (double TURNOVER) {
+        shooterUp.setVelocity(TURNOVER*28);
     }
 
     public void setLongThrow() {

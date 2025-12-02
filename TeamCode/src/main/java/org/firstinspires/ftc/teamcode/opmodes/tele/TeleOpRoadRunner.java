@@ -82,11 +82,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
             if (gamepad2.a && !isShooting && !stateA2) {
                 st.wallForShooting();
                 sh.shootByPower(-POWER_HIGHEST);
-                sh.shooter2.setPower(POWER_HIGHEST);
+                sh.shooterUp.setPower(POWER_HIGHEST);
                 isShooting = true;
             } else if (gamepad2.a && isShooting && !stateA2) {
                 sh.shootStop();
-                sh.shooter2.setPower(0);
+                sh.shooterUp.setPower(0);
                 isShooting = false;
             }
 
@@ -94,11 +94,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
             if (gamepad2.y && !isShooting && !stateY2) {
                 st.wallForShooting();
                 sh.shootByPower(-POWER_LOWEST);
-                sh.shooter2.setPower(POWER_HIGHEST);
+                sh.shooterUp.setPower(POWER_HIGHEST);
                 isShooting = true;
             } else if (gamepad2.y && isShooting && !stateY2) {
                 sh.shootStop();
-                sh.shooter2.setPower(0);
+                sh.shooterUp.setPower(0);
                 isShooting = false;
             }
 
