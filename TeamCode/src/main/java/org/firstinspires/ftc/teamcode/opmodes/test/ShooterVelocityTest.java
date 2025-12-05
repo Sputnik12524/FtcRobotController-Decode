@@ -16,24 +16,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
 
+import util.Logger;
+
 @TeleOp(name = "Shooter", group = "Test")
 public class ShooterVelocityTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
+        Logger logger = new Logger("Shooter_AllTele.csv");
         String directoryPath = "/sdcard/FIRST/";
         ElapsedTime timer = new ElapsedTime();
         Shooter sh = new Shooter(this);
 
 
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(directoryPath + "ShooterTest.csv");
-            writer.write("time_ms,velocity\n");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        logger.addHeader("time_ms,velocity");
+
         FtcDashboard dash = FtcDashboard.getInstance();
         Telemetry dashTele = dash.getTelemetry();
+
         waitForStart();
         while (opModeIsActive()) {
             if (gamepad1.a) {
@@ -41,11 +40,8 @@ public class ShooterVelocityTest extends LinearOpMode {
             } else {
                 sh.shootStop();
             }
-            try {
-                writer.write(timer.milliseconds() + "," + -sh.shooter.getVelocity() + "\n");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+
+            logger.addLine(timer.milliseconds(), -sh.shooter.getVelocity() / 28);
 
             dashTele.addData("Shooter Motor Velo in degrees", -sh.shooter.getVelocity());
 
@@ -59,10 +55,6 @@ public class ShooterVelocityTest extends LinearOpMode {
             telemetry.update();
 
         }
-        try {
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        logger.fileClose();
     }
 }
