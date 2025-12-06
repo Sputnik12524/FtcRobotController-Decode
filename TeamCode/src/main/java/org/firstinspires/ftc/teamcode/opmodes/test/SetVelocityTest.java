@@ -35,19 +35,19 @@ public class SetVelocityTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             PIDFCoefficients pidfOrig = sh.shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-            PIDFCoefficients pidfOrigUP = sh.shooterUp.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+            PIDFCoefficients pidfOrigUP = sh.shooterTest.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
             double error = target - sh.shooter.getVelocity(AngleUnit.DEGREES);
             double power = error * k;
             sh.shooter.setVelocity(power, AngleUnit.DEGREES);
 
-            double errorUp = targetUP - sh.shooterUp.getVelocity(AngleUnit.DEGREES);
+            double errorUp = targetUP - sh.shooterTest.getVelocity(AngleUnit.DEGREES);
             double powerUp = errorUp * k;
-            sh.shooterUp.setVelocity(powerUp, AngleUnit.DEGREES);
+            sh.shooterTest.setVelocity(powerUp, AngleUnit.DEGREES);
 
             telemetry.addData("Shooter Velocity", sh.shooter.getVelocity(AngleUnit.DEGREES));
-            telemetry.addData("ShooterUP Velocity", sh.shooterUp.getVelocity(AngleUnit.DEGREES));
+            telemetry.addData("ShooterUP Velocity", sh.shooterTest.getVelocity(AngleUnit.DEGREES));
             telemetry.addData("P,I,D,F (orig)", "%.04f, %.04f, %.04f, %.04f",
                     pidfOrig.p, pidfOrig.i, pidfOrig.d, pidfOrig.f);
             telemetry.addData("P,I,D,F (orig) UP", "%.04f, %.04f, %.04f, %.04f",

@@ -31,7 +31,7 @@ public class AutoBlueGoal3 extends LinearOpMode {
         if (isStopRequested()) return;
         sh.continuousShooter.start();
 
-        sh.setPower(0.6);
+        sh.setVelocityAuto(0.6);
 
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-27, 5, Math.toRadians(140)))

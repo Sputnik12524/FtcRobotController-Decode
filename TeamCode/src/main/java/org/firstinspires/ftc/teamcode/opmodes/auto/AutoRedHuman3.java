@@ -30,7 +30,7 @@ public class AutoRedHuman3 extends LinearOpMode {
         if (isStopRequested()) return;
         sh.continuousShooter.start();
         st.regulatorSorting.start();
-        sh.setPower(1);
+        sh.setVelocityAuto(1);
 
 
         ll.getTagID();

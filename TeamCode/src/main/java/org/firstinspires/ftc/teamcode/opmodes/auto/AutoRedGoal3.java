@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
@@ -31,7 +30,7 @@ public class AutoRedGoal3 extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
         sh.continuousShooter.start();
-        sh.setPower(0.7);
+        sh.setVelocityAuto(0.7);
 
         telemetry.addData("Power shooter", sh.shooter.getPower());
 

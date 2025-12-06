@@ -23,7 +23,7 @@ public class ShooterVelocityTestDash extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             if (gamepad1.a) {
-                sh.shoot();
+        //        sh.shoot();
             } else {
                 sh.shootStop();
             }

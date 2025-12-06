@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Config
-public class Sorting {
+public class Sorting {  //st
     private final ElapsedTime timer = new ElapsedTime();
     private NormalizedColorSensor colorSensor1;
     private NormalizedColorSensor colorSensor2;

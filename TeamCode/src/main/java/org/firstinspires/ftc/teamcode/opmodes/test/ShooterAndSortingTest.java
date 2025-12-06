@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
@@ -18,38 +17,71 @@ import org.firstinspires.ftc.teamcode.modules.Sorting;
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
     Intake in;
-    Sorting sr;
+    Sorting st;
     Limelight ll;
 
-    public static double RPS = 10;
+    public static double RPS = 10; //Maximum = ~52 rps
+
+    boolean stateA1 = false;
+    boolean stateB1 = false;
+    boolean stateX1 = false;
+    boolean stateY1 = false;
+    boolean isRotateIn = false;
+    boolean isRotateOut = false;
 
     @Override
     public void runOpMode() {
         sh = new Shooter(this);
         ll = new Limelight(this);
         in = new Intake(this);
-        sr = new Sorting(this);
+        st = new Sorting(this);
 
-        sr.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        sr.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        st.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        st.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        sh.shooterUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        sh.shooterUp.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sh.shooterTest.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sh.shooterTest.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        FtcDashboard dash = FtcDashboard.getInstance();
+        Telemetry dashTele = dash.getTelemetry();
 
         waitForStart();
         while (opModeIsActive()) {
 
-            FtcDashboard dash = FtcDashboard.getInstance();
-            Telemetry dashTele = dash.getTelemetry();
-            sh.setVelocityUp(RPS);
+            /// Shooter
+            if (gamepad1.y && !stateY1) {
+                sh.shootByVelocity(RPS);
+            } else if (gamepad1.x && !stateX1) {
+                sh.shootStop();
+            }
+            stateY1 = gamepad1.y;
+            stateX1 = gamepad1.x;
+
+            /// Intake
+            if (gamepad1.a && !isRotateIn && !stateA1) {
+                in.rotateIn();
+                isRotateIn = true;
+                isRotateOut = false;
+            } else if (gamepad1.a && isRotateIn && !stateA1) {
+                in.rotateStop();
+                isRotateIn = false;
+            }
+            if (gamepad1.b && !isRotateOut && !stateB1) {
+                in.rotateOut();
+                isRotateOut = true;
+                isRotateIn = false;
+            } else if (gamepad1.b && isRotateOut && !stateB1) {
+                in.rotateStop();
+                isRotateOut = false;
+            }
+            stateA1 = gamepad1.a;
+            stateB1 = gamepad1.b;
 
 
-            dashTele.addData("ticks per second", sh.shooterUp.getVelocity());
-            dashTele.addData("degrees per second", sh.shooterUp.getVelocity(AngleUnit.DEGREES));
-            dashTele.addData("radians per second", sh.shooterUp.getVelocity(AngleUnit.RADIANS));
-            dashTele.addData("VELOCITY", (sh.shooterUp.getVelocity() / 28));
-            dashTele.addData("ENCODERS", sh.shooterUp.getCurrentPosition());
-
+            dashTele.addLine("VELOCITY:");
+            dashTele.addData("TPS:", sh.getVelocityTPS());
+            dashTele.addData("RPS:", sh.getVelocityRPS());
+            dashTele.addData("VALUE OF ENCODERS:", sh.shooterTest.getCurrentPosition());
             dashTele.update();
         }
     }
