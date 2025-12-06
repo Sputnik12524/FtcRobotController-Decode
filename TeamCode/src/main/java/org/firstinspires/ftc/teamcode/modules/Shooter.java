@@ -45,7 +45,7 @@ public class Shooter { //sh
         public void run() {
             if (!isInterrupted()) {
                 timer.reset();
-                shooter.setPower(VELOCITY);
+                shooter.setVelocity(VELOCITY);
                 while (timer.milliseconds() < 23000);
                 shooter.setPower(0);
             }

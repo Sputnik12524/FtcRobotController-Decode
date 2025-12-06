@@ -1,10 +1,19 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
+import static org.firstinspires.ftc.teamcode.opmodes.test.ShootingConsistencyTest.DEFAULT_GAINS;
+import static org.firstinspires.ftc.teamcode.opmodes.test.ShootingConsistencyTest.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.opmodes.test.VeloPIDTuner.MOTOR_VELO_PID;
+
+import android.util.Log;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
@@ -19,6 +28,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
     Intake in;
     Sorting st;
     Limelight ll;
+    private VoltageSensor batteryVoltageSensor;
 
     public static double RPS = 10; //Maximum = ~52 rps
 
@@ -42,8 +52,14 @@ public class ShooterAndSortingTest extends LinearOpMode {
         sh.shooterTest.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sh.shooterTest.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+
+
+        setPIDFCoefficients(sh.shooter, MOTOR_VELO_PID);
+
         FtcDashboard dash = FtcDashboard.getInstance();
         Telemetry dashTele = dash.getTelemetry();
+
 
         waitForStart();
         while (opModeIsActive()) {
@@ -83,6 +99,21 @@ public class ShooterAndSortingTest extends LinearOpMode {
             dashTele.addData("RPS:", sh.getVelocityRPS());
             dashTele.addData("VALUE OF ENCODERS:", sh.shooterTest.getCurrentPosition());
             dashTele.update();
+        }
+    }
+    private void setPIDFCoefficients(DcMotorEx motor, PIDFCoefficients coefficients) {
+        if(!RUN_USING_ENCODER) {
+            Log.i("config", "skipping RUE");
+            return;
+        }
+
+        if (!DEFAULT_GAINS) {
+            Log.i("config", "setting custom gains");
+            motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
+                    coefficients.p, coefficients.i, coefficients.d, coefficients.f * 12 / batteryVoltageSensor.getVoltage()
+            ));
+        } else {
+            Log.i("config", "setting default gains");
         }
     }
 }
