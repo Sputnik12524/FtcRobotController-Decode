@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
-import static org.firstinspires.ftc.teamcode.opmodes.test.ShootingConsistencyTest.DEFAULT_GAINS;
-import static org.firstinspires.ftc.teamcode.opmodes.test.ShootingConsistencyTest.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.opmodes.test.VeloPIDTuner.MOTOR_VELO_PID;
-
-import android.util.Log;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -14,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
@@ -49,8 +46,8 @@ public class ShooterAndSortingTest extends LinearOpMode {
         st.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         st.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        sh.shooterTest.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        sh.shooterTest.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sh.shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sh.shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -60,6 +57,9 @@ public class ShooterAndSortingTest extends LinearOpMode {
         FtcDashboard dash = FtcDashboard.getInstance();
         Telemetry dashTele = dash.getTelemetry();
 
+        MotorConfigurationType motorConfigurationType = sh.shooter.getMotorType().clone();
+        motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+        sh.shooter.setMotorType(motorConfigurationType);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -93,28 +93,38 @@ public class ShooterAndSortingTest extends LinearOpMode {
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
 
+            if (gamepad1.right_bumper || gamepad2.right_bumper) {
+                st.drumTeleGo();
+            } else {
+                st.drumStop();
+            }
+
+            if (gamepad2.dpad_down) {
+                st.verticalWallOpen();
+            } else if (gamepad2.dpad_up) {
+                st.verticalWallClose();
+            }
+
+            if (gamepad2.dpad_left) {
+                st.horizontalWallOpen();
+            } else if (gamepad2.dpad_right) {
+                st.horizontalWallClose();
+            }
 
             dashTele.addLine("VELOCITY:");
             dashTele.addData("TPS:", sh.getVelocityTPS());
             dashTele.addData("RPS:", sh.getVelocityRPS());
             dashTele.addData("VALUE OF ENCODERS:", sh.shooterTest.getCurrentPosition());
+            dashTele.addData("POS H:", st.horizontalWall.getPosition());
+            dashTele.addData("POS V:", st.verticalWall.getPosition());
+            dashTele.addData("target", RPS);
             dashTele.update();
         }
     }
     private void setPIDFCoefficients(DcMotorEx motor, PIDFCoefficients coefficients) {
-        if(!RUN_USING_ENCODER) {
-            Log.i("config", "skipping RUE");
-            return;
-        }
-
-        if (!DEFAULT_GAINS) {
-            Log.i("config", "setting custom gains");
-            motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                    coefficients.p, coefficients.i, coefficients.d, coefficients.f * 12 / batteryVoltageSensor.getVoltage()
-            ));
-        } else {
-            Log.i("config", "setting default gains");
-        }
+        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
+                coefficients.p, coefficients.i, coefficients.d, coefficients.f * 12 / batteryVoltageSensor.getVoltage()
+        ));
     }
 }
 

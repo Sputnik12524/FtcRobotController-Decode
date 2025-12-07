@@ -43,12 +43,15 @@ public class Sorting {  //st
 
     public static double HOPEN_WALL = 0.65;
     public static double HCLOSE_WALL = 0;
-    public static double VOPEN_WALL = 0.25;
-    public static double VCLOSE_WALL = 0;
+    public static double VOPEN_WALL = 0.92;
+    public static double VCLOSE_WALL = 0.8;
     public static double GREEN_MAX = 175;
     public static double GREEN_MIN = 115;
     public static double PURPLE_MAX = 245;
     public static double PURPLE_MIN = 210;
+
+    public static double POWER_TELE_GO = 0.65;
+    public static double POWER_REVERSE_TELE_GO = -0.2;
     public Regulator regulatorSorting = new Regulator();
     public SortIntaker sortIntaker = new SortIntaker();
     public SortShooter sortShooter = new SortShooter();
@@ -65,6 +68,7 @@ public class Sorting {  //st
         this.colorSensor2.setGain(GAIN);
         this.colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor3");
         this.colorSensor3.setGain(GAIN);
+
     }
 
 
@@ -271,11 +275,11 @@ public class Sorting {  //st
     }
 
     public void drumTeleGo() {
-        drumMotor.setPower(0.2);
+        drumMotor.setPower(POWER_TELE_GO);
     }
 
     public void drumTeleGoRevers() {
-        drumMotor.setPower(-0.1);
+        drumMotor.setPower(POWER_REVERSE_TELE_GO);
     }
 
 

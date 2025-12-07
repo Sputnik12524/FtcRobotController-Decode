@@ -28,7 +28,7 @@ public class AutoBlueHuman3Simple extends LinearOpMode {
         if (isStopRequested()) return;
         sleep(10000);
         sh.continuousShooter.start();
-        sh.setPower(0.9);
+        sh.shootByVelocity(Shooter.VELO_HUMAN);
 
 
         ///st.aprilTagToScan(ll.getTagID()); //сорян дшпш возможно бред написала

@@ -16,6 +16,8 @@ public class Shooter { //sh
 
     public static double POWER = 1;
     public static double VELOCITY = 0;
+    public static double VELO_HUMAN = 45;
+    public static double VELO_GOAL = 37;
 
    public ContinuousShooter continuousShooter = new ContinuousShooter();
 
@@ -23,7 +25,9 @@ public class Shooter { //sh
         shooter = opMode.hardwareMap.get(DcMotorEx.class, "shooter");
         shooterTest = opMode.hardwareMap.get(DcMotorEx.class, "shooterTest");
 
+        shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterTest.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterTest.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
@@ -33,8 +37,11 @@ public class Shooter { //sh
     public void shootByPower(double POWER) {
         shooter.setPower(POWER);
     }
+    public void setPower(double POWER) {
+        shooter.setPower(POWER);
+    }
     public void shootStop() {
-        shooter.setVelocity(0);
+        //shooter.setVelocity(0);
         shooter.setPower(0);
     }
 
@@ -47,22 +54,22 @@ public class Shooter { //sh
                 timer.reset();
                 shooter.setVelocity(VELOCITY);
                 while (timer.milliseconds() < 23000);
-                shooter.setPower(0);
+                shooter.setVelocity(0);
             }
         }
     }
-    public void setVelocityAuto(double power){ //For ContinuousShooter
-        VELOCITY = power;
+    public void setVelocityAuto(double RPS){ //For ContinuousShooter
+        VELOCITY = RPS * TPR;
     }
 
     public double getPower() {
         return shooter.getPower();
     }
     public double getVelocityRPS() {
-        return (shooter.getVelocity()/TPR);
+        return shooter.getVelocity()/TPR;
     }
     public double getVelocityTPS() {
-        return (shooter.getVelocity());
+        return shooter.getVelocity();
     }
 
 

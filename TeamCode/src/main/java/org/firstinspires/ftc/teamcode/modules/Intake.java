@@ -24,7 +24,6 @@ public class Intake {
         artifactIntake = new ArtifactIntake();
         this.linearOpMode = linearOpMode;
         this.catcher = linearOpMode.hardwareMap.get(DcMotor.class, "catcher");
-        catcher.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void rotateIn() {
