@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.disabled;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.Limelight;
@@ -9,8 +10,9 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "BLUE Human 3 Artifacts", group = "0")
-public class AutoBlueHuman3 extends LinearOpMode {
+@Autonomous(name = "RED Human 3 Artifacts", group = "0")
+@Disabled
+public class AutoRedHuman3Recognition extends LinearOpMode {
 
     @Override
     public void runOpMode() {
@@ -21,22 +23,19 @@ public class AutoBlueHuman3 extends LinearOpMode {
         Sorting st = new Sorting(this);
         Thread main = Thread.currentThread();
 
-
-        Pose2d startPose = new Pose2d(62, -10, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(61, 7, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
         st.wallForShooting();
 
 
         waitForStart();
         if (isStopRequested()) return;
-        sleep(10000);
         sh.continuousShooter.start();
         st.regulatorSorting.start();
-        sh.setVelocityAuto(0.9);
+        sh.setVelocityAuto(1);
 
 
         ll.getTagID();
-
         st.sortingArtefacts(st.artefact_pos(st.getColor()), st.aprilTagToScan(ll.tagId));
         try {
             main.join(1500);
@@ -46,7 +45,7 @@ public class AutoBlueHuman3 extends LinearOpMode {
 
         sleep(1000);
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(59, -10, Math.toRadians(200)))
+                .lineToLinearHeading(new Pose2d(59, 10, Math.toRadians(-180)))
                 .build());
         sleep(3000);
 
@@ -58,12 +57,12 @@ public class AutoBlueHuman3 extends LinearOpMode {
             st.exception = String.valueOf(e);
         }
 
+        st.autoTurning();
         sh.continuousShooter.interrupt();
         st.regulatorSorting.interrupt();
         st.sortShooter.interrupt();
 
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(180)))
-                .build());
     }
+
+
 }
