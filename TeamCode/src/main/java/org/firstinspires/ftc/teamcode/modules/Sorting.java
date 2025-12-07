@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Config
-public class Sorting {
+public class Sorting {  //st
     private final ElapsedTime timer = new ElapsedTime();
     private NormalizedColorSensor colorSensor1;
     private NormalizedColorSensor colorSensor2;
@@ -160,6 +160,8 @@ public class Sorting {
 
     public void sortingArtefacts(Scan inRobot, Scan needed) {
         target = 0;
+        if(needed == Scan.NONE || inRobot == Scan.NONE) return;
+
         if (needed != null) {
             if (inRobot == null) {
                 inRobot = Scan.BETWEEN;

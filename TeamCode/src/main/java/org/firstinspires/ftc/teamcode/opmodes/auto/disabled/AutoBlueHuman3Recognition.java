@@ -34,7 +34,7 @@ public class AutoBlueHuman3Recognition extends LinearOpMode {
         sleep(10000);
         sh.continuousShooter.start();
         st.regulatorSorting.start();
-        sh.setPower(0.9);
+        sh.setVelocityAuto(0.9);
 
 
         ll.getTagID();

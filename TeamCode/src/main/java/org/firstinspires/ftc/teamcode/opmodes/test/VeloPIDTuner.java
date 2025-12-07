@@ -8,13 +8,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.opmodes.test.TuningController;
 
 @Config
 @TeleOp
@@ -31,7 +29,7 @@ public class VeloPIDTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Shooter sh = new Shooter(this);
         // Change my id
-        DcMotorEx myMotor = sh.shooterUp;
+        DcMotorEx myMotor = sh.shooter;
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);

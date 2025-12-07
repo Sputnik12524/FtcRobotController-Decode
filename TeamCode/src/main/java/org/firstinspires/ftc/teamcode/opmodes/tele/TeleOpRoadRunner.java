@@ -76,17 +76,18 @@ public class TeleOpRoadRunner extends LinearOpMode {
             } else if (gamepad1.a && isRotateIn && !stateA1) {
                 in.rotateStop();
                 isRotateIn = false;
+                isRotateOut = true;
             }
 
             // SHOOTER and SORTING стрельба с дальней
             if (gamepad2.a && !isShooting && !stateA2) {
                 st.wallForShooting();
                 sh.shootByPower(-POWER_HIGHEST);
-                sh.shooterUp.setPower(POWER_HIGHEST);
+                sh.shooterTest.setPower(POWER_HIGHEST);
                 isShooting = true;
             } else if (gamepad2.a && isShooting && !stateA2) {
                 sh.shootStop();
-                sh.shooterUp.setPower(0);
+                sh.shooterTest.setPower(0);
                 isShooting = false;
             }
 
@@ -94,11 +95,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
             if (gamepad2.y && !isShooting && !stateY2) {
                 st.wallForShooting();
                 sh.shootByPower(-POWER_LOWEST);
-                sh.shooterUp.setPower(POWER_HIGHEST);
+                sh.shooterTest.setPower(POWER_HIGHEST);
                 isShooting = true;
             } else if (gamepad2.y && isShooting && !stateY2) {
                 sh.shootStop();
-                sh.shooterUp.setPower(0);
+                sh.shooterTest.setPower(0);
                 isShooting = false;
             }
 
@@ -164,6 +165,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         stateUp1 = gamepad1.dpad_up;
         stateLeft1 = gamepad1.dpad_left;
         stateLeft2 = gamepad2.dpad_left;
+
         telemetry.addData("Power shooter", sh.shooter.getPower());
         telemetry.update();
     }

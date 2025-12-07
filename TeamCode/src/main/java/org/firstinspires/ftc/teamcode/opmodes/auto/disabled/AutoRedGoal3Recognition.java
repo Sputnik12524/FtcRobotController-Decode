@@ -32,7 +32,7 @@ public class AutoRedGoal3Recognition extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
         sh.continuousShooter.start();
-        sh.setPower(0.7);
+        sh.setVelocityAuto(0.7);
 
         telemetry.addData("Power shooter", sh.shooter.getPower());
 
