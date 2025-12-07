@@ -160,6 +160,8 @@ public class Sorting {  //st
 
     public void sortingArtefacts(Scan inRobot, Scan needed) {
         target = 0;
+        if(needed == Scan.NONE || inRobot == Scan.NONE) return;
+
         if (needed != null) {
             if (inRobot == null) {
                 inRobot = Scan.BETWEEN;
