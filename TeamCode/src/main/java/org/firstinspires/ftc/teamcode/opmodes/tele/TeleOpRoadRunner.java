@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.tele;
 
 import static org.firstinspires.ftc.teamcode.opmodes.test.VeloPIDTuner.MOTOR_VELO_PID;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
@@ -75,6 +77,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         setPIDFCoefficients(sh.shooter, MOTOR_VELO_PID);
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashtele = dashboard.getTelemetry();
 
         waitForStart();
 
@@ -163,14 +167,14 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 st.drumStop();
             }
 
-
-            if (gamepad2.b && !isOpen && !stateB2) {
-                st.horizontalWallOpen();
-                isOpen = true;
-            } else if (gamepad2.b && isOpen && !stateB2) {
-                st.horizontalWallClose();
-                isOpen = false;
-            }
+//
+//            if (gamepad2.b && !isOpen && !stateB2) {
+//             //   st.horizontalWallOpen();
+//                isOpen = true;
+//            } else if (gamepad2.b && isOpen && !stateB2) {
+//               // st.horizontalWallClose();
+//                isOpen = false;
+//            }
 
         stateA1 = gamepad1.a;
         stateB1 = gamepad1.b;
@@ -190,6 +194,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
         //telemetry.addData("Power shooter", sh.shooter.getPower());
         telemetry.addData("Velocity shooter", sh.shooter.getVelocity()/28);
         telemetry.update();
+        dashtele.addData("Target highest", VELOCITY_HIGHEST);
+        dashtele.addData("target lowest", VELOCITY_LOWEST);
+        dashtele.addData(   "velocity current", sh.shooter.getVelocity()/28);
+        dashtele.update();
+
     }
 }
 

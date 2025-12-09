@@ -290,12 +290,12 @@ public class Sorting {  //st
 
     public void wallForShooting() {
         verticalWallClose();
-        horizontalWallOpen();
+        //horizontalWallOpen();
     }
 
     public void wallForIntaking() {
         verticalWallOpen();
-        horizontalWallClose();
+       // horizontalWallClose();
     }
 
     public void autoTurning() {
