@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.modules.Parking;
 
 @Disabled
 @Config
-@TeleOp(name = "ParkingTest", group = "Test")
+@TeleOp(name = "TEST Parking", group = "Test")
 public class ParkingTest extends LinearOpMode {
     Parking park;
     boolean isParking = false;

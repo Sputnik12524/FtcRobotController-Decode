@@ -16,11 +16,11 @@ import java.util.function.Function;
 @Config
 public class Sorting {  //st
     private final ElapsedTime timer = new ElapsedTime();
-    private NormalizedColorSensor colorSensor1;
-    private NormalizedColorSensor colorSensor2;
-    private NormalizedColorSensor colorSensor3;
+    private final NormalizedColorSensor colorSensor1;
+    private final NormalizedColorSensor colorSensor2;
+    private final NormalizedColorSensor colorSensor3;
     public DcMotor drumMotor;
-    public Servo horizontalWall; // верхняяя сенка
+    public Servo horizontalWall; // верхняя сенка
     public Servo verticalWall; // нижняя стенка
 
     public Limelight limelight;
@@ -104,7 +104,7 @@ public class Sorting {  //st
     public void intakingArtefacts() {
         wallForIntaking();
         do {
-            while (timer.milliseconds() < 800) ;
+            while (timer.milliseconds() < 800);
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
                 target += 120;
             }
@@ -118,7 +118,7 @@ public class Sorting {  //st
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефактa
             timer.reset();
             target += 120;
-            while (timer.milliseconds() < 2000) ;
+            while (timer.milliseconds() < 2000);
         }
         timer.reset();
     }
@@ -219,11 +219,11 @@ public class Sorting {  //st
     }
 
     public String printGetColor(ArrayList<Color> a) {
-        String res = "";
+        StringBuilder res = new StringBuilder();
         for (int i = 0; i < 3; i++) {
-            res += a.get(i) + " ";
+            res.append(a.get(i)).append(" ");
         }
-        return res;
+        return res.toString();
     }
 
     public void drumStop() {
@@ -304,7 +304,7 @@ public class Sorting {  //st
         for (int i = 0; i < 3; i++) {
             timer.reset();
             drumMotor.setPower(POWER);
-            while (drumMotor.getCurrentPosition() < 125 * DEGREES) ;
+            while (drumMotor.getCurrentPosition() < 125 * DEGREES);
             drumStop();
             while (timer.milliseconds() < 3000) ;
             drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

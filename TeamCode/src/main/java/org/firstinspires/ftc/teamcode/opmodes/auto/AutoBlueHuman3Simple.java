@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "BLUE Human 3 Artifacts", group = "0")
+@Autonomous(name = "BLUE Human 3 Artifacts", group = "1")
 public class AutoBlueHuman3Simple extends LinearOpMode {
 
     @Override

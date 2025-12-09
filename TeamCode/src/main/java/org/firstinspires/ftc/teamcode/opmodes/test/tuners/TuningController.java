@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.test;
+package org.firstinspires.ftc.teamcode.opmodes.test.tuners;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.noahbres.jotai.StateMachine;

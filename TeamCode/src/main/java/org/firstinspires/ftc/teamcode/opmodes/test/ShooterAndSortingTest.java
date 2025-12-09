@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
-import static org.firstinspires.ftc.teamcode.opmodes.test.VeloPIDTuner.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.opmodes.test.tuners.VeloPIDTuner.MOTOR_VELO_PID;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 
 @Config
-@TeleOp(name = "TEST Shooter/Sorting/Intake", group = "Test")
+@TeleOp(name = "TEST Shooter/Sorting/Intake", group = "3")
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
     Intake in;
@@ -93,31 +93,33 @@ public class ShooterAndSortingTest extends LinearOpMode {
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
 
+            /// Sorting
             if (gamepad1.right_bumper || gamepad2.right_bumper) {
                 st.drumTeleGo();
             } else {
                 st.drumStop();
             }
-
+            /// Walls
             if (gamepad2.dpad_down) {
                 st.verticalWallOpen();
             } else if (gamepad2.dpad_up) {
                 st.verticalWallClose();
             }
-
             if (gamepad2.dpad_left) {
                 st.horizontalWallOpen();
             } else if (gamepad2.dpad_right) {
                 st.horizontalWallClose();
             }
 
-            dashTele.addLine("VELOCITY:");
-            dashTele.addData("TPS:", sh.getVelocityTPS());
-            dashTele.addData("RPS:", sh.getVelocityRPS());
-            dashTele.addData("VALUE OF ENCODERS:", sh.shooterTest.getCurrentPosition());
-            dashTele.addData("POS H:", st.horizontalWall.getPosition());
-            dashTele.addData("POS V:", st.verticalWall.getPosition());
-            dashTele.addData("target", RPS);
+            dashTele.addLine("SHOOTER:");
+            dashTele.addData("target of RPS:", RPS);
+            dashTele.addData("real RPS:", sh.getVelocityRPS());
+            dashTele.addData("real TPS:", sh.getVelocityTPS());
+            dashTele.addData("Value of encoders:", sh.shooterTest.getCurrentPosition());
+            dashTele.addLine("INTAKE:");
+            dashTele.addData("real RPS:", in.getVelocityRPS());
+            dashTele.addData("real TPS:", in.getVelocityTPS());
+            dashTele.addData("Value of encoders:", in.catcher.getCurrentPosition());
             dashTele.update();
         }
     }

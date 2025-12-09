@@ -12,7 +12,7 @@ public class Shooter { //sh
 
     public final DcMotorEx shooter;
     public final DcMotorEx shooterTest;
-    public final double TPR = 28;
+    private final double TPR = 28;
 
     public static double POWER = 1;
     public static double VELOCITY = 0;

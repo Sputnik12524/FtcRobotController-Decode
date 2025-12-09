@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
-import static org.firstinspires.ftc.teamcode.opmodes.test.VeloPIDTuner.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.opmodes.test.tuners.VeloPIDTuner.MOTOR_VELO_PID;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -52,10 +52,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateDown2 = false;
     boolean stateRight2 = false;
     boolean stateUp2 = false;
-
-    public static double POWER_LOWEST = 0.1;
-
-    public static double POWER_HIGHEST = 1;
 
     public static double VELOCITY_HIGHEST = 50;
     public static double VELOCITY_LOWEST = 25;

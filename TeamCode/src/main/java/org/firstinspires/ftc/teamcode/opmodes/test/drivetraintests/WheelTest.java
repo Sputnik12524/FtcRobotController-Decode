@@ -1,16 +1,16 @@
-package org.firstinspires.ftc.teamcode.opmodes.test;
+package org.firstinspires.ftc.teamcode.opmodes.test.drivetraintests;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name="TEST Wheel TeleOp", group = "Test")
+@TeleOp(name="TEST Wheel", group = "5")
 public class WheelTest extends LinearOpMode {
     DcMotor leftFront;
     DcMotor leftBack;
     DcMotor rightFront;
     DcMotor rightBack;
-    private final double SPEED = .5;
+    double SPEED = 0.5;
     @Override
     public void runOpMode() throws InterruptedException {
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -23,20 +23,25 @@ public class WheelTest extends LinearOpMode {
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         waitForStart();
         while (opModeIsActive()) {
-            if(gamepad1.a){
+            if(gamepad1.dpad_up){
                 leftFront.setPower(SPEED);
-            } else if(gamepad1.b){
+                telemetry.addLine("LEFT FRONT");
+            } else if(gamepad1.dpad_left){
                 leftBack.setPower(SPEED);
-            }else if(gamepad1.x){
+                telemetry.addLine("LEFT BACK");
+            }else if(gamepad1.dpad_right){
                 rightFront.setPower(SPEED);
-            }else if(gamepad1.y){
+                telemetry.addLine("RIGHT FRONT");
+            }else if(gamepad1.dpad_down){
                 rightBack.setPower(SPEED);
+                telemetry.addLine("RIGHT BACK");
             } else {
                 leftBack.setPower(0);
                 leftFront.setPower(0);
                 rightBack.setPower(0);
                 rightFront.setPower(0);
             }
+            telemetry.update();
 
         }
     }

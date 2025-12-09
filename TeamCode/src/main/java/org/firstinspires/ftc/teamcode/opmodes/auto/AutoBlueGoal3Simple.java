@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "BLUE Goal 3 Artifacts", group = "0")
+@Autonomous(name = "BLUE Goal 3 Artifacts", group = "1")
 public class AutoBlueGoal3Simple extends LinearOpMode {
 
 
