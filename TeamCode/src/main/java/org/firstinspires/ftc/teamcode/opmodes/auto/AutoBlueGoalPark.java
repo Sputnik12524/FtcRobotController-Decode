@@ -18,7 +18,6 @@ public class AutoBlueGoalPark extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-        //съезд с линии синий зоны к артефактам.
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-36, -15, Math.toRadians(-120)))
                 .build());

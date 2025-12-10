@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "BLUE Human 3 Artifacts", group = "0")
-public class AutoBlueHuman3 extends LinearOpMode {
+@Autonomous(name = "BLUE Human 3 Artifacts", group = "1")
+public class AutoBlueHuman3Simple extends LinearOpMode {
 
     @Override
     public void runOpMode() {
@@ -19,30 +19,16 @@ public class AutoBlueHuman3 extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         Limelight ll = new Limelight(this);
         Sorting st = new Sorting(this);
-        Thread main = Thread.currentThread();
-
 
         Pose2d startPose = new Pose2d(62, -10, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
         st.wallForShooting();
 
-
         waitForStart();
         if (isStopRequested()) return;
         sleep(10000);
         sh.continuousShooter.start();
-        st.regulatorSorting.start();
-        sh.setPower(0.9);
-
-
-        ///st.aprilTagToScan(ll.getTagID());
-
-        st.sortingArtefacts(st.artefact_pos(st.getColor()), st.aprilTagToScan(ll.tagId));
-        try {
-            main.join(1500);
-        } catch (InterruptedException e) {
-            st.exception = String.valueOf(e);
-        }
+        sh.shootByVelocity(Shooter.VELO_HUMAN);
 
         sleep(1000);
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
@@ -50,20 +36,14 @@ public class AutoBlueHuman3 extends LinearOpMode {
                 .build());
         sleep(3000);
 
-        st.sortShooter.start();
-
-        try {
-            main.join();
-        } catch (InterruptedException e) {
-            st.exception = String.valueOf(e);
-        }
-
+        st.autoTurning();
         sh.continuousShooter.interrupt();
-        st.regulatorSorting.interrupt();
-        st.sortShooter.interrupt();
-
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(180)))
                 .build());
+
+
     }
+
+
 }

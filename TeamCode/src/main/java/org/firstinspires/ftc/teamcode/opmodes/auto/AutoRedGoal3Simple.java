@@ -10,8 +10,8 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "RED Goal 3 Artifacts", group = "0")
-public class AutoRedGoal3 extends LinearOpMode {
+@Autonomous(name = "RED Goal 3 Artifacts", group = "1")
+public class AutoRedGoal3Simple extends LinearOpMode {
 
     @Override
     public void runOpMode() {
@@ -20,18 +20,16 @@ public class AutoRedGoal3 extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         Limelight ll = new Limelight(this);
         Sorting st = new Sorting(this);
-        Thread main = Thread.currentThread();
+        VoltageSensor sensor = hardwareMap.voltageSensor.iterator().next();
 
         Pose2d startPose = new Pose2d(-48, 50, Math.toRadians(-45));
         dt.setPoseEstimate(startPose);
         st.wallForShooting();
-        st.regulatorSorting.start();
-
 
         waitForStart();
         if (isStopRequested()) return;
         sh.continuousShooter.start();
-        sh.setPower(0.7);
+        sh.setVelocityAuto(Shooter.VELO_GOAL);
 
         telemetry.addData("Power shooter", sh.shooter.getPower());
 
@@ -41,29 +39,12 @@ public class AutoRedGoal3 extends LinearOpMode {
                 .build());
 
 
-        ///st.aprilTagToScan(ll.getTagID());
-        st.sortingArtefacts(st.artefact_pos(st.getColor()), st.aprilTagToScan(ll.tagId));
-        try {
-            main.join(1500);
-        } catch (InterruptedException e) {
-            st.exception = String.valueOf(e);
-        }
-
         sleep(1000);
         dt.turn(Math.toRadians(-50));
         sleep(1000);
 
-        st.sortShooter.start();
-
-        try {
-            main.join();
-        } catch (InterruptedException e) {
-            st.exception = String.valueOf(e);
-        }
-
+        st.autoTurning();
         sh.continuousShooter.interrupt();
-        st.regulatorSorting.interrupt();
-        st.sortShooter.interrupt();
         telemetry.update();
 
     }

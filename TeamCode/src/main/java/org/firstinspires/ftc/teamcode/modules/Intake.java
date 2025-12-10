@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -10,7 +11,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Intake {
 
-    private final DcMotor catcher;
+    public final DcMotorEx catcher;
+    private final double TPR = 28;
 
     public static double POWER = 1;
 
@@ -23,8 +25,7 @@ public class Intake {
     public Intake(LinearOpMode linearOpMode) {
         artifactIntake = new ArtifactIntake();
         this.linearOpMode = linearOpMode;
-        this.catcher = linearOpMode.hardwareMap.get(DcMotor.class, "catcher");
-        catcher.setDirection(DcMotor.Direction.REVERSE);
+        this.catcher = linearOpMode.hardwareMap.get(DcMotorEx.class, "catcher");
     }
 
     public void rotateIn() {
@@ -55,14 +56,14 @@ public class Intake {
 
         public void run() {
             while (!isInterrupted()) {
-                if (isRotateIn){
+                if (isRotateIn) {
                     timer.reset();
                     rotateIn();
                     while (timer.milliseconds() < IN_OUT);
                     rotateStop();
                     isRotateIn = false;
                 }
-                if (isRotateOut){
+                if (isRotateOut) {
                     timer.reset();
                     rotateOut();
                     while (timer.milliseconds() < IN_OUT);
@@ -72,4 +73,7 @@ public class Intake {
             }
         }
     }
+    public void setVelocityRPS(double RPS) { catcher.setVelocity(RPS * TPR); }
+    public double getVelocityRPS() { return catcher.getVelocity()/TPR; }
+    public double getVelocityTPS() { return catcher.getVelocity(); }
 }

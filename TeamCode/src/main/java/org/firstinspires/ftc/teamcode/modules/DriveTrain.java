@@ -61,8 +61,7 @@ public class DriveTrain {
         rightFront.setPower(power);
         rightBack.setPower(power);
 
-        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance) {
-        }
+        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance);
         leftFront.setPower(0);
         leftBack.setPower(0);
         rightFront.setPower(0);
@@ -85,8 +84,7 @@ public class DriveTrain {
         rightFront.setPower(-power);
         rightBack.setPower(power);
 
-        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance) {
-        }
+        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance);
 
         leftFront.setPower(0);
         leftBack.setPower(0);
@@ -110,8 +108,7 @@ public class DriveTrain {
         rightFront.setPower(power);
         rightBack.setPower(power);
 
-        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance) {
-        }
+        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance);
 
         leftFront.setPower(0);
         leftBack.setPower(0);

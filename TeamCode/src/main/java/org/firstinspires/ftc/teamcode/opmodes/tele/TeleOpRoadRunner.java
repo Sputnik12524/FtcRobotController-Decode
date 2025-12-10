@@ -1,17 +1,27 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
+import static org.firstinspires.ftc.teamcode.opmodes.test.pidtuners.VeloPIDTuner.MOTOR_VELO_PID;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@TeleOp(name = "TeleOpRR", group = "0")
+@TeleOp(name = "TeleOpRR Shooter - Velocity", group = "0")
+@Config
 public class TeleOpRoadRunner extends LinearOpMode {
 
     Shooter sh;
@@ -43,9 +53,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateRight2 = false;
     boolean stateUp2 = false;
 
-    public static double POWER_LOWEST = 0.76;
-
-    public static double POWER_HIGHEST = 1;
+    public static double VELOCITY_HIGHEST = 50;
+    public static double VELOCITY_LOWEST = 25;
+    private VoltageSensor batteryVoltageSensor;
 
 
     @Override
@@ -59,6 +69,12 @@ public class TeleOpRoadRunner extends LinearOpMode {
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         PoseStorage.currentPose = dt.getPoseEstimate();
         dt.setPoseEstimate(PoseStorage.currentPose);
+
+
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+        setPIDFCoefficients(sh.shooter, MOTOR_VELO_PID);
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashtele = dashboard.getTelemetry();
 
         waitForStart();
 
@@ -76,22 +92,26 @@ public class TeleOpRoadRunner extends LinearOpMode {
             } else if (gamepad1.a && isRotateIn && !stateA1) {
                 in.rotateStop();
                 isRotateIn = false;
+                isRotateOut = true;
             }
 
             // SHOOTER and SORTING стрельба с дальней
             if (gamepad2.a && !isShooting && !stateA2) {
                 st.wallForShooting();
-                sh.shootByPower(POWER_HIGHEST);
+                //sh.shootByPower(-POWER_HIGHEST);
+                sh.shootByVelocity(VELOCITY_HIGHEST);
                 isShooting = true;
             } else if (gamepad2.a && isShooting && !stateA2) {
                 sh.shootStop();
                 isShooting = false;
             }
 
+
             //стрельба с ближней 0.76
             if (gamepad2.y && !isShooting && !stateY2) {
                 st.wallForShooting();
-                sh.shootByPower(POWER_LOWEST);
+                //sh.shootByPower(-POWER_LOWEST);
+                sh.shootByVelocity(VELOCITY_LOWEST);
                 isShooting = true;
             } else if (gamepad2.y && isShooting && !stateY2) {
                 sh.shootStop();
@@ -101,16 +121,22 @@ public class TeleOpRoadRunner extends LinearOpMode {
             // увеличение мощности при стрельбе
             if (gamepad2.dpad_up && isShooting && !stateUp2) {
                 st.wallForShooting();
-                POWER_LOWEST += 0.05;
-                sh.shootByPower(POWER_LOWEST);
+                //POWER_LOWEST += 0.05;
+                //sh.shootByPower(-POWER_LOWEST);
+
+                VELOCITY_LOWEST += 5;
+                sh.shootByVelocity(VELOCITY_LOWEST);
                 isShooting = true;
             }
 
             // уменьшение мощности при стрельбе
             if (gamepad2.dpad_down && isShooting && !stateDown2) {
                 st.wallForShooting();
-                POWER_LOWEST -= 0.05;
-                sh.shootByPower(POWER_LOWEST);
+                //POWER_LOWEST -= 0.05;
+                //sh.shootByPower(-POWER_LOWEST);
+
+                VELOCITY_LOWEST -= 5;
+                sh.shootByVelocity(VELOCITY_LOWEST);
                 isShooting = true;
             }
 
@@ -137,14 +163,14 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 st.drumStop();
             }
 
-
-            if (gamepad2.b && !isOpen && !stateB2) {
-                st.horizontalWallOpen();
-                isOpen = true;
-            } else if (gamepad2.b && isOpen && !stateB2) {
-                st.horizontalWallClose();
-                isOpen = false;
-            }
+//
+//            if (gamepad2.b && !isOpen && !stateB2) {
+//             //   st.horizontalWallOpen();
+//                isOpen = true;
+//            } else if (gamepad2.b && isOpen && !stateB2) {
+//               // st.horizontalWallClose();
+//                isOpen = false;
+//            }
 
         stateA1 = gamepad1.a;
         stateB1 = gamepad1.b;
@@ -160,8 +186,15 @@ public class TeleOpRoadRunner extends LinearOpMode {
         stateUp1 = gamepad1.dpad_up;
         stateLeft1 = gamepad1.dpad_left;
         stateLeft2 = gamepad2.dpad_left;
-        telemetry.addData("Power shooter", sh.shooter.getPower());
+
+        //telemetry.addData("Power shooter", sh.shooter.getPower());
+        telemetry.addData("Velocity shooter", sh.shooter.getVelocity()/28);
         telemetry.update();
+        dashtele.addData("Target highest", VELOCITY_HIGHEST);
+        dashtele.addData("target lowest", VELOCITY_LOWEST);
+        dashtele.addData(   "velocity current", sh.shooter.getVelocity()/28);
+        dashtele.update();
+
     }
 }
 
@@ -170,4 +203,10 @@ public static class PoseStorage {
     public static Pose2d currentPose = new Pose2d();
 }
 
+
+    private void setPIDFCoefficients(DcMotorEx motor, PIDFCoefficients coefficients) {
+        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
+                coefficients.p, coefficients.i, coefficients.d, coefficients.f * 12 / batteryVoltageSensor.getVoltage()
+        ));
+    }
 }

@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Config
-public class Sorting {
+public class Sorting {  //st
     private final ElapsedTime timer = new ElapsedTime();
-    private NormalizedColorSensor colorSensor1;
-    private NormalizedColorSensor colorSensor2;
-    private NormalizedColorSensor colorSensor3;
+    private final NormalizedColorSensor colorSensor1;
+    private final NormalizedColorSensor colorSensor2;
+    private final NormalizedColorSensor colorSensor3;
     public DcMotor drumMotor;
-    public Servo horizontalWall; // верхняяя сенка
+    public Servo horizontalWall; // верхняя сенка
     public Servo verticalWall; // нижняя стенка
 
     public Limelight limelight;
@@ -43,12 +43,15 @@ public class Sorting {
 
     public static double HOPEN_WALL = 0.65;
     public static double HCLOSE_WALL = 0;
-    public static double VOPEN_WALL = 0.25;
-    public static double VCLOSE_WALL = 0;
+    public static double VOPEN_WALL = 0.92;
+    public static double VCLOSE_WALL = 0.8;
     public static double GREEN_MAX = 175;
     public static double GREEN_MIN = 115;
     public static double PURPLE_MAX = 245;
     public static double PURPLE_MIN = 210;
+
+    public static double POWER_TELE_GO = 0.65;
+    public static double POWER_REVERSE_TELE_GO = -0.2;
     public Regulator regulatorSorting = new Regulator();
     public SortIntaker sortIntaker = new SortIntaker();
     public SortShooter sortShooter = new SortShooter();
@@ -65,6 +68,7 @@ public class Sorting {
         this.colorSensor2.setGain(GAIN);
         this.colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "color_sensor3");
         this.colorSensor3.setGain(GAIN);
+
     }
 
 
@@ -100,7 +104,7 @@ public class Sorting {
     public void intakingArtefacts() {
         wallForIntaking();
         do {
-            while (timer.milliseconds() < 800) ;
+            while (timer.milliseconds() < 800);
             if (getColor().get(0) == Color.PURPLE || getColor().get(0) == Color.GREEN) {// если 1 датчик видит артефакт
                 target += 120;
             }
@@ -114,7 +118,7 @@ public class Sorting {
         while (getColor().get(1) == Color.PURPLE || getColor().get(1) == Color.GREEN) {// если 2 датчик (у запуска) видит артефактa
             timer.reset();
             target += 120;
-            while (timer.milliseconds() < 2000) ;
+            while (timer.milliseconds() < 2000);
         }
         timer.reset();
     }
@@ -160,6 +164,8 @@ public class Sorting {
 
     public void sortingArtefacts(Scan inRobot, Scan needed) {
         target = 0;
+        if(needed == Scan.NONE || inRobot == Scan.NONE) return;
+
         if (needed != null) {
             if (inRobot == null) {
                 inRobot = Scan.BETWEEN;
@@ -213,11 +219,11 @@ public class Sorting {
     }
 
     public String printGetColor(ArrayList<Color> a) {
-        String res = "";
+        StringBuilder res = new StringBuilder();
         for (int i = 0; i < 3; i++) {
-            res += a.get(i) + " ";
+            res.append(a.get(i)).append(" ");
         }
-        return res;
+        return res.toString();
     }
 
     public void drumStop() {
@@ -269,11 +275,11 @@ public class Sorting {
     }
 
     public void drumTeleGo() {
-        drumMotor.setPower(0.2);
+        drumMotor.setPower(POWER_TELE_GO);
     }
 
     public void drumTeleGoRevers() {
-        drumMotor.setPower(-0.1);
+        drumMotor.setPower(POWER_REVERSE_TELE_GO);
     }
 
 
@@ -284,12 +290,12 @@ public class Sorting {
 
     public void wallForShooting() {
         verticalWallClose();
-        horizontalWallOpen();
+        //horizontalWallOpen();
     }
 
     public void wallForIntaking() {
         verticalWallOpen();
-        horizontalWallClose();
+       // horizontalWallClose();
     }
 
     public void autoTurning() {
@@ -298,7 +304,7 @@ public class Sorting {
         for (int i = 0; i < 3; i++) {
             timer.reset();
             drumMotor.setPower(POWER);
-            while (drumMotor.getCurrentPosition() < 125 * DEGREES) ;
+            while (drumMotor.getCurrentPosition() < 125 * DEGREES);
             drumStop();
             while (timer.milliseconds() < 3000) ;
             drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes.test;
+package org.firstinspires.ftc.teamcode.opmodes.test.drivetraintests;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 
-@TeleOp(name="Simple TeleOp", group="Tele")
+@TeleOp(name="Simple TeleOp", group="3")
 public class SimpleTeleOpTest extends LinearOpMode {
 
     @Override
