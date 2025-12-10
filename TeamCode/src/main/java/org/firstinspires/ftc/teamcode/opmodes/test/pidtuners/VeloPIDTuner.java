@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.test.tuners;
+package org.firstinspires.ftc.teamcode.opmodes.test.pidtuners;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
-import static org.firstinspires.ftc.teamcode.opmodes.test.tuners.VeloPIDTuner.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.opmodes.test.pidtuners.VeloPIDTuner.MOTOR_VELO_PID;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

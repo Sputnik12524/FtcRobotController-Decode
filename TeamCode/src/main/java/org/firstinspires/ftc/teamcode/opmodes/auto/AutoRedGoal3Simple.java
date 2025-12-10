@@ -39,14 +39,10 @@ public class AutoRedGoal3Simple extends LinearOpMode {
                 .build());
 
 
-        ///st.aprilTagToScan(ll.getTagID()); //сорян дшпш возможно бред написала
         sleep(1000);
         dt.turn(Math.toRadians(-50));
         sleep(1000);
 
-//        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-//                .lineToLinearHeading(new Pose2d(7, 27, Math.toRadians(90)))
-//                .build());
         st.autoTurning();
         sh.continuousShooter.interrupt();
         telemetry.update();

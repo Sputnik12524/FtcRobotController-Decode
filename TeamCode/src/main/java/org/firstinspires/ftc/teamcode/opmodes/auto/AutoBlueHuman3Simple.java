@@ -30,17 +30,12 @@ public class AutoBlueHuman3Simple extends LinearOpMode {
         sh.continuousShooter.start();
         sh.shootByVelocity(Shooter.VELO_HUMAN);
 
-
-        ///st.aprilTagToScan(ll.getTagID()); //сорян дшпш возможно бред написала
         sleep(1000);
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(59, -10, Math.toRadians(200)))
                 .build());
         sleep(3000);
 
-//        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-//                .lineToLinearHeading(new Pose2d(7, 27, Math.toRadians(90)))
-//                .build());
         st.autoTurning();
         sh.continuousShooter.interrupt();
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
