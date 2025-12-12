@@ -1,4 +1,4 @@
-package util;
+package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -11,7 +11,7 @@ public class Logger {
 
     public Logger(String fileName) {
         try {
-            this.writer = new FileWriter(this.directoryPath + fileName);
+            this.writer = new FileWriter(this.directoryPath + fileName + ".csv", false);
         } catch (IOException e) {
             e.printStackTrace();
         }
