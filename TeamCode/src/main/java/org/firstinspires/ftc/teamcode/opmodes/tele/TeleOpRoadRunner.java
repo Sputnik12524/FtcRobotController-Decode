@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
-import static org.firstinspires.ftc.teamcode.opmodes.test.pidtuners.VeloPIDTuner.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.opmodes.test.pidtuners.VeloPIDTuner.MOTOR_VELO_PID_SHOOTER_OLD;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -72,7 +72,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-        setPIDFCoefficients(sh.shooter, MOTOR_VELO_PID);
+        setPIDFCoefficients(sh.shooter, MOTOR_VELO_PID_SHOOTER_OLD);
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
 

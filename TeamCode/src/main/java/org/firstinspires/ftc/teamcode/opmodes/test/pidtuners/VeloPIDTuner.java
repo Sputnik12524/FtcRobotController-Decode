@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 @Config
 @TeleOp (name = "VeloPID Tuner", group = "4")
 public class VeloPIDTuner extends LinearOpMode {
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(30, 0, 30, 27);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTER_OLD = new PIDFCoefficients(30, 0, 30, 27);
     //public static PIDFCoefficients MOTOR_VELO_PID_UP = new PIDFCoefficients(80, 0, 23, 23);
    // public static PIDFCoefficients MOTOR_TEST = new PIDFCoefficients(0, 0, 0, 0);
 
@@ -40,7 +40,7 @@ public class VeloPIDTuner extends LinearOpMode {
         myMotor.setMotorType(motorConfigurationType);
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-        setPIDFCoefficients(myMotor, MOTOR_VELO_PID);
+        setPIDFCoefficients(myMotor, MOTOR_VELO_PID_SHOOTER_OLD);
 
         TuningController tuningController = new TuningController();
 
@@ -74,13 +74,13 @@ public class VeloPIDTuner extends LinearOpMode {
             telemetry.addData("upperBound", TuningController.rpmToTicksPerSecond(TuningController.TESTING_MAX_SPEED * 1.15));
             telemetry.addData("lowerBound", 0);
 
-            if (lastKp != MOTOR_VELO_PID.p || lastKi != MOTOR_VELO_PID.i || lastKd != MOTOR_VELO_PID.d || lastKf != MOTOR_VELO_PID.f) {
-                setPIDFCoefficients(myMotor, MOTOR_VELO_PID);
+            if (lastKp != MOTOR_VELO_PID_SHOOTER_OLD.p || lastKi != MOTOR_VELO_PID_SHOOTER_OLD.i || lastKd != MOTOR_VELO_PID_SHOOTER_OLD.d || lastKf != MOTOR_VELO_PID_SHOOTER_OLD.f) {
+                setPIDFCoefficients(myMotor, MOTOR_VELO_PID_SHOOTER_OLD);
 
-                lastKp = MOTOR_VELO_PID.p;
-                lastKi = MOTOR_VELO_PID.i;
-                lastKd = MOTOR_VELO_PID.d;
-                lastKf = MOTOR_VELO_PID.f;
+                lastKp = MOTOR_VELO_PID_SHOOTER_OLD.p;
+                lastKi = MOTOR_VELO_PID_SHOOTER_OLD.i;
+                lastKd = MOTOR_VELO_PID_SHOOTER_OLD.d;
+                lastKf = MOTOR_VELO_PID_SHOOTER_OLD.f;
             }
 
             tuningController.update();

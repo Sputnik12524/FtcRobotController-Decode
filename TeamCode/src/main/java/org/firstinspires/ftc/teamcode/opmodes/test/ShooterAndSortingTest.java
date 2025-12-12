@@ -1,15 +1,10 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
-import static org.firstinspires.ftc.teamcode.opmodes.test.pidtuners.VeloPIDTuner.MOTOR_VELO_PID;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -25,9 +20,8 @@ public class ShooterAndSortingTest extends LinearOpMode {
     Intake in;
     Sorting st;
     Limelight ll;
-    private VoltageSensor batteryVoltageSensor;
 
-    public static double RPS = 10; //Maximum = ~52 rps
+    public static double RPS = 10; //Maximum = ~52 rps for old shooter
 
     boolean stateA1 = false;
     boolean stateB1 = false;
@@ -45,14 +39,6 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
         st.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         st.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        sh.shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        sh.shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-
-
-        setPIDFCoefficients(sh.shooter, MOTOR_VELO_PID);
 
         FtcDashboard dash = FtcDashboard.getInstance();
         Telemetry dashTele = dash.getTelemetry();
@@ -115,18 +101,13 @@ public class ShooterAndSortingTest extends LinearOpMode {
             dashTele.addData("target of RPS:", RPS);
             dashTele.addData("real RPS:", sh.getVelocityRPS());
             dashTele.addData("real TPS:", sh.getVelocityTPS());
-            dashTele.addData("Value of encoders:", sh.shooterTest.getCurrentPosition());
+            dashTele.addData("Value of encoders:", sh.shooter.getCurrentPosition());
             dashTele.addLine("INTAKE:");
             dashTele.addData("real RPS:", in.getVelocityRPS());
             dashTele.addData("real TPS:", in.getVelocityTPS());
             dashTele.addData("Value of encoders:", in.catcher.getCurrentPosition());
             dashTele.update();
         }
-    }
-    private void setPIDFCoefficients(DcMotorEx motor, PIDFCoefficients coefficients) {
-        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                coefficients.p, coefficients.i, coefficients.d, coefficients.f * 12 / batteryVoltageSensor.getVoltage()
-        ));
     }
 }
 
