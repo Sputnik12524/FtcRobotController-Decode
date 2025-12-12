@@ -9,14 +9,21 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
-public class Shooter { //sh
-
+public class Shooter {//sh
+    private final Object monitor = new Object();
     public final DcMotorEx shooter;
     private final VoltageSensor batteryVoltageSensor;
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTER_OLD = new PIDFCoefficients(30, 0, 30, 27);
     public static PIDFCoefficients MOTOR_VELO_PID_TURRET = new PIDFCoefficients(0, 0, 0, 0);
     private final double TPR = 28;
-
+    public String error;
+    private boolean shooting = true;
+    public int artifacts = 0;
+    public static final double HUMAN_SPEED = 1000;
+    public static final double NOT_HUMAN_SPEED = 400;
+    public static final double ERROR_WHEN_SHOOT = 28.585;
+    public static final long SLEEP_AFTER_SHOOT = 500;
+    public static final double SLEEP_BEFORE_MONITOR = 1500;
     public static double POWER = 1;
     public static double VELOCITY = 0;
     public static double VELO_HUMAN = 45;
@@ -26,6 +33,7 @@ public class Shooter { //sh
     boolean isShooting = false;
 
     public ContinuousShooter continuousShooter = new ContinuousShooter();
+    public ArtefactsCalculator artefactsCalculator = new ArtefactsCalculator();
 
     public Shooter(LinearOpMode opMode) {
         shooter = opMode.hardwareMap.get(DcMotorEx.class, "shooter");
@@ -35,24 +43,26 @@ public class Shooter { //sh
 
         batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
         setPIDFCoefficients(shooter, MOTOR_VELO_PID_SHOOTER_OLD);
-
     }
 
     public void shootByVelocity(double RPS) {
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
         shooter.setVelocity(RPS * TPR);
+        while (timer.milliseconds() < SLEEP_BEFORE_MONITOR) ; //подобрать
+        synchronized (monitor) {
+            shooting = true;
+            monitor.notify();
+        }
     }
 
     public void shootByPower(double POWER) {
         shooter.setPower(POWER);
     }
 
-    public void setPower(double POWER) {
-        shooter.setPower(POWER);
-    }
-
     public void shootStop() {
-        //shooter.setVelocity(0);
-        shooter.setPower(0);
+        shooter.setVelocity(0);
+        shooting = false;
     }
 
     private void setPIDFCoefficients(DcMotorEx motor, PIDFCoefficients coefficients) {
@@ -62,7 +72,7 @@ public class Shooter { //sh
     }
 
     public void waitForShoot(double velocity) {
-        setVelocityAuto(velocity);
+        shootByVelocity(velocity);
         while (getVelocityRPS() >= VELO_GOAL + ERROR || getVelocityRPS() <= VELO_GOAL - ERROR) {}
         //тут открытие крышки
     }
@@ -75,9 +85,47 @@ public class Shooter { //sh
             if (!isInterrupted()) {
                 timer.reset();
                 shooter.setVelocity(VELOCITY);
-                while (timer.milliseconds() < 23000) ;
+                while (timer.milliseconds() < 23000);
                 shooter.setVelocity(0);
             }
+        }
+    }
+
+    public class ArtefactsCalculator extends Thread {
+        ElapsedTime timer = new ElapsedTime();
+
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+                synchronized (monitor) {
+                    while (!shooting) {
+                        try {
+                            monitor.wait();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+                monitoring();
+            }
+        }
+
+
+        public void monitoring() {
+            while (shooting) {
+                if (isShoot()) {
+                    artifacts++;
+                    try {
+                        Thread.sleep(SLEEP_AFTER_SHOOT);//подобрать
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        }
+
+        public boolean isShoot() {
+            return shooter.getVelocity() < VELOCITY - ERROR_WHEN_SHOOT;//подобрать
         }
     }
 
@@ -88,13 +136,20 @@ public class Shooter { //sh
     public double getPower() {
         return shooter.getPower();
     }
-
     public double getVelocityRPS() {
-        return shooter.getVelocity() / TPR;
+        return shooter.getVelocity()/TPR;
     }
-
     public double getVelocityTPS() {
         return shooter.getVelocity();
     }
+
+    public void setHumanSpeed() {
+        VELOCITY = HUMAN_SPEED;
+    }
+
+    public void setNotHumanSpeed() {
+        VELOCITY = NOT_HUMAN_SPEED;
+    }
+
 
 }
