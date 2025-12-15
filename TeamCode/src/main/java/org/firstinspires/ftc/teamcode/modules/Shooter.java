@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,6 +13,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Shooter {//sh
     private final Object monitor = new Object();
     public final DcMotorEx shooter;
+    private Servo angleCover;
+    private Servo shutCover;
     private final VoltageSensor batteryVoltageSensor;
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTER_OLD = new PIDFCoefficients(30, 0, 30, 27);
     public static PIDFCoefficients MOTOR_VELO_PID_TURRET = new PIDFCoefficients(0, 0, 0, 0);
@@ -29,6 +32,10 @@ public class Shooter {//sh
     public static double VELO_HUMAN = 45;
     public static double VELO_GOAL = 37;
     public static double ERROR = 3;
+    public static double COVER_GOAL;
+    public static double COVER_HUMAN;
+    public static double COVER_OPEN;
+    public static double COVER_CLOSE;
     boolean StateA = false;
     boolean isShooting = false;
 
@@ -37,6 +44,8 @@ public class Shooter {//sh
 
     public Shooter(LinearOpMode opMode) {
         shooter = opMode.hardwareMap.get(DcMotorEx.class, "shooter");
+        shutCover = opMode.hardwareMap.get(Servo.class, "shutCover");
+        angleCover = opMode.hardwareMap.get(Servo.class, "angleCover");
 
         shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -73,8 +82,29 @@ public class Shooter {//sh
 
     public void waitForShoot(double velocity) {
         shootByVelocity(velocity);
-        while (getVelocityRPS() >= VELO_GOAL + ERROR || getVelocityRPS() <= VELO_GOAL - ERROR) {}
+        while (getVelocityRPS() >= VELO_GOAL + ERROR || getVelocityRPS() <= VELO_GOAL - ERROR) {
+        }
         //тут открытие крышки
+    }
+
+    public void setAngleCoverGoal() {
+        angleCover.setPosition(COVER_GOAL);
+    }
+
+    public void setAngleCoverHuman() {
+        angleCover.setPosition(COVER_HUMAN);
+    }
+
+    public void shutCoverOpen() {
+        shutCover.setPosition(COVER_OPEN);
+    }
+
+    public void shutCoverClose() {
+        shutCover.setPosition(COVER_CLOSE);
+    }
+
+    public void setAngleCoverPos(double angle) {
+        angleCover.setPosition(angle);
     }
 
     public class ContinuousShooter extends Thread {
@@ -85,7 +115,7 @@ public class Shooter {//sh
             if (!isInterrupted()) {
                 timer.reset();
                 shooter.setVelocity(VELOCITY);
-                while (timer.milliseconds() < 23000);
+                while (timer.milliseconds() < 23000) ;
                 shooter.setVelocity(0);
             }
         }
@@ -136,9 +166,11 @@ public class Shooter {//sh
     public double getPower() {
         return shooter.getPower();
     }
+
     public double getVelocityRPS() {
-        return shooter.getVelocity()/TPR;
+        return shooter.getVelocity() / TPR;
     }
+
     public double getVelocityTPS() {
         return shooter.getVelocity();
     }
