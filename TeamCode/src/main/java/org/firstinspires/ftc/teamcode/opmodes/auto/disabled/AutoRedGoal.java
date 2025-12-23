@@ -9,10 +9,11 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
 @Autonomous(name = "RED Goal 3+3 Artifacts", group = "AutoRed")
 public class AutoRedGoal extends LinearOpMode {
-    DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
 
     @Override
     public void runOpMode() {
+        DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
+
         Pose2d startPose = new Pose2d(-49, 49, Math.toRadians(-45));
         dt.setPoseEstimate(startPose);
 

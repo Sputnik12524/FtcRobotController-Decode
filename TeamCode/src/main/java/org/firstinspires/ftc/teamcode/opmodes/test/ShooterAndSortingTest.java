@@ -111,6 +111,10 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
             logger.addLine(timer.milliseconds(), sh.getVelocityRPS());
 
+            telemetry.addData("real PRS", sh.getVelocityRPS());
+            telemetry.addData("real TPS", sh.getVelocityTPS());
+            telemetry.update();
+
             dashTele.addLine("SHOOTER:");
             dashTele.addData("target of RPS:", RPS);
             dashTele.addData("real RPS:", sh.getVelocityRPS());
