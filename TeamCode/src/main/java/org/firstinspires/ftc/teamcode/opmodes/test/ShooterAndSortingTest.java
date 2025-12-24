@@ -15,8 +15,6 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-import java.util.Timer;
-
 @Config
 @TeleOp(name = "TEST Shooter/Sorting/Intake", group = "3")
 public class ShooterAndSortingTest extends LinearOpMode {
@@ -52,9 +50,9 @@ public class ShooterAndSortingTest extends LinearOpMode {
         FtcDashboard dash = FtcDashboard.getInstance();
         Telemetry dashTele = dash.getTelemetry();
 
-        MotorConfigurationType motorConfigurationType = sh.shooter.getMotorType().clone();
+        MotorConfigurationType motorConfigurationType = sh.shooterUpper.getMotorType().clone();
         motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
-        sh.shooter.setMotorType(motorConfigurationType);
+        sh.shooterUpper.setMotorType(motorConfigurationType);
 
         timer.reset();
         logger.addHeader("Time,Velocity");
@@ -119,7 +117,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
             dashTele.addData("target of RPS:", RPS);
             dashTele.addData("real RPS:", sh.getVelocityRPS());
             dashTele.addData("real TPS:", sh.getVelocityTPS());
-            dashTele.addData("Value of encoders:", sh.shooter.getCurrentPosition());
+            dashTele.addData("Value of encoders:", sh.shooterUpper.getCurrentPosition());
 //            dashTele.addLine("INTAKE:");
 //            dashTele.addData("real RPS:", in.getVelocityRPS());
 //            dashTele.addData("real TPS:", in.getVelocityTPS());

@@ -30,7 +30,7 @@ public class AutoBlueGoal3Simple extends LinearOpMode {
         if (isStopRequested()) return;
         sh.continuousShooter.start();
 
-        sh.setVelocityAuto(Shooter.VELO_GOAL);
+        sh.setVelocityAuto(Shooter.VELOCITY_FOR_SHORT_THROW);
 
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-27, 5, Math.toRadians(140)))

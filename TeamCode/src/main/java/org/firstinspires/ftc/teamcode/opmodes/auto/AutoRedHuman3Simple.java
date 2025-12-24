@@ -27,7 +27,7 @@ public class AutoRedHuman3Simple extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
         sh.continuousShooter.start();
-        sh.shootByVelocity(Shooter.VELO_HUMAN);
+        sh.shootByVelocity(Shooter.VELOCITY_FOR_LONG_THROW);
 
 
         sleep(1000);

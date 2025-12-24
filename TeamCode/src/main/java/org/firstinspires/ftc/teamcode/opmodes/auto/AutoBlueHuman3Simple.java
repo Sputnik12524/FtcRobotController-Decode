@@ -28,7 +28,7 @@ public class AutoBlueHuman3Simple extends LinearOpMode {
         if (isStopRequested()) return;
         sleep(10000);
         sh.continuousShooter.start();
-        sh.shootByVelocity(Shooter.VELO_HUMAN);
+        sh.shootByVelocity(Shooter.VELOCITY_FOR_LONG_THROW);
 
         sleep(1000);
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)

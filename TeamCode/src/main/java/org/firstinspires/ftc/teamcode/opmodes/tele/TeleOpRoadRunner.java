@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
-import static org.firstinspires.ftc.teamcode.opmodes.test.pidtuners.VeloPIDTuner.MOTOR_VELO_PID_SHOOTER_OLD;
+import static org.firstinspires.ftc.teamcode.opmodes.test.pidtuners.VeloPIDTuner.MOTOR_VELO_PID_SHOOTERS;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -75,7 +75,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-        setPIDFCoefficients(sh.shooter, MOTOR_VELO_PID_SHOOTER_OLD);
+        setPIDFCoefficients(sh.shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
 
@@ -109,7 +109,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             if (gamepad2.a && !isShooting && !stateA2) {
                 st.wallForShooting();
                 sh.shootByVelocity(VELOCITY_HIGHEST);
-                sh.setHumanSpeed();
+               // sh.setHumanSpeed();
                 isShooting = true;
             } else if (gamepad2.a && isShooting && !stateA2) {
                 sh.shootStop();
@@ -121,7 +121,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             if (gamepad2.y && !isShooting && !stateY2) {
                 st.wallForShooting();
                 sh.shootByVelocity(VELOCITY_LOWEST);
-                sh.setNotHumanSpeed();
+                //sh.setNotHumanSpeed();
                 isShooting = true;
             } else if (gamepad2.y && isShooting && !stateY2) {
                 sh.shootStop();
@@ -174,13 +174,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateLeft2 = gamepad2.dpad_left;
 
             //telemetry.addData("Power shooter", sh.shooter.getPower());
-            telemetry.addData("Velocity shooter", sh.shooter.getVelocity() / 28);
+            telemetry.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
             telemetry.update();
             dashtele.addData("Target highest", VELOCITY_HIGHEST);
             telemetry.addData("Заброшенных артефактов", sh.artifacts);
             telemetry.addData("Shooting?", isShooting);
             dashtele.addData("target lowest", VELOCITY_LOWEST);
-            dashtele.addData("velocity current", sh.shooter.getVelocity() / 28);
+            dashtele.addData("velocity current", sh.shooterUpper.getVelocity() / 28);
             dashtele.update();
 
         }
