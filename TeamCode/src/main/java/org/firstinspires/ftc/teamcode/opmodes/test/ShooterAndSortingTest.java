@@ -27,7 +27,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
     Logger logger;
     ElapsedTime timer;
 
-    public static double RPS = 10; //Maximum = ~52 rps for old shooter
+    public static double RPS = 25; //Maximum = ~52 rps for old shooter
 
     boolean stateA1 = false;
     boolean stateB1 = false;
@@ -120,10 +120,10 @@ public class ShooterAndSortingTest extends LinearOpMode {
             dashTele.addData("real RPS:", sh.getVelocityRPS());
             dashTele.addData("real TPS:", sh.getVelocityTPS());
             dashTele.addData("Value of encoders:", sh.shooter.getCurrentPosition());
-            dashTele.addLine("INTAKE:");
-            dashTele.addData("real RPS:", in.getVelocityRPS());
-            dashTele.addData("real TPS:", in.getVelocityTPS());
-            dashTele.addData("Value of encoders:", in.catcher.getCurrentPosition());
+//            dashTele.addLine("INTAKE:");
+//            dashTele.addData("real RPS:", in.getVelocityRPS());
+//            dashTele.addData("real TPS:", in.getVelocityTPS());
+//            dashTele.addData("Value of encoders:", in.catcher.getCurrentPosition());
             dashTele.update();
         }
         logger.fileClose();
