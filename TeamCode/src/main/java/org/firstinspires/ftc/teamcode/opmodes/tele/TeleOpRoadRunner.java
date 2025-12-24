@@ -31,12 +31,12 @@ public class TeleOpRoadRunner extends LinearOpMode {
     ElapsedTime timer;
     /// Intake
     boolean isRotateIn = false;
+    boolean isShooting = false;
     boolean isRotateOut = false;
     boolean stateA1 = false;
     boolean stateB1 = false;
 
     /// Shooter
-    boolean isShooting = false;
     boolean stateA2 = false;
 
     /// Sorting
@@ -53,9 +53,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateRight2 = false;
     boolean stateUp2 = false;
 
-    public static double VELOCITY_HIGHEST = 50;
-    public static double VELOCITY_LOWEST = 25;
+
+    public double VELOCITY_HIGHEST = 50;
+    public double VELOCITY_LOWEST = 25;
     private VoltageSensor batteryVoltageSensor;
+    private double delay = 1000;
 
 
     @Override
@@ -66,6 +68,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         st = new Sorting(this);
         sh = new Shooter(this);
         in = new Intake(this);
+        isShooting = false;
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         PoseStorage.currentPose = dt.getPoseEstimate();
         dt.setPoseEstimate(PoseStorage.currentPose);
@@ -76,11 +79,18 @@ public class TeleOpRoadRunner extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
 
+
         waitForStart();
+        ElapsedTime timer = new ElapsedTime();
 
         while (opModeIsActive()) {
             // DRIVETRAIN
             dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
+
+            if (isShooting && timer.milliseconds() > sh.timers) {
+                sh.updateCalculator();
+                timer.reset();
+            }
 
 
             // INTAKE and SORTING
@@ -95,11 +105,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 isRotateOut = true;
             }
 
-            // SHOOTER and SORTING стрельба с дальней
+            // стрельба с дальней
             if (gamepad2.a && !isShooting && !stateA2) {
                 st.wallForShooting();
-                //sh.shootByPower(-POWER_HIGHEST);
                 sh.shootByVelocity(VELOCITY_HIGHEST);
+                sh.setHumanSpeed();
                 isShooting = true;
             } else if (gamepad2.a && isShooting && !stateA2) {
                 sh.shootStop();
@@ -110,8 +120,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
             //стрельба с ближней 0.76
             if (gamepad2.y && !isShooting && !stateY2) {
                 st.wallForShooting();
-                //sh.shootByPower(-POWER_LOWEST);
                 sh.shootByVelocity(VELOCITY_LOWEST);
+                sh.setNotHumanSpeed();
                 isShooting = true;
             } else if (gamepad2.y && isShooting && !stateY2) {
                 sh.shootStop();
@@ -121,13 +131,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
             // увеличение мощности при стрельбе
             if (gamepad2.dpad_up && isShooting && !stateUp2) {
                 st.wallForShooting();
-                //POWER_LOWEST += 0.05;
-                //sh.shootByPower(-POWER_LOWEST);
-
                 VELOCITY_LOWEST += 5;
                 sh.shootByVelocity(VELOCITY_LOWEST);
                 isShooting = true;
             }
+
 
             // уменьшение мощности при стрельбе
             if (gamepad2.dpad_down && isShooting && !stateDown2) {
@@ -150,58 +158,38 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 isRotateOut = false;
             }
 
+            stateA1 = gamepad1.a;
+            stateB1 = gamepad1.b;
+            stateA2 = gamepad2.a;
+            stateB2 = gamepad2.b;
+            stateY2 = gamepad2.y;
+            stateY1 = gamepad1.y;
+            stateDown2 = gamepad2.dpad_down;
+            stateRight2 = gamepad2.dpad_right;
+            stateUp2 = gamepad2.dpad_up;
+            stateDown1 = gamepad1.dpad_down;
+            stateRight1 = gamepad1.dpad_right;
+            stateUp1 = gamepad1.dpad_up;
+            stateLeft1 = gamepad1.dpad_left;
+            stateLeft2 = gamepad2.dpad_left;
 
-            if (gamepad2.x) {
-                st.drumTeleGo();
-            } else {
-                st.drumTeleStop();
-            }
+            //telemetry.addData("Power shooter", sh.shooter.getPower());
+            telemetry.addData("Velocity shooter", sh.shooter.getVelocity() / 28);
+            telemetry.update();
+            dashtele.addData("Target highest", VELOCITY_HIGHEST);
+            telemetry.addData("Заброшенных артефактов", sh.artifacts);
+            telemetry.addData("Shooting?", isShooting);
+            dashtele.addData("target lowest", VELOCITY_LOWEST);
+            dashtele.addData("velocity current", sh.shooter.getVelocity() / 28);
+            dashtele.update();
 
-            if (gamepad2.dpad_left) {
-                st.drumTeleGoRevers();
-            } else {
-                st.drumStop();
-            }
-
-//
-//            if (gamepad2.b && !isOpen && !stateB2) {
-//             //   st.horizontalWallOpen();
-//                isOpen = true;
-//            } else if (gamepad2.b && isOpen && !stateB2) {
-//               // st.horizontalWallClose();
-//                isOpen = false;
-//            }
-
-        stateA1 = gamepad1.a;
-        stateB1 = gamepad1.b;
-        stateA2 = gamepad2.a;
-        stateB2 = gamepad2.b;
-        stateY2 = gamepad2.y;
-        stateY1 = gamepad1.y;
-        stateDown2 = gamepad2.dpad_down;
-        stateRight2 = gamepad2.dpad_right;
-        stateUp2 = gamepad2.dpad_up;
-        stateDown1 = gamepad1.dpad_down;
-        stateRight1 = gamepad1.dpad_right;
-        stateUp1 = gamepad1.dpad_up;
-        stateLeft1 = gamepad1.dpad_left;
-        stateLeft2 = gamepad2.dpad_left;
-
-        //telemetry.addData("Power shooter", sh.shooter.getPower());
-        telemetry.addData("Velocity shooter", sh.shooter.getVelocity()/28);
-        telemetry.update();
-        dashtele.addData("Target highest", VELOCITY_HIGHEST);
-        dashtele.addData("target lowest", VELOCITY_LOWEST);
-        dashtele.addData(   "velocity current", sh.shooter.getVelocity()/28);
-        dashtele.update();
-
+        }
     }
-}
 
 
-public static class PoseStorage {
-    public static Pose2d currentPose = new Pose2d();
-}
+    public static class PoseStorage {
+        public static Pose2d currentPose = new Pose2d();
+    }
 
 
     private void setPIDFCoefficients(DcMotorEx motor, PIDFCoefficients coefficients) {
