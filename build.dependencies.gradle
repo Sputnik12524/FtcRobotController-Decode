@@ -1,9 +1,13 @@
 repositories {
-    maven { url = 'https://maven.brott.dev/' }
+    maven { url = 'https://maven.brott.dev/'
+    }
     mavenCentral()
     google() // Needed for androidx
     maven {
         url = 'https://jitpack.io'
+    }
+    maven {
+        url = "https://mymaven.bylazar.com/releases"
     }
 }
 dependencies {
@@ -18,5 +22,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.acmerobotics.dashboard:dashboard:0.5.0'
     implementation 'com.github.NoahBres:jotai:1.0.3'
+    implementation 'com.pedropathing:ftc:2.0.4'
+    implementation 'com.pedropathing:telemetry:1.0.0'
+    implementation 'com.bylazar:fullpanels:1.0'
+
 }
 
