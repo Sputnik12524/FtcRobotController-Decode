@@ -14,25 +14,32 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Shooter {//sh
     public final DcMotorEx shooterUpper;
     public final DcMotorEx shooterLower;
-    private final Servo angleAdjuster;
-    private final Servo cover;
+    public final Servo angleAdjuster;
+    public final Servo cover;
     private final VoltageSensor batteryVoltageSensor;
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(30, 0, 30, 27);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(20, 0, 30, 14.7);
     private final double TPR = 28;
     public volatile int artifacts = 0;
     public int timers;
     public static double POWER = 1;
-    public static double VELOCITY = 0;
-    public static double VELOCITY_FOR_LONG_THROW = 45;
-    public static double VELOCITY_FOR_SHORT_THROW = 37;
+    public double velocityTarget = 0;
+    public static double VELOCITY_FOR_LONG_THROW = 50;
+    public static double VELOCITY_FOR_SHORT_THROW = 43;
+    public static double VELOCITY_ZERO = 0;
     public static double ERROR = 3;
-    public static double POS_COVER_OPEN = 0;
+    public static double POS_COVER_OPEN = 0.72;
     public static double POS_COVER_CLOSE = 1;
-    public static double POS_SHORT_THROW = 0;
+    public static double POS_SHORT_THROW = 0.75;
     public static double POS_LONG_THROW = 1;
     boolean isShooting = false;
+    boolean needShootPortion = false;
+
+    public static double TIME_GATES_BETWEEN_SHOOT = 1000;
+    public static double TIME_FOR_SET_VELOCITY = 2500;
+
 
     public ContinuousShooter continuousShooter = new ContinuousShooter();
+    public ShooterPortion portion = new ShooterPortion();
 
     public Shooter(LinearOpMode opMode) {
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
@@ -52,9 +59,12 @@ public class Shooter {//sh
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
 
-    public void shootByVelocity(double RPS) {
-        shooterUpper.setVelocity(RPS * TPR);
-        shooterLower.setVelocity(RPS * TPR);
+    public void shootByVelocity() {
+        shooterUpper.setVelocity(velocityTarget);
+        shooterLower.setVelocity(velocityTarget);
+    }
+    public void setVelocityTarget(double targetInRPS){
+        velocityTarget = targetInRPS * TPR;
     }
 
     public void shootByPower(double POWER) {
@@ -73,10 +83,10 @@ public class Shooter {//sh
         ));
     }
 
-    public void waitForShoot(double velocity) {
-        shootByVelocity(velocity);
-        while (getVelocityRPS() >= VELOCITY_FOR_SHORT_THROW + ERROR || getVelocityRPS() <= VELOCITY_FOR_SHORT_THROW - ERROR);
-        //тут открытие крышки
+    public void waitForShoot(double velocity) { // no test
+        //shootByVelocity(velocity);
+        while (getVelocityRPS() >= velocityTarget + ERROR || getVelocityRPS() <= velocityTarget - ERROR);
+        openCover();
     }
 
     public void setShortThrowMode() {
@@ -91,6 +101,9 @@ public class Shooter {//sh
     public void closeCover() {
         cover.setPosition(POS_COVER_CLOSE);
     }
+    public double getAngleAdjusterPos(){
+        return angleAdjuster.getPosition();
+    }
 
     public class ContinuousShooter extends Thread {
         private final ElapsedTime timer = new ElapsedTime();
@@ -99,19 +112,50 @@ public class Shooter {//sh
         public void run() {
             if (!isInterrupted()) {
                 timer.reset();
-                shooterUpper.setVelocity(VELOCITY);
+                setShortThrowMode();
+                setVelocityTarget(VELOCITY_FOR_SHORT_THROW);
+                shootByVelocity();
                 while (timer.milliseconds() < 23000);
                 shooterUpper.setVelocity(0);
             }
         }
     }
 
+    public class ShooterPortion extends Thread {
+        private final ElapsedTime timer = new ElapsedTime();
+
+        @Override
+        public void run() {
+            if (!isInterrupted()) {
+                if (needShootPortion) {
+                    timer.reset();
+                    closeCover();
+                    setLongThrowMode();
+                    setVelocityTarget(VELOCITY_FOR_LONG_THROW);
+                    shootByVelocity();
+                    while (timer.milliseconds() <= TIME_FOR_SET_VELOCITY);
+                    timer.reset();
+                    for (int i = 0; i < 3; i+=1){
+                        openCover();
+                        while (timer.milliseconds() <= TIME_GATES_BETWEEN_SHOOT);
+                        closeCover();
+                        while (timer.milliseconds() <= TIME_GATES_BETWEEN_SHOOT);
+                    }
+                    needShootPortion = false;
+                }
+            }
+        }
+    }
+    public void needShootPortion() {
+        this.needShootPortion = true;
+    }
+
     public void setVelocityAuto(double RPS) { //For ContinuousShooter
-        VELOCITY = RPS * TPR;
+        velocityTarget = RPS * TPR;
     }
 
     public void updateCalculator() {
-        if (shooterUpper.getVelocity() < VELOCITY) {
+        if (shooterUpper.getVelocity() < velocityTarget) {
             artifacts++;
             timers = 1000;
         }
