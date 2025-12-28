@@ -33,7 +33,6 @@ public class AutoBlueGoal3Recognition extends LinearOpMode {
         if (isStopRequested()) return;
         sh.continuousShooter.start();
 
-        sh.setVelocityAuto(0.6);
 
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-27, 5, Math.toRadians(140)))

@@ -56,12 +56,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
         PoseStorage.currentPose = dt.getPoseEstimate();
         dt.setPoseEstimate(PoseStorage.currentPose);
 
-        sh.portion.start();
-
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dashtele);
+        sh.closeCover();
 
 
         waitForStart();
@@ -70,7 +69,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
         while (opModeIsActive()) {
             // DRIVETRAIN
             dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
-
+            dt.update();
+            Pose2d current = dt.getPoseEstimate();
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {
                 in.rotateIn();
@@ -117,18 +117,30 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
 
-            if (gamepad1.dpad_up) {
+            /*if (current.getX() <= -23 && current.getY() >= 0) {
+                sh.setShortThrowMode();
+            } else {
+                sh.setLongThrowMode();
+            }
+            if (current.getX() >= 23) {
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+            }*/
+
+            if (gamepad1.dpad_up || gamepad2.b) {
                 sh.closeCover();
-            } else if (gamepad1.dpad_down) {
+            } else if (gamepad1.dpad_down || gamepad2.a) {
                 sh.openCover();
             }
 
             t.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
             t.addData("Заброшенных артефактов", sh.artifacts);
             t.addData("Is shooting?", isShooting);
+            t.addData("Pose X", current.getX());
+            t.addData("Pose Y", current.getY());
+            t.addData("Heading", current.getHeading());
             t.update();
         }
-        sh.portion.interrupt();
     }
 
     public static class PoseStorage {

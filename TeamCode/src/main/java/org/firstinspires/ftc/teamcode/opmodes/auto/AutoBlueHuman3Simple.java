@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
@@ -14,37 +15,40 @@ public class AutoBlueHuman3Simple extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+        Intake in = new Intake(this);
         Shooter sh = new Shooter(this);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
-        Limelight ll = new Limelight(this);
-        Sorting st = new Sorting(this);
 
-        Pose2d startPose = new Pose2d(62, -10, Math.toRadians(180));
+
+        Pose2d startPose = new Pose2d(61, 7, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
-        st.wallForShooting();
+
+        sh.closeCover();
 
         waitForStart();
         if (isStopRequested()) return;
-        sleep(10000);
-        sh.continuousShooter.start();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
-        sh.shootByVelocity();
 
+        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
+                .back(14)
+                // .lineToLinearHeading(new Pose2d(59, 10, Math.toRadians(-180)))
+                .build());
         sleep(1000);
+        sh.setLongThrowMode();
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        sh.continuousShooter.start();
+        sleep(2000);
+        sh.openCover();
+        in.artifactIntake.start();
+        sleep(10000);
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(59, -10, Math.toRadians(200)))
+                .back(15)
                 .build());
-        sleep(3000);
-
-        st.autoTurning();
+        in.artifactIntake.interrupt();
         sh.continuousShooter.interrupt();
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(35, -30, Math.toRadians(180)))
-                .build());
-
 
     }
 
 
 }
+
+

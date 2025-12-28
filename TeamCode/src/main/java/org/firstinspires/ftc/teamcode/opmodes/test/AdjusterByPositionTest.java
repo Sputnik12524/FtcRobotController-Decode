@@ -33,16 +33,14 @@ public class AdjusterByPositionTest extends LinearOpMode {
 
             dt.update();
             Pose2d current = dt.getPoseEstimate();
-            if (current.getX() <= -23 && current.getY() >= 0) {
+            if (current.getX() <= 23) {
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
                 sh.setShortThrowMode();
             } else {
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
                 sh.setLongThrowMode();
             }
-            if (current.getX() >= 23) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-            } else {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
-            }
+
 
             if (gamepad1.y && !stateY1 && !isShooting) {
                 sh.shootByVelocity();

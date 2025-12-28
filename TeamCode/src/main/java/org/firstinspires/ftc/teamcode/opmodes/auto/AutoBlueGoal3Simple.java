@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
@@ -18,29 +19,26 @@ public class AutoBlueGoal3Simple extends LinearOpMode {
     public void runOpMode() {
         Shooter sh = new Shooter(this);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
-        Limelight ll = new Limelight(this);
-        Sorting st = new Sorting(this);
-        VoltageSensor sensor = hardwareMap.voltageSensor.iterator().next();
+        Intake in = new Intake(this);
 
         Pose2d startPose = new Pose2d(-48, -50, Math.toRadians(45));
         dt.setPoseEstimate(startPose);
-        st.wallForShooting();
 
         waitForStart();
         if (isStopRequested()) return;
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
         sh.continuousShooter.start();
 
-        sh.setVelocityAuto(Shooter.VELOCITY_FOR_SHORT_THROW);
-
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-27, 5, Math.toRadians(140)))
+                .forward(18)
+                //.lineToLinearHeading(new Pose2d(-27, 5, Math.toRadians(140)))
                 .build());
-
         sleep(1000);
-        dt.turn(Math.toRadians(53));
-        sleep(1000);
+        sh.openCover();
+        in.artifactIntake.start();
+        sleep(10000);
 
-        st.autoTurning();
+        in.artifactIntake.interrupt();
         sh.continuousShooter.interrupt();
 
     }

@@ -32,7 +32,7 @@ public class AutoRedHuman3Recognition extends LinearOpMode {
         if (isStopRequested()) return;
         sh.continuousShooter.start();
         st.regulatorSorting.start();
-        sh.setVelocityAuto(1);
+        sh.setVelocityTarget(1);
 
 
         ll.getTagID();

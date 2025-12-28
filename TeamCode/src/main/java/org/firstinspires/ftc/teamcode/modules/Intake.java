@@ -16,10 +16,10 @@ public class Intake {
 
     public static double POWER = 1;
 
-    public static double IN_OUT = 2000;
+    public static double IN_OUT = 200;
 
 
-    ArtifactIntake artifactIntake;
+    public ArtifactIntake artifactIntake;
     LinearOpMode linearOpMode;
 
     public Intake(LinearOpMode linearOpMode) {
@@ -51,25 +51,20 @@ public class Intake {
 
     public class ArtifactIntake extends Thread {
         private final ElapsedTime timer = new ElapsedTime();
-        boolean isRotateIn = false;
+        boolean isRotateIn = true;
         boolean isRotateOut = false;
 
         public void run() {
             while (!isInterrupted()) {
-                if (isRotateIn) {
-                    timer.reset();
-                    rotateIn();
-                    while (timer.milliseconds() < IN_OUT);
-                    rotateStop();
-                    isRotateIn = false;
-                }
-                if (isRotateOut) {
-                    timer.reset();
-                    rotateOut();
-                    while (timer.milliseconds() < IN_OUT);
-                    rotateStop();
-                    isRotateOut = false;
-                }
+                   for (int i = 0; i < 4; i++) {
+                       timer.reset();
+                       rotateIn();
+                       while (timer.milliseconds() < IN_OUT);
+                       rotateStop();
+                       timer.reset();
+                       while (timer.milliseconds() < 1500);
+                   }
+                   rotateIn();
             }
         }
     }
