@@ -34,13 +34,15 @@ public class AutoRedHuman3Simple extends LinearOpMode {
         // sh.shootByVelocity();
 
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .back(14)
+                .back(10)
                 // .lineToLinearHeading(new Pose2d(59, 10, Math.toRadians(-180)))
                 .build());
         sleep(1000);
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
         sh.continuousShooter.start();
         in.artifactIntake.start();
+        sleep(2000);
+        sh.openCover();
         sleep(15000);
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .back(15)

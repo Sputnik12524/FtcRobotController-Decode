@@ -1,29 +1,24 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
-import static org.firstinspires.ftc.teamcode.opmodes.test.pidtuners.VeloPIDTuner.MOTOR_VELO_PID_SHOOTERS;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@TeleOp(name = "TeleOpRR Shooter - Velocity", group = "0")
+@TeleOp(name = "TeleOpRR V2", group = "0")
 @Config
-public class TeleOpRoadRunner extends LinearOpMode {
+@Disabled
+public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
     Shooter sh;
     Intake in;
@@ -68,8 +63,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
         while (opModeIsActive()) {
             // DRIVETRAIN
-
-            dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
+            dt.setMotorsPower(-gamepad2.left_stick_y, gamepad2.left_stick_x, gamepad2.right_trigger - gamepad2.left_trigger);
+            dt.update();
+            Pose2d current = dt.getPoseEstimate();
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {
                 in.rotateIn();
@@ -135,6 +131,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
             t.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
             t.addData("Заброшенных артефактов", sh.artifacts);
             t.addData("Is shooting?", isShooting);
+            t.addData("Pose X", current.getX());
+            t.addData("Pose Y", current.getY());
+            t.addData("Heading", current.getHeading());
             t.update();
         }
     }

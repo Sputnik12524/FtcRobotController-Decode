@@ -16,7 +16,7 @@ public class Intake {
 
     public static double POWER = 1;
 
-    public static double IN_OUT = 200;
+    public static double IN_OUT = 300;
 
 
     public ArtifactIntake artifactIntake;

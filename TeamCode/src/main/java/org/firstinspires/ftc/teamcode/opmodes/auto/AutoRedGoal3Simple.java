@@ -23,25 +23,24 @@ public class AutoRedGoal3Simple extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(-48, 50, Math.toRadians(-45));
         dt.setPoseEstimate(startPose);
+        sh.closeCover();
+        sh.setLongThrowMode();
 
         waitForStart();
         if (isStopRequested()) return;
-        sh.setLongThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-        sh.continuousShooter.start();
-
-
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .forward(25)
+                .back(25)
                 .build());
         sleep(1000);
-        sh.openCover();
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        sh.continuousShooter.start();
         in.artifactIntake.start();
-        sleep(10000);
-
+        sleep(2000);
+        sh.openCover();
+        sleep(15000);
         in.artifactIntake.interrupt();
         sh.continuousShooter.interrupt();
-        telemetry.update();
+
 
     }
 
