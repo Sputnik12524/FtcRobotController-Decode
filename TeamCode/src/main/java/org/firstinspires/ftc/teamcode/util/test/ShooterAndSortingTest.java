@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Sorting;
-import org.firstinspires.ftc.teamcode.util.Logger;
+
 
 @Config
 @TeleOp(name = "TEST Shooter/Sorting/Intake", group = "3")
@@ -22,7 +22,6 @@ public class ShooterAndSortingTest extends LinearOpMode {
     Intake in;
     Sorting st;
     Limelight ll;
-    Logger logger;
     ElapsedTime timer;
 
     public static double RPS = 25; //Maximum = ~52 rps for old shooter
@@ -37,7 +36,6 @@ public class ShooterAndSortingTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         timer = new ElapsedTime();
-        logger = new Logger("ShVelocityTime");
         sh = new Shooter(this);
         ll = new Limelight(this);
         in = new Intake(this);
@@ -55,7 +53,6 @@ public class ShooterAndSortingTest extends LinearOpMode {
         sh.shooter.setMotorType(motorConfigurationType);
 
         timer.reset();
-        logger.addHeader("Time,Velocity");
 
         waitForStart();
         while (opModeIsActive()) {
@@ -107,8 +104,6 @@ public class ShooterAndSortingTest extends LinearOpMode {
                 st.horizontalWallClose();
             }
 
-            logger.addLine(timer.milliseconds(), sh.getVelocityRPS());
-
             telemetry.addData("real PRS", sh.getVelocityRPS());
             telemetry.addData("real TPS", sh.getVelocityTPS());
             telemetry.update();
@@ -124,7 +119,6 @@ public class ShooterAndSortingTest extends LinearOpMode {
 //            dashTele.addData("Value of encoders:", in.catcher.getCurrentPosition());
             dashTele.update();
         }
-        logger.fileClose();
     }
 }
 

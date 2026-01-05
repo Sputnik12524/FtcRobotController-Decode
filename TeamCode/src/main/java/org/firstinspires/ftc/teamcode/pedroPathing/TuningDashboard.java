@@ -1,27 +1,23 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.changes;
-import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawOnlyCurrent;
-import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.draw;
-import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
-import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.stopRobot;
-import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.telemetryM;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TuningDashboard.changes;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TuningDashboard.drawOnlyCurrent;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TuningDashboard.draw;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TuningDashboard.follower;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TuningDashboard.stopRobot;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TuningDashboard.telemetryM;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-
-import com.acmerobotics.dashboard.config.Config;
-
-import com.pedropathing.ErrorCalculator;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.*;
 import com.pedropathing.math.*;
 import com.pedropathing.paths.*;
 import com.pedropathing.telemetry.SelectableOpMode;
 import com.pedropathing.util.*;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -37,8 +33,9 @@ import java.util.List;
  * @version 1.0, 6/26/2025
  */
 @Config
-@TeleOp(name = "Tuning", group = "Pedro Pathing")
-public class Tuning extends SelectableOpMode {
+@Disabled
+@TeleOp(name = "Tuning Dash", group = "Pedro Pathing")
+public class TuningDashboard extends SelectableOpMode {
     public static Follower follower;
 
 
@@ -48,9 +45,11 @@ public class Tuning extends SelectableOpMode {
     static Telemetry telemetryM;
 
 
+
+
     static ArrayList<String> changes = new ArrayList<>();
 
-    public Tuning() {
+    public TuningDashboard() {
         super("Select a Tuning OpMode", s -> {
             s.folder("Localization", l -> {
                 l.add("Localization Test", LocalizationTest::new);
