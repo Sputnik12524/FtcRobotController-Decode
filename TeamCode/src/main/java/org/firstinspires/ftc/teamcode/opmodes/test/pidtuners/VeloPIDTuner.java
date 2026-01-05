@@ -18,8 +18,6 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 @TeleOp (name = "VeloPID Tuner", group = "4")
 public class VeloPIDTuner extends LinearOpMode {
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(20, 0, 30, 14.7);
-    //public static PIDFCoefficients MOTOR_VELO_PID_UP = new PIDFCoefficients(80, 0, 23, 23);
-    //public static PIDFCoefficients MOTOR_TEST = new PIDFCoefficients(0, 0, 0, 0);
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 

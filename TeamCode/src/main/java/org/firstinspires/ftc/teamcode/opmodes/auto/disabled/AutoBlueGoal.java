@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
+@Disabled
 @Autonomous(name = "BLUE Goal 3+3 Artifact", group = "AutoBlue")
-
 public class AutoBlueGoal extends LinearOpMode {
 
     @Override

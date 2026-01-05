@@ -23,7 +23,7 @@ public class ParkingTest extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.a && !isParking && !stateA) {
-                park.parkingPower(POWER);
+                park.setParkingPowerUp();
                 isParking = true;
             } else if (gamepad1.a && isParking && !stateA) {
                 park.parkingStop();
@@ -31,7 +31,7 @@ public class ParkingTest extends LinearOpMode {
             }
 
             if (gamepad1.b && !isParking && !stateB) {
-                park.parkingPower(-POWER);
+                park.setParkingPowerDown();
                 isParking = true;
             } else if (gamepad1.b && isParking && !stateB) {
                 park.parkingStop();

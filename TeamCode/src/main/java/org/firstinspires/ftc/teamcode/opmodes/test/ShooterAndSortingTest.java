@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,20 +11,18 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Config
-@TeleOp(name = "TEST Shooter/Sorting/Intake/Adjuster/Cover", group = "3")
+@TeleOp(name = "TEST Shooter/Intake/Adjuster/Cover", group = "1")
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
     Intake in;
-    Sorting st;
     Limelight ll;
     Logger logger;
     ElapsedTime timer;
 
-    public static double RPS = 25; //Maximum = ~52 rps for old shooter
+    public static double RPS = 25;
 
     public double POS_ADJUSTER = 0.5;
 
@@ -43,11 +40,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
         sh = new Shooter(this);
         ll = new Limelight(this);
         in = new Intake(this);
-        st = new Sorting(this);
 
-
-        st.drumMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        st.drumMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         FtcDashboard dash = FtcDashboard.getInstance();
         Telemetry dashTele = dash.getTelemetry();
@@ -62,7 +55,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
 
-            /// Shooter
+            // SHOOTER
             if (gamepad1.y && !stateY1 && !isShooting) {
                 sh.setVelocityTarget(RPS);
                 sh.shootByVelocity();
@@ -73,7 +66,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
             }
             stateY1 = gamepad1.y;
 
-            /// Intake
+            // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {
                 in.rotateIn();
                 isRotateIn = true;
@@ -93,9 +86,8 @@ public class ShooterAndSortingTest extends LinearOpMode {
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
 
-            /// Sorting не существует
 
-            /// Adjuster
+            // ADJUSTER
             if (gamepad1.dpad_up && POS_ADJUSTER <= 1) {
                 POS_ADJUSTER += 0.005;
                 sh.angleAdjuster.setPosition(POS_ADJUSTER);
@@ -109,6 +101,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
                 sh.closeCover();
             }
 
+            // LOGGER
             logger.addLine(timer.milliseconds(), sh.getVelocityRPS());
 
             telemetry.addData("real PRS", sh.getVelocityRPS());
@@ -120,11 +113,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
             dashTele.addData("target of RPS:", RPS);
             dashTele.addData("real RPS:", sh.getVelocityRPS());
             dashTele.addData("real TPS:", sh.getVelocityTPS());
-//            dashTele.addData("Value of encoders:", sh.shooterUpper.getCurrentPosition());
-//            dashTele.addLine("INTAKE:");
-//            dashTele.addData("real RPS:", in.getVelocityRPS());
-//            dashTele.addData("real TPS:", in.getVelocityTPS());
-//            dashTele.addData("Value of encoders:", in.catcher.getCurrentPosition());
+            dashTele.addData("Value of encoders:", sh.shooterUpper.getCurrentPosition());
             dashTele.addData("ADJUSTER POS", POS_ADJUSTER);
             dashTele.update();
         }

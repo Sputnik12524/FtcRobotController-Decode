@@ -3,12 +3,9 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
-import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
 @Autonomous(name = "BLUE Goal 3 Artifacts", group = "1")
@@ -31,7 +28,6 @@ public class AutoBlueGoal3Simple extends LinearOpMode {
 
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .forward(18)
-                //.lineToLinearHeading(new Pose2d(-27, 5, Math.toRadians(140)))
                 .build());
         sleep(1000);
         sh.openCover();

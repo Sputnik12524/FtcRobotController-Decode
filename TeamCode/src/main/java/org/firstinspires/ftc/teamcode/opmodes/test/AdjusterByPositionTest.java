@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
-import org.firstinspires.ftc.teamcode.opmodes.tele.TeleOpRoadRunner;
 
 @TeleOp(name = "TEST Adjuster by Botpose", group = "test")
 

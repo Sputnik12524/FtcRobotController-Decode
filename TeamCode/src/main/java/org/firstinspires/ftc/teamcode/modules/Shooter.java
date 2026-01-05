@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
-public class Shooter {//sh
+public class Shooter {
     public final DcMotorEx shooterUpper;
     LinearOpMode opMode;
     public final DcMotorEx shooterLower;
@@ -26,13 +26,11 @@ public class Shooter {//sh
     public double velocityTarget = 0;
     public static double VELOCITY_FOR_LONG_THROW = 51;
     public static double VELOCITY_FOR_SHORT_THROW = 43;
-    public static double VELOCITY_ZERO = 0;
     public static double ERROR = 3;
     public static double POS_COVER_OPEN = 0.72;
     public static double POS_COVER_CLOSE = 1;
     public static double POS_SHORT_THROW = 0.75;
     public static double POS_LONG_THROW = 1;
-    boolean isShooting = false;
     boolean needShootPortion = false;
 
     public static double TIME_GATES_BETWEEN_SHOOT = 1000;
@@ -69,7 +67,7 @@ public class Shooter {//sh
         velocityTarget = targetInRPS * TPR;
     }
 
-    public void shootByPower(double POWER) {
+    public void shootByPower() {
         shooterUpper.setPower(POWER);
         shooterLower.setPower(POWER);
     }
@@ -85,7 +83,7 @@ public class Shooter {//sh
         ));
     }
 
-    public void waitForShoot() {// no test
+    public void waitForShoot() { // no test
         for (int i = 0; i < 3; i++) {
             while (getVelocityRPS() >= velocityTarget - ERROR);
             closeCover();

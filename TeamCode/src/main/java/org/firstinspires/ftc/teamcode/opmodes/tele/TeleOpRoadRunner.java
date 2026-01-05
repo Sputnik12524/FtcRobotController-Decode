@@ -1,24 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
-import static org.firstinspires.ftc.teamcode.opmodes.test.pidtuners.VeloPIDTuner.MOTOR_VELO_PID_SHOOTERS;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Sorting;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
 @TeleOp(name = "TeleOpRR Shooter - Velocity", group = "0")
@@ -64,12 +57,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
         waitForStart();
-        ElapsedTime timer = new ElapsedTime();
 
         while (opModeIsActive()) {
             // DRIVETRAIN
-
             dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
+
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {
                 in.rotateIn();
@@ -90,7 +82,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
 
-            // SHOOTING
+            // SHOOTER
             if (gamepad1.right_bumper && !stateRB1) {
                 sh.needShootPortion();
             }
@@ -115,16 +107,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
             }
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
-
-            /*if (current.getX() <= -23 && current.getY() >= 0) {
-                sh.setShortThrowMode();
-            } else {
-                sh.setLongThrowMode();
-            }
-            if (current.getX() >= 23) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
-            }*/
 
             if (gamepad1.dpad_up || gamepad2.b) {
                 sh.closeCover();

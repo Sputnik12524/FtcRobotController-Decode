@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,15 +11,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Intake {
 
     public final DcMotorEx catcher;
-    private final double TPR = 28;
-
-    public static double POWER = 1;
-
-    public static double IN_OUT = 300;
-
-
     public ArtifactIntake artifactIntake;
     LinearOpMode linearOpMode;
+
+    public static double POWER = 1;
+    public static double IN_OUT = 300;
 
     public Intake(LinearOpMode linearOpMode) {
         artifactIntake = new ArtifactIntake();
@@ -68,7 +63,4 @@ public class Intake {
             }
         }
     }
-    public void setVelocityRPS(double RPS) { catcher.setVelocity(RPS * TPR); }
-    public double getVelocityRPS() { return catcher.getVelocity()/TPR; }
-    public double getVelocityTPS() { return catcher.getVelocity(); }
 }

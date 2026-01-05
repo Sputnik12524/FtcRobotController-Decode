@@ -2,44 +2,37 @@ package org.firstinspires.ftc.teamcode.opmodes.test.drivetraintests;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 
 @TeleOp(name="TEST Wheel", group = "5")
 public class WheelTest extends LinearOpMode {
-    DcMotor leftFront;
-    DcMotor leftBack;
-    DcMotor rightFront;
-    DcMotor rightBack;
+    DriveTrain dt = new DriveTrain(this);
     double SPEED = 0.5;
     @Override
     public void runOpMode() throws InterruptedException {
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        rightBack.setDirection(DcMotor.Direction.REVERSE);
+
+        DriveTrain dt = new DriveTrain(this);
+
         waitForStart();
         while (opModeIsActive()) {
             if(gamepad1.dpad_up){
-                leftFront.setPower(SPEED);
+                dt.leftFront.setPower(SPEED);
                 telemetry.addLine("LEFT FRONT");
             } else if(gamepad1.dpad_left){
-                leftBack.setPower(SPEED);
+                dt.leftBack.setPower(SPEED);
                 telemetry.addLine("LEFT BACK");
             }else if(gamepad1.dpad_right){
-                rightFront.setPower(SPEED);
+                dt.rightFront.setPower(SPEED);
                 telemetry.addLine("RIGHT FRONT");
             }else if(gamepad1.dpad_down){
-                rightBack.setPower(SPEED);
+                dt.rightBack.setPower(SPEED);
                 telemetry.addLine("RIGHT BACK");
             } else {
-                leftBack.setPower(0);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
+                dt.leftBack.setPower(0);
+                dt.leftFront.setPower(0);
+                dt.rightBack.setPower(0);
+                dt.rightFront.setPower(0);
             }
             telemetry.update();
 
