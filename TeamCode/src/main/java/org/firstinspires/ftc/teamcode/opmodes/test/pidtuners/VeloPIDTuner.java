@@ -17,9 +17,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 @Config
 @TeleOp (name = "VeloPID Tuner", group = "4")
 public class VeloPIDTuner extends LinearOpMode {
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(30, 0, 30, 27);
-    //public static PIDFCoefficients MOTOR_VELO_PID_UP = new PIDFCoefficients(80, 0, 23, 23);
-   // public static PIDFCoefficients MOTOR_TEST = new PIDFCoefficients(0, 0, 0, 0);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(20, 0, 30, 14.7);
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -29,7 +27,8 @@ public class VeloPIDTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Shooter sh = new Shooter(this);
         // Change my id
-        DcMotorEx myMotor = sh.shooter;
+        DcMotorEx myMotor = sh.shooterUpper;
+        DcMotorEx myMotor1 = sh.shooterLower;
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -38,9 +37,11 @@ public class VeloPIDTuner extends LinearOpMode {
         MotorConfigurationType motorConfigurationType = myMotor.getMotorType().clone();
         motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
         myMotor.setMotorType(motorConfigurationType);
+        myMotor1.setMotorType(motorConfigurationType);
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-        setPIDFCoefficients(myMotor, MOTOR_VELO_PID);
+        setPIDFCoefficients(myMotor, MOTOR_VELO_PID_SHOOTERS);
+        setPIDFCoefficients(myMotor1, MOTOR_VELO_PID_SHOOTERS);
 
         TuningController tuningController = new TuningController();
 
@@ -64,6 +65,7 @@ public class VeloPIDTuner extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             double targetVelo = tuningController.update();
             myMotor.setVelocity(targetVelo);
+            myMotor1.setVelocity(targetVelo);
 
             telemetry.addData("targetVelocity", targetVelo);
 
@@ -74,13 +76,14 @@ public class VeloPIDTuner extends LinearOpMode {
             telemetry.addData("upperBound", TuningController.rpmToTicksPerSecond(TuningController.TESTING_MAX_SPEED * 1.15));
             telemetry.addData("lowerBound", 0);
 
-            if (lastKp != MOTOR_VELO_PID.p || lastKi != MOTOR_VELO_PID.i || lastKd != MOTOR_VELO_PID.d || lastKf != MOTOR_VELO_PID.f) {
-                setPIDFCoefficients(myMotor, MOTOR_VELO_PID);
+            if (lastKp != MOTOR_VELO_PID_SHOOTERS.p || lastKi != MOTOR_VELO_PID_SHOOTERS.i || lastKd != MOTOR_VELO_PID_SHOOTERS.d || lastKf != MOTOR_VELO_PID_SHOOTERS.f) {
+                setPIDFCoefficients(myMotor, MOTOR_VELO_PID_SHOOTERS);
+                setPIDFCoefficients(myMotor1, MOTOR_VELO_PID_SHOOTERS);
 
-                lastKp = MOTOR_VELO_PID.p;
-                lastKi = MOTOR_VELO_PID.i;
-                lastKd = MOTOR_VELO_PID.d;
-                lastKf = MOTOR_VELO_PID.f;
+                lastKp = MOTOR_VELO_PID_SHOOTERS.p;
+                lastKi = MOTOR_VELO_PID_SHOOTERS.i;
+                lastKd = MOTOR_VELO_PID_SHOOTERS.d;
+                lastKf = MOTOR_VELO_PID_SHOOTERS.f;
             }
 
             tuningController.update();

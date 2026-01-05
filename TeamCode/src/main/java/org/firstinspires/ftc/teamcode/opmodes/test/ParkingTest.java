@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.Parking;
 
-@Disabled
 @Config
 @TeleOp(name = "TEST Parking", group = "Test")
 public class ParkingTest extends LinearOpMode {
@@ -25,7 +23,7 @@ public class ParkingTest extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.a && !isParking && !stateA) {
-                park.parkingPower(POWER);
+                park.setParkingPowerUp();
                 isParking = true;
             } else if (gamepad1.a && isParking && !stateA) {
                 park.parkingStop();
@@ -33,7 +31,7 @@ public class ParkingTest extends LinearOpMode {
             }
 
             if (gamepad1.b && !isParking && !stateB) {
-                park.parkingPower(-POWER);
+                park.setParkingPowerDown();
                 isParking = true;
             } else if (gamepad1.b && isParking && !stateB) {
                 park.parkingStop();

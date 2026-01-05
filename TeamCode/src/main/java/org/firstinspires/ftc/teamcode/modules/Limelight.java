@@ -11,7 +11,7 @@ import java.util.List;
 public class Limelight {
     public Limelight3A limelight3A;
     LinearOpMode opMode;
-   public int tagId = 0; // добавил проверить
+   public int tagId = 0;
 
     public Limelight(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -50,9 +50,9 @@ public class Limelight {
         return id;
 
     }
-    //либо
+
     public int getSingleTagID(){
         LLResultTypes.FiducialResult fr = limelightResult().getFiducialResults().get(0);
-        return fr.getFiducialId(); //хз пусть так будет надо протестить
+        return fr.getFiducialId();
     }
 }
