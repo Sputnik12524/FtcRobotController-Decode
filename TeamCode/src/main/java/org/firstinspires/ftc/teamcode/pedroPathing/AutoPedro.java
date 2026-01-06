@@ -80,6 +80,8 @@ public class AutoPedro extends OpMode {
                 }
                 break;
         }
+        //сначала включаем трансфер, начинаем двигаться, затем разгоняем шутер и открываем крышку
+
     }
     public void setPathState(int pState) {
         pathState = pState;

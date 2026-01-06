@@ -33,7 +33,8 @@ public class Constants {
             .rightFrontMotorDirection(DcMotor.Direction.REVERSE)
             .rightRearMotorDirection(DcMotor.Direction.REVERSE)
             .yVelocity(35.379986519104946)
-            .xVelocity(64.2857167569573);
+            .xVelocity(64.2857167569573)
+            .useBrakeModeInTeleOp(true);
 
 
     public static ThreeWheelConstants localizerConstants = new ThreeWheelConstants()
