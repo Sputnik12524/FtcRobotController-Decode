@@ -24,8 +24,8 @@ public class Shooter {
     public int timers;
     public static double POWER = 1;
     public double velocityTarget = 0;
-    public static double VELOCITY_FOR_LONG_THROW = 51;
-    public static double VELOCITY_FOR_SHORT_THROW = 43;
+    public static double VELOCITY_FOR_LONG_THROW = 52.5;
+    public static double VELOCITY_FOR_SHORT_THROW = 44;
     public static double ERROR = 3;
     public static double POS_COVER_OPEN = 0.72;
     public static double POS_COVER_CLOSE = 1;
