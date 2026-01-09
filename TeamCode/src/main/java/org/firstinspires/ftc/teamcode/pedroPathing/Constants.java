@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.control.FilteredPIDFCoefficients;
+import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -15,7 +17,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants().mass(11.1)
             .forwardZeroPowerAcceleration(-38.378604479027615).lateralZeroPowerAcceleration(-70.80644621428662)
-            .useSecondaryTranslationalPIDF(true).useSecondaryHeadingPIDF(true).useSecondaryDrivePIDF(true);
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.1,0,0.02606,0.2))
+            .headingPIDFCoefficients(new PIDFCoefficients(2.1,0,0.00001,0.01))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.4,0,0.01,0.6,0.01))
+            .centripetalScaling(0.00005)
+            ;
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
             .rightFrontMotorName("rightFront")
@@ -44,7 +50,7 @@ public class Constants {
             .rightEncoderDirection(Encoder.FORWARD)
             .strafeEncoderDirection(Encoder.REVERSE);
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 2, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
