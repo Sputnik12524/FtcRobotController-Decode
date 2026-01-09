@@ -5,6 +5,7 @@ repositories {
     maven {
         url = 'https://jitpack.io'
     }
+    maven { url = "https://memaven.bylazar.com/releases" }
 }
 dependencies {
     implementation 'org.firstinspires.ftc:Inspection:11.0.0'
@@ -18,5 +19,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.acmerobotics.dashboard:dashboard:0.5.0'
     implementation 'com.github.NoahBres:jotai:1.0.3'
+
+    implementation 'com.pedropathing:ftc:2.0.5'
+    implementation 'com.pedropathing:telemetry:1.0.9'
+    implementation 'com.bylazar:fullpanels:1.0.9'
+
 }
 
