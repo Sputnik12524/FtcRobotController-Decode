@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.TelemetryManager;
@@ -9,9 +8,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.PathChain;
@@ -22,11 +19,11 @@ import com.pedropathing.util.Timer;
 @Autonomous(name = "Pedro Pathing Autonomous", group = "Autonomous")
 @Configurable // Panels
 public class AutoPedro extends LinearOpMode {
-    private TelemetryManager panelsTelemetry; // Panels Telemetry instance
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
-    private Timer pathTimer, actionTimer, opmodeTimer;
+    private Timer pathTimer;
+    private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
@@ -35,13 +32,14 @@ public class AutoPedro extends LinearOpMode {
     @Override
     public void runOpMode() {
         pathTimer = new Timer();
-        opmodeTimer = new Timer();
+        Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
         in = new Intake(this);
         sh = new Shooter(this);
 
-        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+        // Panels Telemetry instance
+        TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(22, 124, Math.toRadians(-38)));

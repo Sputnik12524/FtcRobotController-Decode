@@ -80,11 +80,7 @@ public class TuningDashboard extends SelectableOpMode {
 
     @Override
     public void onSelect() {
-        if (follower == null) {
-            follower = Constants.createFollower(hardwareMap);
-        } else {
-            follower = Constants.createFollower(hardwareMap);
-        }
+        follower = Constants.createFollower(hardwareMap);
 
         follower.setStartingPose(new Pose());
 
@@ -1258,8 +1254,7 @@ class Drawing {
     /**
      * This draws everything that will be used in the Follower's telemetryDebug() method. This takes
      * a Follower as an input, so an instance of the DashboardDrawingHandler class is not needed.
-     *
-     * @param follower
+     *  param follower
      */
     public static void drawDebug(Follower follower) {
         if (follower.getCurrentPath() != null) {
