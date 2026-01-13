@@ -8,6 +8,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -50,6 +51,8 @@ public class TeleOpPedro extends OpMode {
                 -gamepad1.right_stick_x,
                 true // Robot Centric
         );
+
+
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);

@@ -1,11 +1,14 @@
 repositories {
-    maven { url = 'https://maven.brott.dev/' }
+    maven { url = 'https://maven.brott.dev/'
+    }
     mavenCentral()
     google() // Needed for androidx
     maven {
         url = 'https://jitpack.io'
     }
-    maven { url = "https://memaven.bylazar.com/releases" }
+    maven {
+        url = "https://mymaven.bylazar.com/releases"
+    }
 }
 dependencies {
     implementation 'org.firstinspires.ftc:Inspection:11.0.0'
@@ -21,8 +24,10 @@ dependencies {
     implementation 'com.github.NoahBres:jotai:1.0.3'
 
     implementation 'com.pedropathing:ftc:2.0.5'
-    implementation 'com.pedropathing:telemetry:1.0.9'
+    implementation 'com.pedropathing:telemetry:1.0.0'
     implementation 'com.bylazar:fullpanels:1.0.9'
+    implementation "com.bylazar:docs:1.0.5"
+
 
 }
 

@@ -8,21 +8,21 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "BLUE Goal 3 Artifacts", group = "1")
-public class AutoBlueGoal3Simple extends LinearOpMode {
-
+@Autonomous(name = "RED WOEN Artifacts", group = "1")
+public class AutoRedWoENSimple extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Intake in = new Intake(this);
         Shooter sh = new Shooter(this);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
-        Intake in = new Intake(this);
 
-        Pose2d startPose = new Pose2d(-48, -50, Math.toRadians(45));
+
+        Pose2d startPose = new Pose2d(61, 7, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
 
         sh.closeTunnel();
-        sh.setShortThrowMode();
+        sh.setLongThrowMode();
 
         waitForStart();
         if (isStopRequested()) return;
@@ -30,10 +30,15 @@ public class AutoBlueGoal3Simple extends LinearOpMode {
         in.rotateIn();
         sleep(1000);
 
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose).forward(25).build());
-
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 5);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW + 2);
         sh.continuousShooter.start();
+
+        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
+                .back(10)
+                .build());
+        dt.turn(Math.toRadians(-22));
+        sleep(1000);
+
         sleep(2000);
 
         sh.waitForShoot();
@@ -43,13 +48,21 @@ public class AutoBlueGoal3Simple extends LinearOpMode {
         sh.closeTunnel();
         in.rotateStop();
         sh.setVelocityTarget(0);
+        dt.followTrajectory(dt.trajectoryBuilder(dt.getPoseEstimate())
+                .forward(10)
+                .build());
+        dt.turn(Math.toRadians(-90));
+        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
+                .back(28)
+                .build());
 
-
-        dt.turn(Math.toRadians(90));
-           dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate()).forward(18).build());
 
         in.artifactIntake.interrupt();
         sh.continuousShooter.interrupt();
 
     }
+
+
 }
+
+
