@@ -21,18 +21,32 @@ public class AutoBlueGoal3Simple extends LinearOpMode {
         Pose2d startPose = new Pose2d(-48, -50, Math.toRadians(45));
         dt.setPoseEstimate(startPose);
 
+        sh.closeTunnel();
+        sh.setShortThrowMode();
+
         waitForStart();
         if (isStopRequested()) return;
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
-        sh.continuousShooter.start();
 
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .forward(18)
-                .build());
+        in.rotateIn();
         sleep(1000);
-        sh.openCover();
-        in.artifactIntake.start();
-        sleep(10000);
+
+        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose).forward(25).build());
+
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 5);
+        sh.continuousShooter.start();
+        sleep(2000);
+
+        sh.waitForShoot();
+        sh.openTunnel();
+        sleep(5000);
+
+        sh.closeTunnel();
+        in.rotateStop();
+        sh.setVelocityTarget(0);
+
+
+        dt.turn(Math.toRadians(90));
+           dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate()).forward(18).build());
 
         in.artifactIntake.interrupt();
         sh.continuousShooter.interrupt();

@@ -15,6 +15,7 @@ public class Shooter {
     public final DcMotorEx shooterUpper;
     LinearOpMode opMode;
     public final DcMotorEx shooterLower;
+
     public final Servo angleAdjuster;
     public final Servo cover;
     private final VoltageSensor batteryVoltageSensor;
@@ -24,9 +25,9 @@ public class Shooter {
     public int timers;
     public static double POWER = 1;
     public double velocityTarget = 0;
-    public static double VELOCITY_FOR_LONG_THROW = 51;
+    public static double VELOCITY_FOR_LONG_THROW = 52.5;
     public static double VELOCITY_FOR_SHORT_THROW = 43;
-    public static double ERROR = 3;
+    public static double ERROR = 2.5;
     public static double POS_COVER_OPEN = 0.72;
     public static double POS_COVER_CLOSE = 1;
     public static double POS_SHORT_THROW = 0.75;
@@ -39,6 +40,7 @@ public class Shooter {
 
     public ContinuousShooter continuousShooter = new ContinuousShooter();
     public ShooterPortion portion = new ShooterPortion();
+    private final ElapsedTime timerSh = new ElapsedTime();
 
     public Shooter(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -63,7 +65,8 @@ public class Shooter {
         shooterUpper.setVelocity(velocityTarget);
         shooterLower.setVelocity(velocityTarget);
     }
-    public void setVelocityTarget(double targetInRPS){
+
+    public void setVelocityTarget(double targetInRPS) {
         velocityTarget = targetInRPS * TPR;
     }
 
@@ -84,11 +87,11 @@ public class Shooter {
     }
 
     public void waitForShoot() { // no test
-        for (int i = 0; i < 3; i++) {
-            while (getVelocityRPS() >= velocityTarget - ERROR);
-            closeCover();
-            opMode.sleep(700);
-            openCover();
+        for (int i = 0; i < 5; i++) {
+            opMode.sleep(2000);
+            openTunnel();
+            opMode.sleep(200);
+            closeTunnel();
         }
 
     }
@@ -96,16 +99,20 @@ public class Shooter {
     public void setShortThrowMode() {
         angleAdjuster.setPosition(POS_SHORT_THROW);
     }
+
     public void setLongThrowMode() {
         angleAdjuster.setPosition(POS_LONG_THROW);
     }
-    public void openCover() {
+
+    public void openTunnel() {
         cover.setPosition(POS_COVER_OPEN);
     }
-    public void closeCover() {
+
+    public void closeTunnel() {
         cover.setPosition(POS_COVER_CLOSE);
     }
-    public double getAngleAdjusterPos(){
+
+    public double getAngleAdjusterPos() {
         return angleAdjuster.getPosition();
     }
 
@@ -115,10 +122,7 @@ public class Shooter {
         @Override
         public void run() {
             if (!isInterrupted()) {
-                timer.reset();
                 shootByVelocity();
-                while (timer.milliseconds() < 23000);
-                shootStop();
             }
         }
     }
@@ -131,24 +135,25 @@ public class Shooter {
             if (!isInterrupted()) {
                 if (needShootPortion) {
                     timer.reset();
-                    closeCover();
+                    closeTunnel();
                     setLongThrowMode();
                     setVelocityTarget(VELOCITY_FOR_LONG_THROW);
                     shootByVelocity();
-                    while (timer.milliseconds() <= TIME_FOR_SET_VELOCITY);
-                    for (int i = 0; i < 3; i+=1){
+                    while (timer.milliseconds() <= TIME_FOR_SET_VELOCITY) ;
+                    for (int i = 0; i < 3; i += 1) {
                         timer.reset();
-                        openCover();
-                        while (timer.milliseconds() <= TIME_GATES_BETWEEN_SHOOT);
+                        openTunnel();
+                        while (timer.milliseconds() <= TIME_GATES_BETWEEN_SHOOT) ;
                         timer.reset();
-                        closeCover();
-                        while (timer.milliseconds() <= TIME_GATES_BETWEEN_SHOOT);
+                        closeTunnel();
+                        while (timer.milliseconds() <= TIME_GATES_BETWEEN_SHOOT) ;
                     }
                     needShootPortion = false;
                 }
             }
         }
     }
+
     public void needShootPortion() {
         this.needShootPortion = true;
     }
@@ -164,9 +169,11 @@ public class Shooter {
     public double getPower() {
         return shooterUpper.getPower();
     }
+
     public double getVelocityRPS() {
         return shooterUpper.getVelocity() / TPR;
     }
+
     public double getVelocityTPS() {
         return shooterUpper.getVelocity();
     }

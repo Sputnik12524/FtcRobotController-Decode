@@ -52,6 +52,7 @@ import java.util.List;
 @Config
 public class DriveTrainMecanum extends MecanumDrive {
     public static double multiplier = 1;
+    public static double MODE_SLOW_POWER = 0.5;
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0.00001, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(1, 0, 0);
 
@@ -316,5 +317,18 @@ public class DriveTrainMecanum extends MecanumDrive {
         leftBack.setPower(multiplier * (main - side + rotation));
         rightFront.setPower(multiplier * (main - side - rotation));
         rightBack.setPower(multiplier * (main + side - rotation));
+    }
+
+    public void turnRightSlowMode() {
+        leftFront.setPower(MODE_SLOW_POWER);
+        leftBack.setPower(MODE_SLOW_POWER);
+        rightFront.setPower(-MODE_SLOW_POWER);
+        rightBack.setPower(-MODE_SLOW_POWER);
+    }
+    public void turnLeftSlowMode() {
+        leftFront.setPower(-MODE_SLOW_POWER);
+        leftBack.setPower(-MODE_SLOW_POWER);
+        rightFront.setPower(MODE_SLOW_POWER);
+        rightBack.setPower(MODE_SLOW_POWER);
     }
 }

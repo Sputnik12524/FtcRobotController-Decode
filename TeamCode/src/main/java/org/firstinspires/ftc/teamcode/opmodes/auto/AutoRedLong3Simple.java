@@ -8,8 +8,8 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "BLUE Human 3 Artifacts", group = "1")
-public class AutoBlueHuman3Simple extends LinearOpMode {
+@Autonomous(name = "RED Long 3 Artifacts", group = "1")
+public class AutoRedLong3Simple extends LinearOpMode {
 
     @Override
     public void runOpMode() {
@@ -21,25 +21,37 @@ public class AutoBlueHuman3Simple extends LinearOpMode {
         Pose2d startPose = new Pose2d(61, 7, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
 
-        sh.closeCover();
+        sh.closeTunnel();
+        sh.setLongThrowMode();
 
         waitForStart();
         if (isStopRequested()) return;
 
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .back(14)
-                .build());
+        in.rotateIn();
         sleep(1000);
-        sh.setLongThrowMode();
+
+        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
+                .back(10)
+                .build());
+        dt.turn(Math.toRadians(-20));
+        sleep(1000);
+
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
         sh.continuousShooter.start();
         sleep(2000);
-        sh.openCover();
-        in.artifactIntake.start();
-        sleep(10000);
+
+        sh.waitForShoot();
+        sh.openTunnel();
+        sleep(5000);
+
+        sh.closeTunnel();
+        in.rotateStop();
+        sh.setVelocityTarget(0);
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .back(15)
                 .build());
+
+
         in.artifactIntake.interrupt();
         sh.continuousShooter.interrupt();
 

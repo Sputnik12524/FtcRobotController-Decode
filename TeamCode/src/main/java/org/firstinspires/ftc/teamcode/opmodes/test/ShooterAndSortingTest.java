@@ -96,9 +96,9 @@ public class ShooterAndSortingTest extends LinearOpMode {
                 sh.angleAdjuster.setPosition(POS_ADJUSTER);
             }
             if (gamepad1.dpad_left) {
-                sh.openCover();
+                sh.openTunnel();
             } else if (gamepad1.dpad_right) {
-                sh.closeCover();
+                sh.closeTunnel();
             }
 
             // LOGGER
