@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
+import static org.firstinspires.ftc.teamcode.modules.Shooter.VELOCITY_FOR_LONG_THROW;
+import static org.firstinspires.ftc.teamcode.modules.Shooter.VELOCITY_FOR_SHORT_THROW;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -17,6 +20,8 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 @TeleOp(name = "TeleOpRR Shooter - Velocity", group = "0")
 @Config
 public class TeleOpRoadRunner extends LinearOpMode {
+    enum Calc {DEFAULT, INIT, LONG, SHORT}
+    Calc position = Calc.DEFAULT;
 
     Shooter sh;
     Intake in;
@@ -36,6 +41,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateY1 = false;
     boolean stateX1 = false;
     boolean stateRB1 = false;
+    boolean isShooting = false;
+    boolean longSh = false;
+    boolean shortSh = false;
+    int artefactsIn = 0;
+
 
 
     @Override
@@ -61,6 +71,29 @@ public class TeleOpRoadRunner extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            switch (position) {
+                case DEFAULT:
+                    if (isShooting && timer.milliseconds() > sh.timers) transit(Calc.INIT);
+                case INIT:
+                    if (longSh && sh.isBack(VELOCITY_FOR_LONG_THROW)) transit(Calc.LONG);
+                    if (shortSh && sh.isBack(VELOCITY_FOR_SHORT_THROW)) transit(Calc.SHORT);
+                case LONG:
+                    sh.openTunnel();
+                    sh.updateCalculator(VELOCITY_FOR_LONG_THROW);
+                    transit(Calc.DEFAULT);
+                case SHORT:
+                    sh.openTunnel();
+                    sh.updateCalculator(VELOCITY_FOR_SHORT_THROW);
+                    transit(Calc.DEFAULT);
+            }
+            longSh = false;
+            shortSh = false;
+
+            if(artefactsIn != 0 && !sh.canShoot){
+                sh.closeTunnel();
+                artefactsIn --;
+            }
+
             // DRIVETRAIN
             if (gamepad1.right_bumper) {
                 dt.turnRightSlowMode();
@@ -97,13 +130,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateRB1 = gamepad1.right_bumper;
 
             if (gamepad1.y && !isShootingLong && !stateY1) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+                sh.setVelocityTarget(VELOCITY_FOR_LONG_THROW);
                 sh.setLongThrowMode();
                 sh.shootByVelocity();
                 isShootingLong = true;
                 isShootingShort = false;
             } else if (gamepad1.x && !isShootingShort && !stateX1) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                sh.setVelocityTarget(VELOCITY_FOR_SHORT_THROW);
                 sh.setShortThrowMode();
                 sh.shootByVelocity();
                 isShootingLong = false;
@@ -125,10 +158,15 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             t.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
             t.addData("Заброшенных артефактов", sh.artifacts);
+            t.addData("Робот: ", sh.isEmpty());
             t.update();
+
+
         }
     }
-
+    public void transit(Calc state) {
+        position = state;
+    }
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }
