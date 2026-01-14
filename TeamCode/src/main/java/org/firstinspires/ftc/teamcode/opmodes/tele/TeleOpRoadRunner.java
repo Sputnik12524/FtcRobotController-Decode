@@ -97,14 +97,12 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateRB1 = gamepad1.right_bumper;
 
             if (gamepad1.y && !isShootingLong && !stateY1) {
-              //  sh.openTunnel();
                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
                 sh.setLongThrowMode();
                 sh.shootByVelocity();
                 isShootingLong = true;
                 isShootingShort = false;
             } else if (gamepad1.x && !isShootingShort && !stateX1) {
-              //  sh.openTunnel();
                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
                 sh.setShortThrowMode();
                 sh.shootByVelocity();

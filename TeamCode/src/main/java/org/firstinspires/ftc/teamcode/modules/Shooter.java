@@ -88,15 +88,8 @@ public class Shooter {
 
     public void waitForShoot() { // no test
         for (int i = 0; i < 5; i++) {
-           // while (getVelocityRPS() >= velocityTarget - ERROR);
             opMode.sleep(2000);
-//            timerSh.reset();
-//            while (timerSh.milliseconds() < 2000);
-
             openTunnel();
-            // while (getVelocityRPS() <= velocityTarget - ERROR);
-//            timerSh.reset();
-//            while (timerSh.milliseconds() < 200);
             opMode.sleep(200);
             closeTunnel();
         }
@@ -129,10 +122,7 @@ public class Shooter {
         @Override
         public void run() {
             if (!isInterrupted()) {
-                timer.reset();
                 shootByVelocity();
-                while (timer.milliseconds() < 23000) ;
-                shootStop();
             }
         }
     }
