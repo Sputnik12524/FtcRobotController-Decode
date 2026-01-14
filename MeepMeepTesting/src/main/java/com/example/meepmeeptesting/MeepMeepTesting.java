@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.rowlandhall.meepmeep.MeepMeep;
 import org.rowlandhall.meepmeep.roadrunner.DefaultBotBuilder;
@@ -15,23 +16,20 @@ import javax.imageio.ImageIO;
 public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(500, 500);
-
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                        .forward(30)
-                        .turn(Math.toRadians(90))
-                        .forward(30)
-                        .turn(Math.toRadians(90))
-                        .forward(30)
-                        .turn(Math.toRadians(90))
-                        .forward(30)
-                        .turn(Math.toRadians(90))
-                        .build());
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-48, -50, Math.toRadians(45)))
+                        .lineToLinearHeading(new Pose2d(-27, -5, Math.toRadians(193)))
+
+                        .lineToLinearHeading(new Pose2d(-11, -25, Math.toRadians(-90)))
+                                .build());
+
 
         Image img = null;
-        try { img = ImageIO.read(new File("C:/Users/Admin/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png")); }
-        catch(IOException e) {}
+        try {
+            img = ImageIO.read(new File("C:/Users/Admin/Downloads/decode-custom-field-images-meepmeep-compatible-printer-v0-xsjhmvxpoonf1.png"));
+        } catch (IOException e) {
+        }
 
         meepMeep.setBackground(img)
                 .setDarkMode(true)

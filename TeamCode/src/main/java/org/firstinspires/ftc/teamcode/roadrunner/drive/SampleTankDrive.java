@@ -39,7 +39,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveConstants.*;
-
 /*
  * Simple tank drive hardware implementation for REV hardware.
  */
