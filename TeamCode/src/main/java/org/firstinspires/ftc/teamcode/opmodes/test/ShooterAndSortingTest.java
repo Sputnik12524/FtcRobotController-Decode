@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Config
-@TeleOp(name = "TEST Shooter/Intake/Turret/Adjuster/Cover", group = "1")
+@TeleOp(name = "TEST Shooter, Sorting and their friends!", group = "1")
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
     Turret tr;
