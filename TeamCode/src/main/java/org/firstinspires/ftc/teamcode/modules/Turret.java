@@ -58,7 +58,7 @@ public class Turret {
     }
 
     public boolean isMagneting() {
-        return magneticSensor.getState();
+        return !magneticSensor.getState();
     }
 
     public class TurretRegulator extends Thread {
