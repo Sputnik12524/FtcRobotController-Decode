@@ -70,11 +70,11 @@ public class AutoPedro extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain Path1;
-        public PathChain Path2, Path3, Path4, Path5;
+        public PathChain PathFirstScoring, PathToPresetArtifacts, PathIntakingArtifacts,
+                PathSecondScoring, PathLeaving;
 
         public Paths(Follower follower) {
-            Path1 = follower.pathBuilder().addPath(
+            PathFirstScoring = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(22.000, 124.000),
 
@@ -84,7 +84,7 @@ public class AutoPedro extends LinearOpMode {
 
                     .build();
 
-            Path2 = follower.pathBuilder().addPath(
+            PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(43.541, 103.509),
 
@@ -93,7 +93,7 @@ public class AutoPedro extends LinearOpMode {
                     ).setLinearHeadingInterpolation(Math.toRadians(-38), Math.toRadians(180))
 
                     .build();
-            Path3 = follower.pathBuilder().addPath(
+            PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(43.258, 84.561),
 
@@ -103,7 +103,7 @@ public class AutoPedro extends LinearOpMode {
 
                     .build();
 
-            Path4 = follower.pathBuilder().addPath(
+            PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(16.940, 83.897),
 
@@ -113,7 +113,7 @@ public class AutoPedro extends LinearOpMode {
 
                     .build();
 
-            Path5 = follower.pathBuilder().addPath(
+            PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(43.777, 103.708),
 
@@ -130,49 +130,34 @@ public class AutoPedro extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                sh.shootByVelocity();
                 in.rotateIn();
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW-5);
-                sh.continuousShooter.start();
-                pathTimer.resetTimer();
-                while (pathTimer.getElapsedTime() < 2000);
-                follower.followPath(paths.Path1, true);
-                sh.waitForShoot();
-                pathTimer.resetTimer();
-                while (pathTimer.getElapsedTime() < 5000);
                 setPathState(1);
                 break;
             case 1:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.Path2, true);
+                if (sh.getVelocityRPS() >= Shooter.VELOCITY_FOR_LONG_THROW) {
+                    follower.followPath(Pa);
                     setPathState(2);
                 }
                 break;
             case 2:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.Path3, true);
                     setPathState(3);
                 }
                 break;
             case 3:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.Path4, true);
                     setPathState(4);
                 }
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    sh.waitForShoot();
-                    sh.openTunnel();
-                    sleep(5000);
-                    follower.followPath(paths.Path5, true);
                     setPathState(5);
                 }
                 break;
             case 5:
                 if (!follower.isBusy()) {
-                    sh.continuousShooter.interrupt();
-                    in.rotateStop();
-                    sh.closeTunnel();
                     setPathState(-100);
                 }
                 break;
