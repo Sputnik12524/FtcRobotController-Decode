@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -9,6 +12,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Config
 public class Shooter {
@@ -19,6 +24,8 @@ public class Shooter {
     public final Servo angleAdjuster;
     public final Servo cover;
     private final VoltageSensor batteryVoltageSensor;
+
+    Follower follower;
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(20, 0, 30, 14.7);
     private final double TPR = 28;
     public volatile int artifacts = 0;
@@ -37,6 +44,8 @@ public class Shooter {
     public static double TIME_GATES_BETWEEN_SHOOT = 1000;
     public static double TIME_FOR_SET_VELOCITY = 2500;
 
+    boolean InZone = true;
+
 
     public ContinuousShooter continuousShooter = new ContinuousShooter();
     public ShooterPortion portion = new ShooterPortion();
@@ -44,6 +53,7 @@ public class Shooter {
 
     public Shooter(LinearOpMode opMode) {
         this.opMode = opMode;
+        follower = Constants.createFollower(hardwareMap);
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
@@ -114,6 +124,30 @@ public class Shooter {
 
     public double getAngleAdjusterPos() {
         return angleAdjuster.getPosition();
+    }
+
+    public void ifInZone() {
+        if (InZone) {
+            openTunnel();
+        } else {
+            closeTunnel();
+        }
+    }
+
+    public void ifInLaunchZoneGoal(double x, double y) {
+        if (y >= Math.abs(x - 72) + 72) {
+            ifInZone();
+        } else {
+            InZone = false;
+        }
+    }
+
+    public void ifInLaunchZoneHuman(double x, double y) {
+        if (y <= -Math.abs(x - 72) + 24) {
+            ifInZone();
+        } else {
+            InZone = false;
+        }
     }
 
     public class ContinuousShooter extends Thread {
