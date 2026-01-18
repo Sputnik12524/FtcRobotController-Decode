@@ -45,6 +45,7 @@ public class Shooter {
     public static double TIME_FOR_SET_VELOCITY = 2500;
 
     boolean InZone = true;
+    public static boolean isTunnelOpen;
 
 
     public ContinuousShooter continuousShooter = new ContinuousShooter();
@@ -100,8 +101,10 @@ public class Shooter {
         for (int i = 0; i < 5; i++) {
             opMode.sleep(2000);
             openTunnel();
+            isTunnelOpen = true;
             opMode.sleep(200);
             closeTunnel();
+            isTunnelOpen = false;
         }
 
     }

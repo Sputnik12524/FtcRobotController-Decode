@@ -136,28 +136,44 @@ public class AutoPedro extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                if (sh.getVelocityRPS() >= Shooter.VELOCITY_FOR_LONG_THROW) {
-                    follower.followPath(Pa);
+                if (sh.getVelocityRPS() >= Shooter.VELOCITY_FOR_LONG_THROW && !follower.isBusy()) {
+                    follower.followPath(paths.PathFirstScoring, true);
                     setPathState(2);
                 }
                 break;
             case 2:
                 if (!follower.isBusy()) {
+                    sh.waitForShoot();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (!follower.isBusy()) {
+                if (!Shooter.isTunnelOpen && !follower.isBusy()) {
+                    follower.followPath(paths.PathToPresetArtifacts, true);
                     setPathState(4);
                 }
                 break;
             case 4:
                 if (!follower.isBusy()) {
+                    follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(5);
                 }
                 break;
             case 5:
                 if (!follower.isBusy()) {
+                    follower.followPath(paths.PathSecondScoring, true);
+                    setPathState(6);
+                }
+                break;
+            case 6:
+                if(!follower.isBusy()) {
+                    sh.waitForShoot();
+                    setPathState(7);
+                }
+                break;
+            case 7:
+                if(!follower.isBusy() && !Shooter.isTunnelOpen){
+                    follower.followPath(paths.PathLeaving);
                     setPathState(-100);
                 }
                 break;
