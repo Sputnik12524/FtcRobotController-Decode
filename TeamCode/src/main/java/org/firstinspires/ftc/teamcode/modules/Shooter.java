@@ -49,6 +49,7 @@ public class Shooter {
     public static double POWER = 1;
     public double velocityTarget = 0;
     public static double VELOCITY_FOR_LONG_THROW = 52.5;
+    public static double VELOCITY_FOR_MIDDLE_THROW = 48; //подобрать
     public static double VELOCITY_FOR_SHORT_THROW = 43;
     public static double ERROR = 2.5;
     public static double POS_COVER_OPEN = 0.72;
@@ -146,6 +147,20 @@ public class Shooter {
     public double getAngleAdjusterPos() {
         return angleAdjuster.getPosition();
     }
+
+    public void autoStupidSetVelocityAndAngle(double y) {
+        if (y < 48) {
+            setLongThrowMode();
+            setVelocityTarget(VELOCITY_FOR_LONG_THROW);
+        } else if (y > 84) {
+            setShortThrowMode();
+            setVelocityTarget(VELOCITY_FOR_SHORT_THROW);
+        } else {
+            setShortThrowMode();
+            setVelocityTarget(VELOCITY_FOR_MIDDLE_THROW);
+        }
+    }
+
 
     public ArrayList<Color> getColor() {
         ArrayList<Color> colorSensors = new ArrayList<>();
