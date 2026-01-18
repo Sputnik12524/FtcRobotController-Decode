@@ -222,6 +222,9 @@ public class Shooter {
             canShoot = true;
         }
     }
+    public void adjusterRegulator(){
+
+    }
 
     public boolean isShoot(double RPS) {
         return getVelocityRPS() > RPS - 4;

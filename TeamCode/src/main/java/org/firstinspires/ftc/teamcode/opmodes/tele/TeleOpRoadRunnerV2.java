@@ -16,11 +16,16 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
+import org.firstinspires.ftc.teamcode.util.GamepadManager;
 
 @TeleOp(name = "TeleOpRR V2", group = "0")
 @Config
 public class TeleOpRoadRunnerV2 extends LinearOpMode {
-    enum Calc {DEFAULT, INIT, LONG, SHORT}
+    GamepadManager g1;
+    GamepadManager g2;
+
+    enum Calc {DEFAULT, FIELD_POSE, INIT, LONG, SHORT}
+
     Calc position = Calc.DEFAULT;
 
     Shooter sh;
@@ -47,7 +52,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     int artefactsIn = 0;
 
 
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -61,6 +65,8 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         PoseStorage.currentPose = dt.getPoseEstimate();
         dt.setPoseEstimate(PoseStorage.currentPose);
 
+        g1 = new GamepadManager(gamepad1);
+        g2 = new GamepadManager(gamepad2);
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
@@ -71,77 +77,88 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            g1.update();
+            g2.update();
             switch (position) {
+
                 case DEFAULT:
-                    if (isShooting && timer.milliseconds() > sh.timers) transit(Calc.INIT);
+                    if (isShooting && timer.milliseconds() > sh.timers) transit(Calc.FIELD_POSE);
+                    break;
+
+                case FIELD_POSE:
+                    //if можно ли стрелять???? transit(Calc.INIT);
+                    break;
+
                 case INIT:
+
                     if (longSh && sh.isBack(VELOCITY_FOR_LONG_THROW)) transit(Calc.LONG);
                     if (shortSh && sh.isBack(VELOCITY_FOR_SHORT_THROW)) transit(Calc.SHORT);
+                    break;
+
                 case LONG:
                     sh.openTunnel();
                     sh.updateCalculator(VELOCITY_FOR_LONG_THROW);
                     transit(Calc.DEFAULT);
+                    break;
+
                 case SHORT:
                     sh.openTunnel();
                     sh.updateCalculator(VELOCITY_FOR_SHORT_THROW);
                     transit(Calc.DEFAULT);
+                    break;
             }
             longSh = false;
             shortSh = false;
 
-            if(artefactsIn != 0 && !sh.canShoot){
+            if (artefactsIn != 0 && !sh.canShoot) {
                 sh.closeTunnel();
-                artefactsIn --;
+                artefactsIn--;
             }
 
             // DRIVETRAIN
-            if (gamepad1.right_bumper) {
+            if (g1.rightBumper.isHeld()) {
                 dt.turnRightSlowMode();
-            } else if (gamepad1.left_bumper){
+            } else if (g1.leftBumper.isHeld()) {
                 dt.turnLeftSlowMode();
             } else {
                 dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
             }
 
             // INTAKE
-            if (gamepad1.a && !isRotateIn && !stateA1) {
-                in.rotateIn();
-                isRotateIn = true;
-                isRotateOut = false;
-            } else if (gamepad1.a && isRotateIn && !stateA1) {
-                in.rotateStop();
-                isRotateIn = false;
+            if (g1.A.isPressed()) {
+                if (g1.A.getToggleState()) {
+                    in.rotateIn();
+                } else {
+                    in.rotateStop();
+                }
             }
-            if (gamepad1.b && !isRotateOut && !stateB1) {
-                in.rotateOut();
-                isRotateOut = true;
-                isRotateIn = false;
-            } else if (gamepad1.b && isRotateOut && !stateB1) {
-                in.rotateStop();
-                isRotateOut = false;
+            if (g1.B.isPressed()) {
+                if (g1.B.getToggleState()) {
+                    in.rotateOut();
+                } else  {
+                    in.rotateStop();
+                }
             }
-            stateA1 = gamepad1.a;
-            stateB1 = gamepad1.b;
 
             // SHOOTER
-            if (gamepad1.right_bumper && !stateRB1) {
+            if (g1.rightBumper.isPressed() && g1.rightBumper.getToggleState()) {
                 sh.needShootPortion();
             }
-            stateRB1 = gamepad1.right_bumper;
 
-            if (gamepad1.y && !isShootingLong && !stateY1) {
+
+            if (g1.Y.isPressed() && !isShootingLong && g1.Y.getToggleState()) {
                 sh.setVelocityTarget(VELOCITY_FOR_LONG_THROW);
                 sh.setLongThrowMode();
                 sh.shootByVelocity();
                 isShootingLong = true;
                 isShootingShort = false;
-            } else if (gamepad1.x && !isShootingShort && !stateX1) {
+            } else if (g1.X.isPressed()&& !isShootingShort && g1.X.getToggleState()) {
                 sh.setVelocityTarget(VELOCITY_FOR_SHORT_THROW);
                 sh.setShortThrowMode();
                 sh.shootByVelocity();
                 isShootingLong = false;
                 isShootingShort = true;
-            } else if ((gamepad1.y && !stateY1 && isShootingLong) || (gamepad1.x && !stateX1 && isShootingShort)) {
+            } else if ((g1.X.isPressed()&& !isShootingShort && g1.X.getToggleState()) || (g1.Y.isPressed() && !isShootingLong && g1.Y.getToggleState())){
                 sh.closeTunnel();
                 sh.shootStop();
                 isShootingLong = false;
@@ -150,9 +167,9 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
 
-            if (gamepad1.dpad_up || gamepad2.b) {
+            if (g1.dpadUp.isPressed()) {
                 sh.openTunnel();
-            } else if (gamepad1.dpad_down || gamepad2.a) {
+            } else if (g1.dpadDown.isPressed()) {
                 sh.closeTunnel();
             }
 
@@ -164,9 +181,11 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
         }
     }
+
     public void transit(Calc state) {
         position = state;
     }
+
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }
