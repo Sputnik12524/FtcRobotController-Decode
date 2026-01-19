@@ -22,6 +22,7 @@ public class Turret {
     public static double POS_RIGHTMOST = 360;  //подобрать
     public static double POS_LEFTMOST = -360;
     public static double POS_ZERO = 0;
+    Limelight camera;
 
 
     public boolean isInLimits = false;
@@ -70,6 +71,30 @@ public class Turret {
             timer.reset();
             while (!isInterrupted()) {
                 error = target - getCurrentPosOfTurret();
+
+                double powerP = error * kP;
+
+                turnInLimits(powerP);
+
+                timer.reset();
+            }
+        }
+    }
+
+    public class TurretCameraAiming extends Thread {
+
+        private final ElapsedTime timer = new ElapsedTime();
+
+        @Override
+        public void run() {
+            timer.reset();
+            while (!isInterrupted()) {
+                while(camera.getTagInfo().get(0) != 21){
+                   turnRightByPower();
+                }
+
+                error = target - getCurrentPosOfTurret();
+                // error = центр - координаты_эйприл_тега
 
                 double powerP = error * kP;
 
