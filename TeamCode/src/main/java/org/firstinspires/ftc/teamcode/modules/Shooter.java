@@ -51,12 +51,14 @@ public class Shooter {
     public static double VELOCITY_FOR_LONG_THROW = 52.5;
     public static double VELOCITY_FOR_MIDDLE_THROW = 48; //подобрать
     public static double VELOCITY_FOR_SHORT_THROW = 43;
+    public  double VELOCITY = 0;
     public static double ERROR = 2.5;
     public static double POS_COVER_OPEN = 0.72;
     public static double POS_COVER_CLOSE = 1;
     public static double POS_SHORT_THROW = 0.75;
     public static double POS_LONG_THROW = 1;
     boolean needShootPortion = false;
+    public boolean isShooting = false;
 
     public static double TIME_GATES_BETWEEN_SHOOT = 1000;
     public static double TIME_FOR_SET_VELOCITY = 2500;
@@ -94,6 +96,7 @@ public class Shooter {
     public void shootByVelocity() {
         shooterUpper.setVelocity(velocityTarget);
         shooterLower.setVelocity(velocityTarget);
+        isShooting = true;
     }
 
     public void setVelocityTarget(double targetInRPS) {
@@ -108,6 +111,7 @@ public class Shooter {
     public void shootStop() {
         shooterUpper.setVelocity(0);
         shooterLower.setVelocity(0);
+        isShooting = false;
     }
 
     private void setPIDFCoefficients(DcMotorEx motor, PIDFCoefficients coefficients) {
@@ -115,18 +119,6 @@ public class Shooter {
                 coefficients.p, coefficients.i, coefficients.d, coefficients.f * 12 / batteryVoltageSensor.getVoltage()
         ));
     }
-
-    public void waitForShoot() { // no test
-        for (int i = 0; i < 5; i++) {
-            opMode.sleep(2000);
-            openTunnel();
-            opMode.sleep(200);
-            closeTunnel();
-        }
-
-    }
-
-
 
     public void setShortThrowMode() {
         angleAdjuster.setPosition(POS_SHORT_THROW);
@@ -146,6 +138,10 @@ public class Shooter {
 
     public double getAngleAdjusterPos() {
         return angleAdjuster.getPosition();
+    }
+
+    public void setMode(double pos){
+        angleAdjuster.setPosition(pos);
     }
 
     public void autoStupidSetVelocityAndAngle(double y) {
@@ -207,7 +203,7 @@ public class Shooter {
         for(int i = 0; i < 3; i ++){
             if(getColor().get(i) != Color.NONE) artifactsIn++;
         }
-        return artefactsIn();
+        return artifactsIn;
     }
 
     public class ContinuousShooter extends Thread {
@@ -229,20 +225,15 @@ public class Shooter {
         if(artifactsNow == 3) artifactsNow = 0;
 
         if (isShoot(RPS) && RPS != 0) {
-            canShoot = false;
             artifacts++;
-            artifactsIn++;
+            artifactsNow++;
         } else {
             timers = 50;
-            canShoot = true;
         }
-    }
-    public void adjusterRegulator(){
-
     }
 
     public boolean isShoot(double RPS) {
-        return getVelocityRPS() > RPS - 4;
+        return getVelocityRPS() < RPS - 4;
     }
 
     public double getVelocityRPS() {

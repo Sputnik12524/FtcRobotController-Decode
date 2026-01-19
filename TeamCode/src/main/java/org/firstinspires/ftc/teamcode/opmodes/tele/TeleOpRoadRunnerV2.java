@@ -24,9 +24,9 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     GamepadManager g1;
     GamepadManager g2;
 
-    enum Calc {DEFAULT, FIELD_POSE, INIT, LONG, SHORT}
+    enum Calc {DEFAULT, INIT, WAIT_SHOOT, UPDATE, RESTART, START}
 
-    Calc position = Calc.DEFAULT;
+    Calc state = Calc.RESTART;
 
     Shooter sh;
     Intake in;
@@ -47,9 +47,13 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     boolean stateX1 = false;
     boolean stateRB1 = false;
     boolean isShooting = false;
-    boolean longSh = false;
-    boolean shortSh = false;
     int artefactsIn = 0;
+    double angleAdjusterDegrees = 0;
+    double shooterSpeed = 0;
+    int artefacts;
+    int num = 0;
+    public double change;
+    public double TARGET_VELOCITY;
 
 
     @Override
@@ -79,40 +83,54 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         while (opModeIsActive()) {
             g1.update();
             g2.update();
-            switch (position) {
-
-                case DEFAULT:
-                    if (isShooting && timer.milliseconds() > sh.timers) transit(Calc.FIELD_POSE);
+            switch (state) {
+                case START:
+                    if (sh.isShooting && timer.milliseconds() > sh.timers) {
+                        if (timer.milliseconds() > 1000) TARGET_VELOCITY = sh.VELOCITY;
+                        transit(Calc.INIT);
+                    }
                     break;
 
-                case FIELD_POSE:
-                    //if можно ли стрелять???? transit(Calc.INIT);
+                case RESTART:
+                    num = 0;
+                    TARGET_VELOCITY += change;
+                    change = 0;
+                    transit(Calc.START);
                     break;
 
                 case INIT:
-
-                    if (longSh && sh.isBack(VELOCITY_FOR_LONG_THROW)) transit(Calc.LONG);
-                    if (shortSh && sh.isBack(VELOCITY_FOR_SHORT_THROW)) transit(Calc.SHORT);
-                    break;
-
-                case LONG:
+                    //if (мы в зоне)????{
                     sh.openTunnel();
-                    sh.updateCalculator(VELOCITY_FOR_LONG_THROW);
-                    transit(Calc.DEFAULT);
+                    transit(Calc.UPDATE);
+                    //else sh.closeTunnel();
+                    artefacts = sh.artifactsNow;
                     break;
 
-                case SHORT:
-                    sh.openTunnel();
-                    sh.updateCalculator(VELOCITY_FOR_SHORT_THROW);
-                    transit(Calc.DEFAULT);
+                case WAIT_SHOOT:
+                    sh.updateCalculator(TARGET_VELOCITY);
+                    if (artefacts < sh.artifactsNow) {
+                        num++;
+                        transit(Calc.UPDATE);
+                    }
                     break;
-            }
-            longSh = false;
-            shortSh = false;
 
-            if (artefactsIn != 0 && !sh.canShoot) {
-                sh.closeTunnel();
-                artefactsIn--;
+                case UPDATE:
+                    if (num == 1) {
+                        TARGET_VELOCITY -= 3;
+                        change -= 3;
+                        sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
+                    } else if (num == 2) {
+                        TARGET_VELOCITY -= 4;
+                        change -= 4;
+                        sh.setMode(sh.angleAdjuster.getPosition() - 0.02);
+                    } else if (num == 3) {
+                        TARGET_VELOCITY -= 5;
+                        change -= 5;
+                        sh.setMode(sh.angleAdjuster.getPosition() - 0.01);
+                        transit(Calc.RESTART);
+                    }
+                    transit(Calc.INIT);
+                    break;
             }
 
             // DRIVETRAIN
@@ -123,6 +141,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             } else {
                 dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
             }
+
 
             // INTAKE
             if (g1.A.isPressed()) {
@@ -135,7 +154,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             if (g1.B.isPressed()) {
                 if (g1.B.getToggleState()) {
                     in.rotateOut();
-                } else  {
+                } else {
                     in.rotateStop();
                 }
             }
@@ -152,13 +171,13 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                 sh.shootByVelocity();
                 isShootingLong = true;
                 isShootingShort = false;
-            } else if (g1.X.isPressed()&& !isShootingShort && g1.X.getToggleState()) {
+            } else if (g1.X.isPressed() && !isShootingShort && g1.X.getToggleState()) {
                 sh.setVelocityTarget(VELOCITY_FOR_SHORT_THROW);
                 sh.setShortThrowMode();
                 sh.shootByVelocity();
                 isShootingLong = false;
                 isShootingShort = true;
-            } else if ((g1.X.isPressed()&& !isShootingShort && g1.X.getToggleState()) || (g1.Y.isPressed() && !isShootingLong && g1.Y.getToggleState())){
+            } else if ((g1.X.isPressed() && !isShootingShort && g1.X.getToggleState()) || (g1.Y.isPressed() && !isShootingLong && g1.Y.getToggleState())) {
                 sh.closeTunnel();
                 sh.shootStop();
                 isShootingLong = false;
@@ -183,8 +202,14 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     }
 
     public void transit(Calc state) {
-        position = state;
+        timer.reset();
+        this.state = state;
     }
+
+    public void timeChecking() {
+        if (timer.milliseconds() > 5000) transit(Calc.START);
+    }
+
 
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
