@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.linearOpMode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -51,14 +53,36 @@ public class Shooter {
     public ContinuousShooter continuousShooter = new ContinuousShooter();
     public ShooterPortion portion = new ShooterPortion();
     private final ElapsedTime timerSh = new ElapsedTime();
+    private Pose currentPose;
 
     public Shooter(LinearOpMode opMode) {
         this.opMode = opMode;
-        follower = Constants.createFollower(hardwareMap);
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
+
+
+        shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
+        setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
+        setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+    }
+
+    public Shooter(LinearOpMode opMode, Follower follower) {
+        this.follower = follower;
+        this.opMode = opMode;
+        shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
+        shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
+        cover = opMode.hardwareMap.get(Servo.class, "cover");
+        angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
+        currentPose = follower.getPose();
 
         shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -129,29 +153,32 @@ public class Shooter {
         return angleAdjuster.getPosition();
     }
 
-    public void ifInZone() {
-        if (InZone) {
+    public boolean ifInLaunchZoneGoal() {
+        currentPose = follower.getPose();
+        if (follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 72) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean ifInLaunchZoneHuman() {
+        currentPose = follower.getPose();
+        if (follower.getPose().getY() <= -Math.abs(follower.getPose().getX() - 72) + 24) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void shootingAllowed() {
+        if (ifInLaunchZoneGoal() || ifInLaunchZoneHuman()) {
             openTunnel();
         } else {
             closeTunnel();
         }
     }
 
-    public void ifInLaunchZoneGoal(double x, double y) {
-        if (y >= Math.abs(x - 72) + 72) {
-            ifInZone();
-        } else {
-            InZone = false;
-        }
-    }
-
-    public void ifInLaunchZoneHuman(double x, double y) {
-        if (y <= -Math.abs(x - 72) + 24) {
-            ifInZone();
-        } else {
-            InZone = false;
-        }
-    }
 
     public class ContinuousShooter extends Thread {
         private final ElapsedTime timer = new ElapsedTime();

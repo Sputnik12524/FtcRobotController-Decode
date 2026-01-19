@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Config
@@ -32,12 +34,13 @@ public class ShooterAndSortingTest extends LinearOpMode {
     boolean isRotateIn = false;
     boolean isRotateOut = false;
     boolean isShooting = false;
-
+Follower follower;
     @Override
     public void runOpMode() {
+        follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
         logger = new Logger("ShVelocityTime");
-        sh = new Shooter(this);
+        sh = new Shooter(this, follower);
         ll = new Limelight(this);
         in = new Intake(this);
 

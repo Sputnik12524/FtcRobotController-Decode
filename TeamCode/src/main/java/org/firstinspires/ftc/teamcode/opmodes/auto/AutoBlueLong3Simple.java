@@ -1,20 +1,23 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous(name = "BLUE Long 3 Artifacts", group = "1")
 public class AutoBlueLong3Simple extends LinearOpMode {
-
+    Follower follower;
     @Override
     public void runOpMode() {
+        follower = Constants.createFollower(hardwareMap);
         Intake in = new Intake(this);
-        Shooter sh = new Shooter(this);
+        Shooter sh = new Shooter(this, follower);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
 
 

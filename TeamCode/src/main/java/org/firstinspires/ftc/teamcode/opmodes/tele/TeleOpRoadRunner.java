@@ -1,9 +1,15 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -13,6 +19,7 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "TeleOpRR Shooter - Velocity", group = "0")
 @Config
@@ -22,7 +29,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
     Intake in;
     Limelight ll;
     ElapsedTime timer;
-
+    Follower follower;
+    private Pose currentPose;
 
     /// Intake
     boolean isRotateIn = false;
@@ -36,15 +44,18 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateY1 = false;
     boolean stateX1 = false;
     boolean stateRB1 = false;
+    private PathChain PathSecondScoring;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         //ll = new Limelight(this);
+        follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
-        sh = new Shooter(this);
+        sh = new Shooter(this, follower);
         in = new Intake(this);
+        currentPose = follower.getPose();
         isShootingLong = false;
         isShootingShort = false;
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
@@ -61,6 +72,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            follower.update();
+            currentPose = follower.getPose();
+
             // DRIVETRAIN
             if (gamepad1.right_bumper) {
                 dt.turnRightSlowMode();
