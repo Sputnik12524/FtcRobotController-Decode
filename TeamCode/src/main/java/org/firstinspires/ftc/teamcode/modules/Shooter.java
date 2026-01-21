@@ -20,6 +20,7 @@ public class Shooter {
     public final DcMotorEx shooterUpper;
     LinearOpMode opMode;
     public final DcMotorEx shooterLower;
+    public DcMotor turret;
     enum Color{GREEN, PURPLE, NONE}
 
     private NormalizedColorSensor colorSensor1;
@@ -39,6 +40,7 @@ public class Shooter {
 
     public final Servo angleAdjuster;
     public final Servo cover;
+    public Servo tunnel;
     private final VoltageSensor batteryVoltageSensor;
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(20, 0, 30, 14.7);
     private final double TPR = 28;
@@ -53,8 +55,8 @@ public class Shooter {
     public static double VELOCITY_FOR_SHORT_THROW = 43;
     public  double VELOCITY = 0;
     public static double ERROR = 2.5;
-    public static double POS_COVER_OPEN = 0.72;
-    public static double POS_COVER_CLOSE = 1;
+    public static double POS_COVER_OPEN = 0.4;
+    public static double POS_COVER_CLOSE = 0.9;
     public static double POS_SHORT_THROW = 0.75;
     public static double POS_LONG_THROW = 1;
     boolean needShootPortion = false;
@@ -71,7 +73,10 @@ public class Shooter {
         this.opMode = opMode;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
+        turret = opMode.hardwareMap.get(DcMotor.class, "turret");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
+        tunnel = opMode.hardwareMap.get(Servo.class, "tunnel");
+
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
         colorSensor1 = opMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensor1");
         colorSensor1.setGain(GAIN);
@@ -85,6 +90,9 @@ public class Shooter {
         shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -156,8 +164,6 @@ public class Shooter {
             setVelocityTarget(VELOCITY_FOR_MIDDLE_THROW);
         }
     }
-
-
     public ArrayList<Color> getColor() {
         ArrayList<Color> colorSensors = new ArrayList<>();
 

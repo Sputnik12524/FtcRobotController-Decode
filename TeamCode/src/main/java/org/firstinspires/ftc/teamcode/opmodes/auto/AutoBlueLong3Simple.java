@@ -40,7 +40,7 @@ public class AutoBlueLong3Simple extends LinearOpMode {
         sh.continuousShooter.start();
         sleep(2000);
 
-        sh.waitForShoot();
+        
         sh.openTunnel();
         sleep(5000);
 

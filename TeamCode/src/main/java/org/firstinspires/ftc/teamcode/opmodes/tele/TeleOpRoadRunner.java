@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 public class TeleOpRoadRunner extends LinearOpMode {
     Shooter sh;
     Intake in;
-    Limelight ll;
+    //Limelight ll;
     ElapsedTime timer;
 
 
@@ -43,7 +43,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        ll = new Limelight(this);
+       // ll = new Limelight(this);
         timer = new ElapsedTime();
         sh = new Shooter(this);
         in = new Intake(this);
@@ -69,6 +69,28 @@ public class TeleOpRoadRunner extends LinearOpMode {
             } else {
                 dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
             }
+
+            if(gamepad2.x){
+                sh.turret.setPower(0.27);
+            }
+            else{
+                sh.turret.setPower(0);
+            }
+            if(gamepad2.b){
+                sh.turret.setPower(-0.27);
+            }
+            else {
+                sh.turret.setPower(0);
+            }
+
+            if(gamepad2.dpad_up){
+                sh.tunnel.setPosition(0.0);
+            }
+            if(gamepad2.dpad_down){
+                sh.tunnel.setPosition(1.0);
+            }
+
+
 
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {
@@ -100,13 +122,19 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 sh.setVelocityTarget(VELOCITY_FOR_LONG_THROW);
                 sh.setLongThrowMode();
                 sh.shootByVelocity();
+                isShootingLong = true;
+                isShootingShort = false;
             } else if (gamepad1.x && !isShootingShort && !stateX1) {
                 sh.setVelocityTarget(VELOCITY_FOR_SHORT_THROW);
                 sh.setShortThrowMode();
                 sh.shootByVelocity();
+                isShootingLong = false;
+                isShootingShort = true;
             } else if ((gamepad1.y && !stateY1 && isShootingLong) || (gamepad1.x && !stateX1 && isShootingShort)) {
                 sh.closeTunnel();
                 sh.shootStop();
+                isShootingLong = false;
+                isShootingShort = false;
             }
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
@@ -115,7 +143,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 sh.openTunnel();
             } else if (gamepad1.dpad_down || gamepad2.a) {
                 sh.closeTunnel();
-            }
+           }
 
             t.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
             t.update();

@@ -136,7 +136,7 @@ public class AutoPedro extends LinearOpMode {
                 pathTimer.resetTimer();
                 while (pathTimer.getElapsedTime() < 2000);
                 follower.followPath(paths.Path1, true);
-                sh.waitForShoot();
+                
                 pathTimer.resetTimer();
                 while (pathTimer.getElapsedTime() < 5000);
                 setPathState(1);
@@ -161,7 +161,7 @@ public class AutoPedro extends LinearOpMode {
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    sh.waitForShoot();
+                    
                     sh.openTunnel();
                     sleep(5000);
                     follower.followPath(paths.Path5, true);

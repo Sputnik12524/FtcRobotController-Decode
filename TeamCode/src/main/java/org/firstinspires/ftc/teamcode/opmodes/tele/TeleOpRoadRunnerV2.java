@@ -30,7 +30,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
     Shooter sh;
     Intake in;
-    Limelight ll;
+    // Limelight ll;
     ElapsedTime timer;
 
 
@@ -59,7 +59,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        ll = new Limelight(this);
+      //  ll = new Limelight(this);
         timer = new ElapsedTime();
         sh = new Shooter(this);
         in = new Intake(this);
@@ -83,9 +83,62 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         while (opModeIsActive()) {
             g1.update();
             g2.update();
+//            switch (state) {
+//                case START:
+//                    if (sh.isShooting && timer.milliseconds() > sh.timers) {
+//                        timer.reset();
+//                        if (timer.milliseconds() > 1000) TARGET_VELOCITY = sh.VELOCITY;
+//                        transit(Calc.INIT);
+//                    }
+//                    break;
+//
+//                case RESTART:
+//                    num = 0;
+//                    TARGET_VELOCITY += change;
+//                    change = 0;
+//                    transit(Calc.START);
+//                    break;
+//
+//                case INIT:
+//                    //if (мы в зоне)????{
+//                    sh.openTunnel();
+//                    transit(Calc.UPDATE);
+//                    //else sh.closeTunnel();
+//                    artefacts = sh.artifactsNow;
+//                    break;
+//
+//                case WAIT_SHOOT:
+//                    sh.updateCalculator(TARGET_VELOCITY);
+//                    if (artefacts < sh.artifactsNow) {
+//                        num++;
+//                        transit(Calc.UPDATE);
+//                    }
+//                    break;
+
+//                case UPDATE:
+//                    if (num == 1) {
+//                        TARGET_VELOCITY -= 3;
+//                        change -= 3;
+//                        sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
+//                    } else if (num == 2) {
+//                        TARGET_VELOCITY -= 4;
+//                        change -= 4;
+//                        sh.setMode(sh.angleAdjuster.getPosition() - 0.02);
+//                    } else if (num == 3) {
+//                        TARGET_VELOCITY -= 5;
+//                        change -= 5;
+//                        sh.setMode(sh.angleAdjuster.getPosition() - 0.01);
+//                        transit(Calc.RESTART);
+//                    }
+//                    transit(Calc.INIT);
+//                    break;
+//            }
             switch (state) {
+
                 case START:
+
                     if (sh.isShooting && timer.milliseconds() > sh.timers) {
+                        timer.reset();
                         if (timer.milliseconds() > 1000) TARGET_VELOCITY = sh.VELOCITY;
                         transit(Calc.INIT);
                     }
@@ -109,29 +162,27 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                 case WAIT_SHOOT:
                     sh.updateCalculator(TARGET_VELOCITY);
                     if (artefacts < sh.artifactsNow) {
-                        num++;
                         transit(Calc.UPDATE);
                     }
                     break;
 
                 case UPDATE:
-                    if (num == 1) {
-                        TARGET_VELOCITY -= 3;
-                        change -= 3;
-                        sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
-                    } else if (num == 2) {
-                        TARGET_VELOCITY -= 4;
-                        change -= 4;
-                        sh.setMode(sh.angleAdjuster.getPosition() - 0.02);
-                    } else if (num == 3) {
-                        TARGET_VELOCITY -= 5;
-                        change -= 5;
-                        sh.setMode(sh.angleAdjuster.getPosition() - 0.01);
-                        transit(Calc.RESTART);
-                    }
+                    TARGET_VELOCITY -= 3;
+                    change -= 3;
+                    sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
+                    Thread.sleep(300);
+                    TARGET_VELOCITY -= 3;
+                    change -= 3;
+                    sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
+                    transit(Calc.INIT);
+                    Thread.sleep(300);
+                    TARGET_VELOCITY -= 3;
+                    change -= 3;
+                    sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
                     transit(Calc.INIT);
                     break;
             }
+
 
             // DRIVETRAIN
             if (g1.rightBumper.isHeld()) {
