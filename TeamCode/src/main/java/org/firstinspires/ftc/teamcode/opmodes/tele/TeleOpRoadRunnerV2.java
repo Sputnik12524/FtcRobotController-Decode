@@ -45,11 +45,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     /// Shooter
     boolean stateY1 = false;
     boolean stateX1 = false;
-    boolean stateRB1 = false;
-    boolean isShooting = false;
-    int artefactsIn = 0;
-    double angleAdjusterDegrees = 0;
-    double shooterSpeed = 0;
     int artefacts;
     int num = 0;
     public double change;
@@ -83,56 +78,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         while (opModeIsActive()) {
             g1.update();
             g2.update();
-//            switch (state) {
-//                case START:
-//                    if (sh.isShooting && timer.milliseconds() > sh.timers) {
-//                        timer.reset();
-//                        if (timer.milliseconds() > 1000) TARGET_VELOCITY = sh.VELOCITY;
-//                        transit(Calc.INIT);
-//                    }
-//                    break;
-//
-//                case RESTART:
-//                    num = 0;
-//                    TARGET_VELOCITY += change;
-//                    change = 0;
-//                    transit(Calc.START);
-//                    break;
-//
-//                case INIT:
-//                    //if (мы в зоне)????{
-//                    sh.openTunnel();
-//                    transit(Calc.UPDATE);
-//                    //else sh.closeTunnel();
-//                    artefacts = sh.artifactsNow;
-//                    break;
-//
-//                case WAIT_SHOOT:
-//                    sh.updateCalculator(TARGET_VELOCITY);
-//                    if (artefacts < sh.artifactsNow) {
-//                        num++;
-//                        transit(Calc.UPDATE);
-//                    }
-//                    break;
-
-//                case UPDATE:
-//                    if (num == 1) {
-//                        TARGET_VELOCITY -= 3;
-//                        change -= 3;
-//                        sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
-//                    } else if (num == 2) {
-//                        TARGET_VELOCITY -= 4;
-//                        change -= 4;
-//                        sh.setMode(sh.angleAdjuster.getPosition() - 0.02);
-//                    } else if (num == 3) {
-//                        TARGET_VELOCITY -= 5;
-//                        change -= 5;
-//                        sh.setMode(sh.angleAdjuster.getPosition() - 0.01);
-//                        transit(Calc.RESTART);
-//                    }
-//                    transit(Calc.INIT);
-//                    break;
-//            }
             switch (state) {
 
                 case START:
@@ -145,9 +90,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                     break;
 
                 case RESTART:
-                    num = 0;
-                    TARGET_VELOCITY += change;
-                    change = 0;
                     transit(Calc.START);
                     break;
 
@@ -167,17 +109,11 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                     break;
 
                 case UPDATE:
-                    TARGET_VELOCITY -= 3;
-                    change -= 3;
                     sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
-                    Thread.sleep(300);
-                    TARGET_VELOCITY -= 3;
-                    change -= 3;
+                    Thread.sleep(200);
                     sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
                     transit(Calc.INIT);
-                    Thread.sleep(300);
-                    TARGET_VELOCITY -= 3;
-                    change -= 3;
+                    Thread.sleep(200);
                     sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
                     transit(Calc.INIT);
                     break;

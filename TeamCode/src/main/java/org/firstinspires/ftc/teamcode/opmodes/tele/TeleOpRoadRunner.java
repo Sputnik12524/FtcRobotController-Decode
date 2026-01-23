@@ -84,10 +84,10 @@ public class TeleOpRoadRunner extends LinearOpMode {
             }
 
             if(gamepad2.dpad_up){
-                sh.tunnel.setPosition(0.0);
+                sh.tunnel.setPower(0);
             }
             if(gamepad2.dpad_down){
-                sh.tunnel.setPosition(1.0);
+                sh.tunnel.setPower(1);
             }
 
 

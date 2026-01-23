@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -13,6 +14,7 @@ public class Intake {
     public final DcMotorEx catcher;
     public ArtifactIntake artifactIntake;
     LinearOpMode linearOpMode;
+
 
     public static double POWER = 1;
     public static double IN_OUT = 300;

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,16 +13,20 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.opmodes.tele.TeleOpRoadRunnerV2;
+
 import java.util.ArrayList;
 
 @Config
 public class Shooter {
 
+
     public final DcMotorEx shooterUpper;
     LinearOpMode opMode;
     public final DcMotorEx shooterLower;
     public DcMotor turret;
-    enum Color{GREEN, PURPLE, NONE}
+
+    enum Color {GREEN, PURPLE, NONE}
 
     private NormalizedColorSensor colorSensor1;
     private NormalizedColorSensor colorSensor2;
@@ -34,17 +39,16 @@ public class Shooter {
     public static double PURPLE_MAX = 245;
     public static double PURPLE_MIN = 210;
     public final float GAIN = 2.4f;
-    public boolean canShoot = false;
-
+    public boolean canShoot = false; //
 
 
     public final Servo angleAdjuster;
     public final Servo cover;
-    public Servo tunnel;
+    public CRServo tunnel;
     private final VoltageSensor batteryVoltageSensor;
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(20, 0, 30, 14.7);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(9.5, 0, 4, 15.2);
     private final double TPR = 28;
-    public  short artifacts = 0;
+    public short artifacts = 0;
     public short artifactsIn = 0;
     public short artifactsNow = 0;
     public int timers;
@@ -53,21 +57,25 @@ public class Shooter {
     public static double VELOCITY_FOR_LONG_THROW = 52.5;
     public static double VELOCITY_FOR_MIDDLE_THROW = 48; //подобрать
     public static double VELOCITY_FOR_SHORT_THROW = 43;
-    public  double VELOCITY = 0;
+    public double VELOCITY = 0;
     public static double ERROR = 2.5;
     public static double POS_COVER_OPEN = 0.4;
     public static double POS_COVER_CLOSE = 0.9;
     public static double POS_SHORT_THROW = 0.75;
     public static double POS_LONG_THROW = 1;
+    public static double TIME_BETWEEN_SHOOT = 300;
     boolean needShootPortion = false;
     public boolean isShooting = false;
+    public boolean detected = false;
+    int timerses  = 0;
 
     public static double TIME_GATES_BETWEEN_SHOOT = 1000;
     public static double TIME_FOR_SET_VELOCITY = 2500;
+    private final ElapsedTime timer = new ElapsedTime();
 
+    enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
+    states state = states.INIT;
 
-    public ContinuousShooter continuousShooter = new ContinuousShooter();
-    private final ElapsedTime timerSh = new ElapsedTime();
 
     public Shooter(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -75,7 +83,7 @@ public class Shooter {
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         turret = opMode.hardwareMap.get(DcMotor.class, "turret");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
-        tunnel = opMode.hardwareMap.get(Servo.class, "tunnel");
+        tunnel = opMode.hardwareMap.get(CRServo.class, "transferServo");
 
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
         colorSensor1 = opMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensor1");
@@ -104,7 +112,6 @@ public class Shooter {
     public void shootByVelocity() {
         shooterUpper.setVelocity(velocityTarget);
         shooterLower.setVelocity(velocityTarget);
-        isShooting = true;
     }
 
     public void setVelocityTarget(double targetInRPS) {
@@ -138,6 +145,8 @@ public class Shooter {
 
     public void openTunnel() {
         cover.setPosition(POS_COVER_OPEN);
+        isShooting = true;
+
     }
 
     public void closeTunnel() {
@@ -148,9 +157,42 @@ public class Shooter {
         return angleAdjuster.getPosition();
     }
 
-    public void setMode(double pos){
+    public void setMode(double pos) {
         angleAdjuster.setPosition(pos);
     }
+   public void threeArtefactsShooting(){
+
+        updateCalculator(velocityTarget);
+        if(detected){
+
+                for(int i =0; i < 3; i++) {
+                    timer.reset();
+                    while (timer.milliseconds() < TIME_BETWEEN_SHOOT){}
+                    setMode(angleAdjuster.getPosition() - 3);
+                }
+            }
+
+        }
+
+//        switch (state){
+//            case INIT:
+//                if(isShooting && inZone && canShoot){
+//                    transit(states.SHOOT);
+//                }
+//            case SHOOT:
+//                openTunnel();
+//                updateCalculator(VELOCITY);
+//                if(detected){
+//
+//                }
+//
+//        }
+//    }
+
+
+
+
+
 
     public void autoStupidSetVelocityAndAngle(double y) {
         if (y < 48) {
@@ -164,6 +206,7 @@ public class Shooter {
             setVelocityTarget(VELOCITY_FOR_MIDDLE_THROW);
         }
     }
+
     public ArrayList<Color> getColor() {
         ArrayList<Color> colorSensors = new ArrayList<>();
 
@@ -198,41 +241,30 @@ public class Shooter {
         return colorSensors;
     }
 
-    public String isEmpty(){
-        for(int i = 0; i < 3; ++i){
-            if(getColor().get(i) != Color.NONE) return "Пустой";
+    public boolean isEmpty() {
+        for (int i = 0; i < 3; ++i) {
+            if (getColor().get(i) != Color.NONE) return true;
         }
-        return "Не пустой";
+        return  false;
     }
-    public int artefactsIn(){
+
+    public int artefactsIn() {
         artifactsIn = 0;
-        for(int i = 0; i < 3; i ++){
-            if(getColor().get(i) != Color.NONE) artifactsIn++;
+        for (int i = 0; i < 3; i++) {
+            if (getColor().get(i) != Color.NONE) artifactsIn++;
         }
         return artifactsIn;
     }
 
-    public class ContinuousShooter extends Thread {
-        private final ElapsedTime timer = new ElapsedTime();
-
-        @Override
-        public void run() {
-            if (!isInterrupted()) {
-                shootByVelocity();
-            }
-        }
-    }
 
     public void needShootPortion() {
         this.needShootPortion = true;
     }
 
     public void updateCalculator(double RPS) {
-        if(artifactsNow == 3) artifactsNow = 0;
-
         if (isShoot(RPS) && RPS != 0) {
+            detected = true;
             artifacts++;
-            artifactsNow++;
         } else {
             timers = 50;
         }
@@ -249,6 +281,7 @@ public class Shooter {
     public double getVelocityTPS() {
         return shooterUpper.getVelocity();
     }
+
     public void sleeping(long ms) {
         try {
             Thread.sleep(ms);
@@ -256,8 +289,14 @@ public class Shooter {
             throw new RuntimeException(e);
         }
     }
+
     public boolean isBack(double RPS) {
         return getVelocityRPS() >= (RPS - 1); //погрешность подобрать
+    }
+
+    public void transit(states state) {
+        timer.reset();
+        this.state = state;
     }
 
 }

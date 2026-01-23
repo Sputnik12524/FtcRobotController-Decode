@@ -54,59 +54,16 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
+            sh.threeArtefactsShooting();
 
-            // SHOOTER
-            if (gamepad1.y && !stateY1 && !isShooting) {
-                sh.setVelocityTarget(RPS);
-                sh.shootByVelocity();
-                isShooting = true;
-            } else if (gamepad1.y && !stateY1 && isShooting) {
-                sh.shootStop();
-                isShooting = false;
-            }
-            stateY1 = gamepad1.y;
-
-            // INTAKE
-            if (gamepad1.a && !isRotateIn && !stateA1) {
-                in.rotateIn();
-                isRotateIn = true;
-                isRotateOut = false;
-            } else if (gamepad1.a && isRotateIn && !stateA1) {
-                in.rotateStop();
-                isRotateIn = false;
-            }
-            if (gamepad1.b && !isRotateOut && !stateB1) {
-                in.rotateOut();
-                isRotateOut = true;
-                isRotateIn = false;
-            } else if (gamepad1.b && isRotateOut && !stateB1) {
-                in.rotateStop();
-                isRotateOut = false;
-            }
-            stateA1 = gamepad1.a;
-            stateB1 = gamepad1.b;
-
-
-            // ADJUSTER
-            if (gamepad1.dpad_up && POS_ADJUSTER <= 1) {
-                POS_ADJUSTER += 0.005;
-                sh.angleAdjuster.setPosition(POS_ADJUSTER);
-            } else if (gamepad1.dpad_down && POS_ADJUSTER >= 0) {
-                POS_ADJUSTER -= 0.005;
-                sh.angleAdjuster.setPosition(POS_ADJUSTER);
-            }
-            if (gamepad1.dpad_left) {
-                sh.openTunnel();
-            } else if (gamepad1.dpad_right) {
-                sh.closeTunnel();
-            }
 
             // LOGGER
             logger.addLine(timer.milliseconds(), sh.getVelocityRPS());
 
-            telemetry.addData("real PRS", sh.getVelocityRPS());
-            telemetry.addData("real TPS", sh.getVelocityTPS());
+//            telemetry.addData("real PRS", sh.getVelocityRPS());
+//            telemetry.addData("real TPS", sh.getVelocityTPS());
             telemetry.addData("ADJUSTER POS", sh.getAngleAdjusterPos());
+            telemetry.addData("Засекли выстрел", sh.detected);
             telemetry.update();
 
             dashTele.addLine("SHOOTER:");
