@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,18 +15,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+//import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
 import org.firstinspires.ftc.teamcode.opmodes.tele.TeleOpRoadRunnerV2;
 
 import java.util.ArrayList;
 
 @Config
 public class Shooter {
-
-
     public final DcMotorEx shooterUpper;
     LinearOpMode opMode;
     public final DcMotorEx shooterLower;
-    public DcMotor turret;
 
     enum Color {GREEN, PURPLE, NONE}
 
@@ -44,8 +45,9 @@ public class Shooter {
 
     public final Servo angleAdjuster;
     public final Servo cover;
-    public CRServo tunnel;
     private final VoltageSensor batteryVoltageSensor;
+
+    Follower follower;
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(9.5, 0, 4, 15.2);
     private final double TPR = 28;
     public short artifacts = 0;
@@ -55,14 +57,12 @@ public class Shooter {
     public static double POWER = 1;
     public double velocityTarget = 0;
     public static double VELOCITY_FOR_LONG_THROW = 52.5;
-    public static double VELOCITY_FOR_MIDDLE_THROW = 48; //подобрать
-    public static double VELOCITY_FOR_SHORT_THROW = 43;
-    public double VELOCITY = 0;
+    public static double VELOCITY_FOR_SHORT_THROW = 40;
     public static double ERROR = 2.5;
-    public static double POS_COVER_OPEN = 0.4;
-    public static double POS_COVER_CLOSE = 0.9;
-    public static double POS_SHORT_THROW = 0.75;
-    public static double POS_LONG_THROW = 1;
+    public static double POS_COVER_OPEN = 0.5;
+    public static double POS_COVER_CLOSE = 0.85;
+    public static double POS_SHORT_THROW = 0.05;
+    public static double POS_LONG_THROW = 0;
     public static double TIME_BETWEEN_SHOOT = 300;
     boolean needShootPortion = false;
     public boolean isShooting = false;
@@ -73,18 +73,22 @@ public class Shooter {
     public static double TIME_FOR_SET_VELOCITY = 2500;
     private final ElapsedTime timer = new ElapsedTime();
 
+    boolean InZone = true;
+    public static boolean isTunnelOpen;
+
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
     states state = states.INIT;
 
+    public ContinuousShooter continuousShooter = new ContinuousShooter();
+    //public ShooterPortion portion = new ShooterPortion();
+    private final ElapsedTime timerSh = new ElapsedTime();
+    private Pose currentPose;
 
     public Shooter(LinearOpMode opMode) {
         this.opMode = opMode;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
-        turret = opMode.hardwareMap.get(DcMotor.class, "turret");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
-        tunnel = opMode.hardwareMap.get(CRServo.class, "transferServo");
-
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
         colorSensor1 = opMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensor1");
         colorSensor1.setGain(GAIN);
@@ -99,15 +103,33 @@ public class Shooter {
         shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
         shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
 
         batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
+
+//    public Shooter(LinearOpMode opMode, Follower follower) {
+//        this.follower = follower;
+//        this.opMode = opMode;
+//        shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
+//        shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
+//        cover = opMode.hardwareMap.get(Servo.class, "cover");
+//        angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
+//      //  currentPose = follower.getPose();
+//
+//        shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//        shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//        shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//
+//        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+//
+//        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
+//        setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
+//        setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+//    }
 
     public void shootByVelocity() {
         shooterUpper.setVelocity(velocityTarget);
@@ -135,6 +157,18 @@ public class Shooter {
         ));
     }
 
+    public void waitForShoot() { // no test
+        for (int i = 0; i < 5; i++) {
+            opMode.sleep(2000);
+            openTunnel();
+            isTunnelOpen = true;
+            opMode.sleep(200);
+            closeTunnel();
+            isTunnelOpen = false;
+        }
+
+    }
+
     public void setShortThrowMode() {
         angleAdjuster.setPosition(POS_SHORT_THROW);
     }
@@ -157,6 +191,43 @@ public class Shooter {
         return angleAdjuster.getPosition();
     }
 
+ //   public boolean ifInLaunchZoneGoal() {
+        //currentPose = follower.getPose();
+//        if (follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 72) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+   // }
+
+//    public boolean ifInLaunchZoneHuman() {
+//        currentPose = follower.getPose();
+//        if (follower.getPose().getY() <= -Math.abs(follower.getPose().getX() - 72) + 24) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
+
+//    public void shootingAllowed() {
+//        if (ifInLaunchZoneGoal() || ifInLaunchZoneHuman()) {
+//            openTunnel();
+//        } else {
+//            closeTunnel();
+//        }
+//    }
+
+
+    public class ContinuousShooter extends Thread {
+        private final ElapsedTime timer = new ElapsedTime();
+
+        @Override
+        public void run() {
+            if (!isInterrupted()) {
+                shootByVelocity();
+            }
+        }
+    }
     public void setMode(double pos) {
         angleAdjuster.setPosition(pos);
     }
@@ -201,9 +272,6 @@ public class Shooter {
         } else if (y > 84) {
             setShortThrowMode();
             setVelocityTarget(VELOCITY_FOR_SHORT_THROW);
-        } else {
-            setShortThrowMode();
-            setVelocityTarget(VELOCITY_FOR_MIDDLE_THROW);
         }
     }
 
@@ -257,10 +325,6 @@ public class Shooter {
     }
 
 
-    public void needShootPortion() {
-        this.needShootPortion = true;
-    }
-
     public void updateCalculator(double RPS) {
         if (isShoot(RPS) && RPS != 0) {
             detected = true;
@@ -294,9 +358,10 @@ public class Shooter {
         return getVelocityRPS() >= (RPS - 1); //погрешность подобрать
     }
 
-    public void transit(states state) {
-        timer.reset();
-        this.state = state;
-    }
+//    public void transit(states state) {
+//        timer.reset();
+//        this.state = state;
+//    }
 
 }
+
