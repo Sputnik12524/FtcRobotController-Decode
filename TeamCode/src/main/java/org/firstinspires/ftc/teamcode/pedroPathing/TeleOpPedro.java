@@ -9,7 +9,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+/*
 @Configurable
 @TeleOp(name = "TeleOpPP", group = "tele")
 public class TeleOpPedro extends OpMode {
@@ -77,4 +77,4 @@ public class TeleOpPedro extends OpMode {
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);
     }
-}
+}*/

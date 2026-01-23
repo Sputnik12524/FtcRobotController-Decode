@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+//import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "TeleOpRR Shooter - Velocity", group = "0")
 @Config
@@ -27,7 +27,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
     Shooter sh;
     Intake in;
-    Limelight ll;
+   // Limelight ll;
     ElapsedTime timer;
     Follower follower;
     private Pose currentPose;
@@ -51,11 +51,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         //ll = new Limelight(this);
-        follower = Constants.createFollower(hardwareMap);
+//        follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
-        sh = new Shooter(this, follower);
+        sh = new Shooter(this);
         in = new Intake(this);
-        currentPose = follower.getPose();
+        //currentPose = follower.getPose();
         isShootingLong = false;
         isShootingShort = false;
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
@@ -72,8 +72,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            follower.update();
-            currentPose = follower.getPose();
+            //follower.update();
+            //currentPose = follower.getPose();
 
             // DRIVETRAIN
             if (gamepad1.right_bumper) {
@@ -87,10 +87,12 @@ public class TeleOpRoadRunner extends LinearOpMode {
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {
                 in.rotateIn();
+                in.transferSetPower(Intake.TRANSFER_POWER);
                 isRotateIn = true;
                 isRotateOut = false;
             } else if (gamepad1.a && isRotateIn && !stateA1) {
                 in.rotateStop();
+                in.transferSetPower(0);
                 isRotateIn = false;
             }
             if (gamepad1.b && !isRotateOut && !stateB1) {

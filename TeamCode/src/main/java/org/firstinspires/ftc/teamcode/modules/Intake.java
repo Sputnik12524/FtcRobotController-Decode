@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -13,14 +14,17 @@ public class Intake {
     public final DcMotorEx catcher;
     public ArtifactIntake artifactIntake;
     LinearOpMode linearOpMode;
+    CRServo transferServo;
 
     public static double POWER = 1;
     public static double IN_OUT = 300;
+    public static double TRANSFER_POWER = 1;
 
     public Intake(LinearOpMode linearOpMode) {
         artifactIntake = new ArtifactIntake();
         this.linearOpMode = linearOpMode;
         this.catcher = linearOpMode.hardwareMap.get(DcMotorEx.class, "catcher");
+        transferServo = linearOpMode.hardwareMap.get(CRServo.class,"transferServo");
     }
 
     public void rotateIn() {
@@ -42,6 +46,9 @@ public class Intake {
 
     public void needRotateOut() {
         artifactIntake.isRotateOut = true;
+    }
+    public void transferSetPower(double power){
+        transferServo.setPower(power);
     }
 
     public class ArtifactIntake extends Thread {
