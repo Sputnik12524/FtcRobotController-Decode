@@ -67,7 +67,7 @@ public class Shooter {
     boolean needShootPortion = false;
     public boolean isShooting = false;
     public boolean detected = false;
-    int timerses  = 0;
+    int timerses = 0;
 
     public static double TIME_GATES_BETWEEN_SHOOT = 1000;
     public static double TIME_FOR_SET_VELOCITY = 2500;
@@ -77,6 +77,7 @@ public class Shooter {
     public static boolean isTunnelOpen;
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
+
     states state = states.INIT;
 
     public ContinuousShooter continuousShooter = new ContinuousShooter();
@@ -191,14 +192,14 @@ public class Shooter {
         return angleAdjuster.getPosition();
     }
 
- //   public boolean ifInLaunchZoneGoal() {
-        //currentPose = follower.getPose();
+    //   public boolean ifInLaunchZoneGoal() {
+    //currentPose = follower.getPose();
 //        if (follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 72) {
 //            return true;
 //        } else {
 //            return false;
 //        }
-   // }
+    // }
 
 //    public boolean ifInLaunchZoneHuman() {
 //        currentPose = follower.getPose();
@@ -228,22 +229,27 @@ public class Shooter {
             }
         }
     }
+
     public void setMode(double pos) {
         angleAdjuster.setPosition(pos);
     }
-   public void threeArtefactsShooting(){
+
+    public boolean threeArtefactsShooting() {
 
         updateCalculator(velocityTarget);
-        if(detected){
+        if (detected) {
 
-                for(int i =0; i < 3; i++) {
-                    timer.reset();
-                    while (timer.milliseconds() < TIME_BETWEEN_SHOOT){}
-                    setMode(angleAdjuster.getPosition() - 3);
+            for (int i = 0; i < 3; i++) {
+                timer.reset();
+                while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
                 }
+                setMode(angleAdjuster.getPosition() - 0.007);
             }
-
+            return false;
         }
+        else return true;
+
+    }
 
 //        switch (state){
 //            case INIT:
@@ -259,10 +265,6 @@ public class Shooter {
 //
 //        }
 //    }
-
-
-
-
 
 
     public void autoStupidSetVelocityAndAngle(double y) {
@@ -313,7 +315,7 @@ public class Shooter {
         for (int i = 0; i < 3; ++i) {
             if (getColor().get(i) != Color.NONE) return true;
         }
-        return  false;
+        return false;
     }
 
     public int artefactsIn() {
@@ -326,12 +328,11 @@ public class Shooter {
 
 
     public void updateCalculator(double RPS) {
-        if (isShoot(RPS) && RPS != 0) {
-            detected = true;
+        if (isShoot(RPS) && detected) {
+            detected = false;
             artifacts++;
-        } else {
-            timers = 50;
         }
+        if(isBack(RPS)) detected = true;
     }
 
     public boolean isShoot(double RPS) {

@@ -42,12 +42,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateX1 = false;
     boolean stateRB1 = false;
     private PathChain PathSecondScoring;
+    public boolean weCanShoot = false;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-       // ll = new Limelight(this);
+        // ll = new Limelight(this);
         //     follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
         sh = new Shooter(this);
@@ -71,11 +72,15 @@ public class TeleOpRoadRunner extends LinearOpMode {
         while (opModeIsActive()) {
             //follower.update();
             //currentPose = follower.getPose();
+            if (weCanShoot) {
+                weCanShoot = sh.threeArtefactsShooting();
+            }
+
 
             // DRIVETRAIN
             if (gamepad1.right_bumper) {
                 dt.turnRightSlowMode();
-            } else if (gamepad1.left_bumper){
+            } else if (gamepad1.left_bumper) {
                 dt.turnLeftSlowMode();
             } else {
                 dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
@@ -105,7 +110,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             // SHOOTER
             if (gamepad1.right_bumper && !stateRB1) {
-               // sh.needShootPortion();
+                // sh.needShootPortion();
             }
             stateRB1 = gamepad1.right_bumper;
 
@@ -130,19 +135,24 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
 
-            if (gamepad1.dpad_up || gamepad2.b) {
+            if (gamepad1.dpad_up) {
                 sh.openTunnel();
-            } else if (gamepad1.dpad_down || gamepad2.a) {
+            } else if (gamepad1.dpad_down) {
                 sh.closeTunnel();
+            }
+            if (gamepad2.a) {
+                weCanShoot = true;
             }
 
             t.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
             t.addData("Заброшенных артефактов", sh.artifacts);
+            t.addData("Potuzhnaya stenka", sh.angleAdjuster.getPosition());
             t.update();
 
 
         }
     }
+
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }

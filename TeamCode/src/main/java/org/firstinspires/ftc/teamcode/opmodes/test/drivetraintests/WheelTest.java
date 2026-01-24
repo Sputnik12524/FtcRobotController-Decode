@@ -7,12 +7,12 @@ import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 
 @TeleOp(name="TEST Wheel", group = "5")
 public class WheelTest extends LinearOpMode {
-    DriveTrain dt = new DriveTrain(this);
+    DriveTrain dt;
     double SPEED = 0.5;
     @Override
     public void runOpMode() throws InterruptedException {
 
-        DriveTrain dt = new DriveTrain(this);
+        dt = new DriveTrain(this);
 
         waitForStart();
         while (opModeIsActive()) {

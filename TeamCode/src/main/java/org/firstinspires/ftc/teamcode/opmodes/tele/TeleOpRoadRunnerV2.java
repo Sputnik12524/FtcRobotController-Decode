@@ -78,46 +78,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         while (opModeIsActive()) {
             g1.update();
             g2.update();
-            switch (state) {
-
-                case START:
-
-                    if (sh.isShooting && timer.milliseconds() > sh.timers) {
-                        timer.reset();
-                        if (timer.milliseconds() > 1000) TARGET_VELOCITY = sh.VELOCITY;
-                        transit(Calc.INIT);
-                    }
-                    break;
-
-                case RESTART:
-                    transit(Calc.START);
-                    break;
-
-                case INIT:
-                    //if (мы в зоне)????{
-                    sh.openTunnel();
-                    transit(Calc.UPDATE);
-                    //else sh.closeTunnel();
-                    artefacts = sh.artifactsNow;
-                    break;
-
-                case WAIT_SHOOT:
-                    sh.updateCalculator(TARGET_VELOCITY);
-                    if (artefacts < sh.artifactsNow) {
-                        transit(Calc.UPDATE);
-                    }
-                    break;
-
-                case UPDATE:
-                    sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
-                    Thread.sleep(200);
-                    sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
-                    transit(Calc.INIT);
-                    Thread.sleep(200);
-                    sh.setMode(sh.angleAdjuster.getPosition() - 0.03);
-                    transit(Calc.INIT);
-                    break;
-            }
 
 
             // DRIVETRAIN
@@ -133,9 +93,11 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             // INTAKE
             if (g1.A.isPressed()) {
                 if (g1.A.getToggleState()) {
+                    in.transferSetPower(Intake.TRANSFER_POWER);
                     in.rotateIn();
                 } else {
                     in.rotateStop();
+                    in.transferSetPower(0);
                 }
             }
             if (g1.B.isPressed()) {
@@ -147,9 +109,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             }
 
             // SHOOTER
-            if (g1.rightBumper.isPressed() && g1.rightBumper.getToggleState()) {
-                sh.needShootPortion();
-            }
+
 
 
             if (g1.Y.isPressed() && !isShootingLong && g1.Y.getToggleState()) {
