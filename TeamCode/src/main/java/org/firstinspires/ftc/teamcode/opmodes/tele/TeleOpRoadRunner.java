@@ -43,6 +43,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateRB1 = false;
     private PathChain PathSecondScoring;
     public boolean weCanShoot = false;
+    boolean detect = false;
 
 
     @Override
@@ -72,9 +73,17 @@ public class TeleOpRoadRunner extends LinearOpMode {
         while (opModeIsActive()) {
             //follower.update();
             //currentPose = follower.getPose();
-            if (weCanShoot) {
-                weCanShoot = sh.threeArtefactsShooting();
+
+            if(sh.isShooting && !detect){
+                if(sh.isDetected()){
+                    timer.reset();
+                    detect = true;
+                    sh.setMode(sh.angleAdjuster.getPosition() -0.0075);
+                    while (timer.milliseconds() < 400){}
+                    sh.setMode(sh.angleAdjuster.getPosition() -0.0075);
+                }
             }
+            if(sh.isSpinUp()) detect = false;
 
 
             // DRIVETRAIN
@@ -140,8 +149,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
             } else if (gamepad1.dpad_down) {
                 sh.closeTunnel();
             }
-            if (gamepad2.a) {
-                weCanShoot = true;
+            if (gamepad1.dpad_right) {
+                detect = false;
             }
 
             t.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);

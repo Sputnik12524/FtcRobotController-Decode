@@ -61,10 +61,10 @@ public class Shooter {
     public static double POS_COVER_CLOSE = 0.9;
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0;
-    public static final double TIME_BETWEEN_SHOOT = 300;
-    public static final double DELTA_ADJASTER = 0.03;
-    public static final double DETECT_SHOOT = 4;
-    public static final double IS_SPIN_UP = 1;
+    public static double TIME_BETWEEN_SHOOT = 300;
+    public static double DELTA_ADJASTER = 0.03;
+    public static double DETECT_SHOOT = 3;
+    public static double IS_SPIN_UP = 1;
     public boolean isShooting = false;
     public boolean detected = false;
     int timerses = 0;
@@ -78,9 +78,6 @@ public class Shooter {
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
     states state = states.INIT;
-
-    public ContinuousShooter continuousShooter = new ContinuousShooter();
-    //public ShooterPortion portion = new ShooterPortion();
     private final ElapsedTime timerSh = new ElapsedTime();
     private Pose currentPose;
 
@@ -157,18 +154,6 @@ public class Shooter {
         ));
     }
 
-    public void waitForShoot() { // no test
-        for (int i = 0; i < 5; i++) {
-            opMode.sleep(2000);
-            openTunnel();
-            isTunnelOpen = true;
-            opMode.sleep(200);
-            closeTunnel();
-            isTunnelOpen = false;
-        }
-
-    }
-
     public void setShortThrowMode() {
         angleAdjuster.setPosition(POS_SHORT_THROW);
     }
@@ -218,17 +203,6 @@ public class Shooter {
 //    }
 
 
-    public class ContinuousShooter extends Thread {
-        private final ElapsedTime timer = new ElapsedTime();
-
-        @Override
-        public void run() {
-            if (!isInterrupted()) {
-                shootByVelocity();
-            }
-        }
-    }
-
     public void setMode(double pos) {
         if(pos < POS_LONG_THROW) angleAdjuster.setPosition(POS_LONG_THROW);
         else if (pos > POS_SHORT_THROW) angleAdjuster.setPosition(POS_SHORT_THROW);
@@ -247,7 +221,6 @@ public class Shooter {
                 setMode(angleAdjuster.getPosition() - 0.007);
             }
         }
-
 
     }
 
