@@ -18,9 +18,19 @@ public class TurretTest extends LinearOpMode {
         tr.turretRegulator.start();
         waitForStart();
         while (opModeIsActive()) {
-            telemetry.addData("Magneting?", tr.isMagneting());
-            telemetry.update();
 
+            if (gamepad1.right_bumper) {
+                tr.turnRightByTarget();
+            } else if (gamepad1.left_bumper) {
+                tr.turnLeftByTarget();
+            }
+
+            telemetry.addData("Magneting?", tr.isMagneting());
+            telemetry.addData("speed", tr.turret.getVelocity());
+            telemetry.addData("t", tr.target);
+            telemetry.addData("error", tr.error);
+            telemetry.update();
         }
+        tr.turretRegulator.interrupt();
     }
 }

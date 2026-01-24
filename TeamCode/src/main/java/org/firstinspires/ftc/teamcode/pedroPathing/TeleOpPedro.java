@@ -21,7 +21,6 @@ public class TeleOpPedro extends OpMode {
         follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
         follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
-
     }
 
     @Override
