@@ -17,14 +17,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 //import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-import org.firstinspires.ftc.teamcode.opmodes.tele.TeleOpRoadRunnerV2;
-
 import java.util.ArrayList;
 
 @Config
 public class Shooter {
-
-
     public final DcMotorEx shooterUpper;
     LinearOpMode opMode;
     public final DcMotorEx shooterLower;
