@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 @Config
 public class Shooter {
+
+
     public final DcMotorEx shooterUpper;
     LinearOpMode opMode;
     public final DcMotorEx shooterLower;
@@ -32,9 +34,9 @@ public class Shooter {
     private NormalizedColorSensor colorSensor1;
     private NormalizedColorSensor colorSensor2;
     private NormalizedColorSensor colorSensor3;
-    private float[] hsv1 = new float[2];
-    private float[] hsv2 = new float[2];
-    private float[] hsv3 = new float[2];
+    private float[] hsv1 = new float[3];
+    private float[] hsv2 = new float[3];
+    private float[] hsv3 = new float[3];
     public static double GREEN_MAX = 175;
     public static double GREEN_MIN = 115;
     public static double PURPLE_MAX = 245;
@@ -59,12 +61,14 @@ public class Shooter {
     public static double VELOCITY_FOR_LONG_THROW = 52.5;
     public static double VELOCITY_FOR_SHORT_THROW = 40;
     public static double ERROR = 2.5;
-    public static double POS_COVER_OPEN = 0.5;
-    public static double POS_COVER_CLOSE = 0.85;
+    public static double POS_COVER_OPEN = 0.4;
+    public static double POS_COVER_CLOSE = 0.9;
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0;
-    public static double TIME_BETWEEN_SHOOT = 300;
-    boolean needShootPortion = false;
+    public static final double TIME_BETWEEN_SHOOT = 300;
+    public static final double DELTA_ADJASTER = 0.03;
+    public static final double DETECT_SHOOT = 4;
+    public static final double IS_SPIN_UP = 1;
     public boolean isShooting = false;
     public boolean detected = false;
     int timerses = 0;
@@ -77,7 +81,6 @@ public class Shooter {
     public static boolean isTunnelOpen;
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
-
     states state = states.INIT;
 
     public ContinuousShooter continuousShooter = new ContinuousShooter();
@@ -231,40 +234,26 @@ public class Shooter {
     }
 
     public void setMode(double pos) {
-        angleAdjuster.setPosition(pos);
+        if(pos < POS_LONG_THROW) angleAdjuster.setPosition(POS_LONG_THROW);
+        else if (pos > POS_SHORT_THROW) angleAdjuster.setPosition(POS_SHORT_THROW);
+        else angleAdjuster.setPosition(pos);
     }
 
-    public boolean threeArtefactsShooting() {
-
-        updateCalculator(velocityTarget);
+    public void threeArtefactsShooting() {
+        updateCalculator();
         if (detected) {
 
             for (int i = 0; i < 3; i++) {
                 timer.reset();
                 while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
                 }
+                setMode(angleAdjuster.getPosition() - DELTA_ADJASTER);
                 setMode(angleAdjuster.getPosition() - 0.007);
             }
-            return false;
         }
-        else return true;
+
 
     }
-
-//        switch (state){
-//            case INIT:
-//                if(isShooting && inZone && canShoot){
-//                    transit(states.SHOOT);
-//                }
-//            case SHOOT:
-//                openTunnel();
-//                updateCalculator(VELOCITY);
-//                if(detected){
-//
-//                }
-//
-//        }
-//    }
 
 
     public void autoStupidSetVelocityAndAngle(double y) {
@@ -313,9 +302,9 @@ public class Shooter {
 
     public boolean isEmpty() {
         for (int i = 0; i < 3; ++i) {
-            if (getColor().get(i) != Color.NONE) return true;
+            if (getColor().get(i) != Color.NONE) return false;
         }
-        return false;
+        return true;
     }
 
     public int artefactsIn() {
@@ -327,16 +316,23 @@ public class Shooter {
     }
 
 
-    public void updateCalculator(double RPS) {
-        if (isShoot(RPS) && detected) {
-            detected = false;
+    public void updateCalculator() {
+        if (isDetected() && !detected) {
+            detected = true;
             artifacts++;
         }
-        if(isBack(RPS)) detected = true;
+        if (isSpinUp()) {
+            detected = false;
+        }
     }
 
-    public boolean isShoot(double RPS) {
-        return getVelocityRPS() < RPS - 4;
+    public boolean isDetected() {
+        if (isSpinUp()) return getVelocityRPS() < velocityTarget - DETECT_SHOOT;
+        else return false;
+    }
+
+    public boolean isSpinUp() {
+        return getVelocityRPS() >= velocityTarget - IS_SPIN_UP; //погрешность подобрать
     }
 
     public double getVelocityRPS() {
@@ -355,14 +351,10 @@ public class Shooter {
         }
     }
 
-    public boolean isBack(double RPS) {
-        return getVelocityRPS() >= (RPS - 1); //погрешность подобрать
+
+    public void transit(states state) {
+        timer.reset();
+        this.state = state;
     }
 
-//    public void transit(states state) {
-//        timer.reset();
-//        this.state = state;
-//    }
-
 }
-
