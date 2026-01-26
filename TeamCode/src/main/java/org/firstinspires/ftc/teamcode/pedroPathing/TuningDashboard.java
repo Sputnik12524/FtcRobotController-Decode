@@ -33,7 +33,6 @@ import java.util.List;
  * @version 1.0, 6/26/2025
  */
 @Config
-@Disabled
 @TeleOp(name = "Tuning Dash", group = "Pedro Pathing")
 public class TuningDashboard extends SelectableOpMode {
     public static Follower follower;
