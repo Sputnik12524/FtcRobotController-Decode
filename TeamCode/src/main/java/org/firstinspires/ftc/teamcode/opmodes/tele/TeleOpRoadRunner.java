@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 //import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
@@ -26,6 +27,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     Intake in;
     Limelight ll;
     ElapsedTime timer;
+    Transfer tr;
     Follower follower;
     private Pose currentPose;
 
@@ -54,6 +56,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         timer = new ElapsedTime();
         sh = new Shooter(this);
         in = new Intake(this);
+        tr = new Transfer(this);
         //currentPose = follower.getPose();
         isShootingLong = false;
         isShootingShort = false;
@@ -74,16 +77,19 @@ public class TeleOpRoadRunner extends LinearOpMode {
             //follower.update();
             //currentPose = follower.getPose();
 
-            if(sh.isShooting && !detect){
-                if(sh.isDetected()){
-                    timer.reset();
-                    detect = true;
-                    sh.setMode(sh.angleAdjuster.getPosition() -0.0075);
-                    while (timer.milliseconds() < 400){}
-                    sh.setMode(sh.angleAdjuster.getPosition() -0.0075);
-                }
-            }
-            if(sh.isSpinUp()) detect = false;
+            sh.threeArtefactsShooting();
+
+
+//            if(sh.isShooting && !detect){
+//                if(sh.isDetected()){
+//                    timer.reset();
+//                    detect = true;
+//                    sh.setMode(sh.angleAdjuster.getPosition() -0.0075);
+//                    while (timer.milliseconds() < 400){}
+//                    sh.setMode(sh.angleAdjuster.getPosition() -0.0075);
+//                }
+//            }
+//            if(sh.isSpinUp()) detect = false;
 
 
             // DRIVETRAIN
@@ -149,16 +155,14 @@ public class TeleOpRoadRunner extends LinearOpMode {
             } else if (gamepad1.dpad_down) {
                 sh.closeTunnel();
             }
-            if (gamepad1.dpad_right) {
-                detect = false;
-            }
+
 
             t.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
             t.addData("Заброшенных артефактов", sh.artifacts);
+            t.addData("Робот пустой?  ", tr.isEmpty());
             t.addData("Potuzhnaya stenka", sh.angleAdjuster.getPosition());
+            t.addData("Complete", sh.complete);
             t.update();
-
-
         }
     }
 

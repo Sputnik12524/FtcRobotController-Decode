@@ -4,47 +4,22 @@ import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-//import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-
-import java.util.ArrayList;
 
 @Config
 public class Shooter {
     public final DcMotorEx shooterUpper;
     LinearOpMode opMode;
     public final DcMotorEx shooterLower;
-
-    enum Color {GREEN, PURPLE, NONE}
-
-    private NormalizedColorSensor colorSensor1;
-    private NormalizedColorSensor colorSensor2;
-    private NormalizedColorSensor colorSensor3;
-    private float[] hsv1 = new float[3];
-    private float[] hsv2 = new float[3];
-    private float[] hsv3 = new float[3];
-    public static double GREEN_MAX = 175;
-    public static double GREEN_MIN = 115;
-    public static double PURPLE_MAX = 245;
-    public static double PURPLE_MIN = 210;
-    public final float GAIN = 2.4f;
-    public boolean canShoot = false; //
-
-
     public final Servo angleAdjuster;
     public final Servo cover;
     private final VoltageSensor batteryVoltageSensor;
-
     Follower follower;
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(9.5, 0, 4, 15.2);
     private final double TPR = 28;
@@ -61,12 +36,15 @@ public class Shooter {
     public static double POS_COVER_CLOSE = 0.9;
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0;
-    public static double TIME_BETWEEN_SHOOT = 300;
-    public static double DELTA_ADJASTER = 0.03;
-    public static double DETECT_SHOOT = 3;
-    public static double IS_SPIN_UP = 1;
+    public static double TIME_BETWEEN_SHOOT = 175;
+    public static double TIME_AFTER_SHOOT = 300;
+    public static double DELTA_ADJASTER = 0.00120;
+    public static double DETECT_SHOOT = 4.5;
+    public static double IS_SPIN_UP = 3.125;
     public boolean isShooting = false;
     public boolean detected = false;
+    public boolean complete = false;
+    boolean isSpinUp = false;
     int timerses = 0;
 
     public static double TIME_GATES_BETWEEN_SHOOT = 1000;
@@ -77,6 +55,7 @@ public class Shooter {
     public static boolean isTunnelOpen;
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
+
     states state = states.INIT;
     private final ElapsedTime timerSh = new ElapsedTime();
     private Pose currentPose;
@@ -87,13 +66,6 @@ public class Shooter {
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
-        colorSensor1 = opMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensor1");
-        colorSensor1.setGain(GAIN);
-        colorSensor2 = opMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensor2");
-        colorSensor2.setGain(GAIN);
-        colorSensor3 = opMode.hardwareMap.get(NormalizedColorSensor.class, "colorSensor3");
-        colorSensor3.setGain(GAIN);
-
 
         shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -176,54 +148,45 @@ public class Shooter {
         return angleAdjuster.getPosition();
     }
 
-    //   public boolean ifInLaunchZoneGoal() {
-    //currentPose = follower.getPose();
-//        if (follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 72) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-    // }
+       public boolean ifInLaunchZoneGoal() {
+    currentPose = follower.getPose();
+           return follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 72;
+     }
 
-//    public boolean ifInLaunchZoneHuman() {
-//        currentPose = follower.getPose();
-//        if (follower.getPose().getY() <= -Math.abs(follower.getPose().getX() - 72) + 24) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
+    public boolean ifInLaunchZoneHuman() {
+        currentPose = follower.getPose();
+        return follower.getPose().getY() <= -Math.abs(follower.getPose().getX() - 72) + 24;
+    }
 
-//    public void shootingAllowed() {
-//        if (ifInLaunchZoneGoal() || ifInLaunchZoneHuman()) {
-//            openTunnel();
-//        } else {
-//            closeTunnel();
-//        }
-//    }
+    public boolean shootingAllowed() {
+        return ifInLaunchZoneGoal() || ifInLaunchZoneHuman();
+    }
 
 
     public void setMode(double pos) {
-        if(pos < POS_LONG_THROW) angleAdjuster.setPosition(POS_LONG_THROW);
+        if (pos < POS_LONG_THROW) angleAdjuster.setPosition(POS_LONG_THROW);
         else if (pos > POS_SHORT_THROW) angleAdjuster.setPosition(POS_SHORT_THROW);
         else angleAdjuster.setPosition(pos);
     }
 
     public void threeArtefactsShooting() {
         updateCalculator();
-        if (detected) {
-
-            for (int i = 0; i < 3; i++) {
+        if (complete) {
+            for (int i = 0; i < 2; i++) {
                 timer.reset();
                 while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
                 }
-                setMode(angleAdjuster.getPosition() - DELTA_ADJASTER);
-                setMode(angleAdjuster.getPosition() - 0.007);
+                setMode(angleAdjuster.getPosition() + DELTA_ADJASTER);
             }
+            complete = false;
+//            timer.reset();
+//            while (timer.milliseconds() < TIME_AFTER_SHOOT) {
+//            }
+//            setShortThrowMode();
+//            isSpinUp = false;
+//            complete = true;
         }
-
     }
-
 
     public void autoStupidSetVelocityAndAngle(double y) {
         if (y < 48) {
@@ -235,73 +198,25 @@ public class Shooter {
         }
     }
 
-    public ArrayList<Color> getColor() {
-        ArrayList<Color> colorSensors = new ArrayList<>();
-
-        NormalizedRGBA color1 = colorSensor1.getNormalizedColors();
-        NormalizedRGBA color2 = colorSensor2.getNormalizedColors();
-        NormalizedRGBA color3 = colorSensor3.getNormalizedColors();
-        android.graphics.Color.colorToHSV(color1.toColor(), hsv1);
-        android.graphics.Color.colorToHSV(color2.toColor(), hsv2);
-        android.graphics.Color.colorToHSV(color3.toColor(), hsv3);
-
-
-        if (hsv1[0] <= GREEN_MAX && hsv1[0] >= GREEN_MIN) {
-            colorSensors.add(Color.GREEN);
-        } else if (hsv1[0] <= PURPLE_MAX && hsv1[0] >= PURPLE_MIN) {
-            colorSensors.add(Color.PURPLE);
-        } else colorSensors.add(Color.NONE);
-
-
-        if (hsv2[0] <= GREEN_MAX && hsv2[0] >= GREEN_MIN) {
-            colorSensors.add(Color.GREEN);
-        } else if (hsv2[0] <= PURPLE_MAX && hsv2[0] >= PURPLE_MIN) {
-            colorSensors.add(Color.PURPLE);
-        } else colorSensors.add(Color.NONE);
-
-
-        if (hsv3[0] <= GREEN_MAX && hsv3[0] >= GREEN_MIN) {
-            colorSensors.add(Color.GREEN);
-        } else if (hsv3[0] <= PURPLE_MAX && hsv3[0] >= PURPLE_MIN) {
-            colorSensors.add(Color.PURPLE);
-        } else colorSensors.add(Color.NONE);
-
-        return colorSensors;
-    }
-
-    public boolean isEmpty() {
-        for (int i = 0; i < 3; ++i) {
-            if (getColor().get(i) != Color.NONE) return false;
-        }
-        return true;
-    }
-
-    public int artefactsIn() {
-        artifactsIn = 0;
-        for (int i = 0; i < 3; i++) {
-            if (getColor().get(i) != Color.NONE) artifactsIn++;
-        }
-        return artifactsIn;
-    }
-
 
     public void updateCalculator() {
-        if (isDetected() && !detected) {
-            detected = true;
-            artifacts++;
-        }
-        if (isSpinUp()) {
+        if (isDetected() && detected) {
             detected = false;
+            artifacts++;
+            complete = true;
+        }
+        if (isSpinUp() && !detected) {
+            detected = true;
         }
     }
 
     public boolean isDetected() {
-        if (isSpinUp()) return getVelocityRPS() < velocityTarget/TPR - DETECT_SHOOT;
-        else return false;
+        return getVelocityRPS() < velocityTarget / TPR - DETECT_SHOOT;
     }
 
     public boolean isSpinUp() {
-        return getVelocityRPS() >= velocityTarget/TPR - IS_SPIN_UP; //погрешность подобрать
+        isSpinUp = true;
+        return getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP; //погрешность подобрать
     }
 
     public double getVelocityRPS() {
