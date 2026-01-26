@@ -155,7 +155,7 @@ public class Shooter {
 
     public boolean ifInLaunchZoneGoal() {
         currentPose = follower.getPose();
-        if (follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 72) {
+        if (follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 61) {
             return true;
         } else {
             return false;
@@ -164,7 +164,7 @@ public class Shooter {
 
     public boolean ifInLaunchZoneHuman() {
         currentPose = follower.getPose();
-        if (follower.getPose().getY() <= -Math.abs(follower.getPose().getX() - 72) + 24) {
+        if (follower.getPose().getY() <= -Math.abs(follower.getPose().getX() - 72) + 33) {
             return true;
         } else {
             return false;
