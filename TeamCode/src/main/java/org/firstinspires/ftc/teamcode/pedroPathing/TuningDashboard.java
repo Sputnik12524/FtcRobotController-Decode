@@ -1054,6 +1054,7 @@ class Line extends OpMode {
  * @author Anyi Lin - 10158 Scott's Bots
  * @author Aaron Yang - 10158 Scott's Bots
  * @author Harrison Womack - 10158 Scott's Bots
+ * @author Sputnik 12524
  * @version 1.0, 3/13/2024
  */
 class CentripetalTuner extends OpMode {
