@@ -73,26 +73,26 @@ public class Shooter {
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
 
-//    public Shooter(LinearOpMode opMode, Follower follower) {
-//        this.follower = follower;
-//        this.opMode = opMode;
-//        shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
-//        shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
-//        cover = opMode.hardwareMap.get(Servo.class, "cover");
-//        angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
-//      //  currentPose = follower.getPose();
-//
-//        shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-//        shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-//        shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-//        shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-//
-//        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
-//
-//        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
-//        setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
-//        setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
-//    }
+    public Shooter(LinearOpMode opMode, Follower follower) {
+        this.follower = follower;
+        this.opMode = opMode;
+        shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
+        shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
+        cover = opMode.hardwareMap.get(Servo.class, "cover");
+        angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
+      //  currentPose = follower.getPose();
+
+        shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
+        setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
+        setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+    }
 
     public void shootByVelocity() {
         shooterUpper.setVelocity(velocityTarget);
