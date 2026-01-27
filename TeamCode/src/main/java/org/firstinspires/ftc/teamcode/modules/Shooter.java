@@ -21,7 +21,7 @@ public class Shooter {
     public final Servo cover;
     private final VoltageSensor batteryVoltageSensor;
     Follower follower;
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(9.5, 0, 4, 15.2);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(26, 0, 10, 15);
     private final double TPR = 28;
     public short artifacts = 0;
     public short artifactsIn = 0;
@@ -36,11 +36,11 @@ public class Shooter {
     public static double POS_COVER_CLOSE = 0.9;
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0;
-    public static double TIME_BETWEEN_SHOOT = 175;
+    public static double TIME_BETWEEN_SHOOT = 275;
     public static double TIME_AFTER_SHOOT = 300;
-    public static double DELTA_ADJASTER = 0.00120;
-    public static double DETECT_SHOOT = 4.5;
-    public static double IS_SPIN_UP = 3.125;
+    public static double DELTA_ADJASTER = 0.01;
+    public static double DETECT_SHOOT = 3.5;
+    public static double IS_SPIN_UP = 2.5;
     public boolean isShooting = false;
     public boolean detected = false;
     public boolean complete = false;
@@ -164,9 +164,9 @@ public class Shooter {
 
 
     public void setMode(double pos) {
-        if (pos < POS_LONG_THROW) angleAdjuster.setPosition(POS_LONG_THROW);
-        else if (pos > POS_SHORT_THROW) angleAdjuster.setPosition(POS_SHORT_THROW);
-        else angleAdjuster.setPosition(pos);
+        if (pos < 0) angleAdjuster.setPosition(0);
+        else if (pos > 0.1) angleAdjuster.setPosition(0.08);
+        else angleAdjuster.setPosition(Math.min(pos, POS_SHORT_THROW));
     }
 
     public void threeArtefactsShooting() {
@@ -176,15 +176,14 @@ public class Shooter {
                 timer.reset();
                 while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
                 }
+               // angleAdjuster.setPosition(angleAdjuster.getPosition() + DELTA_ADJASTER);
                 setMode(angleAdjuster.getPosition() + DELTA_ADJASTER);
             }
             complete = false;
-//            timer.reset();
-//            while (timer.milliseconds() < TIME_AFTER_SHOOT) {
-//            }
-//            setShortThrowMode();
-//            isSpinUp = false;
-//            complete = true;
+            timer.reset();
+            while (timer.milliseconds() < TIME_AFTER_SHOOT) {
+            }
+            setShortThrowMode();
         }
     }
 
@@ -215,7 +214,7 @@ public class Shooter {
     }
 
     public boolean isSpinUp() {
-        isSpinUp = true;
+        if (getVelocityRPS() == 0) return false;
         return getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP; //погрешность подобрать
     }
 

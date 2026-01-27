@@ -50,7 +50,7 @@ public class DetectorTest extends LinearOpMode{
             }
 
             if(gamepad1.b && !stateB){
-                sh.setVelocityTarget(30);
+                sh.setVelocityTarget(VEL);
                 sh.setShortThrowMode();
                 sh.shootByVelocity();
             }

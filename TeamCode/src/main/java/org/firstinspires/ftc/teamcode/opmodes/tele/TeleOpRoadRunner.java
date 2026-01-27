@@ -161,6 +161,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
             t.addData("Заброшенных артефактов", sh.artifacts);
             t.addData("Робот пустой?  ", tr.isEmpty());
             t.addData("Potuzhnaya stenka", sh.angleAdjuster.getPosition());
+            t.addData("isSpinUp", sh.isSpinUp());
+            t.addData("isDetected", sh.detected);
+
             t.addData("Complete", sh.complete);
             t.update();
         }
