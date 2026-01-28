@@ -6,12 +6,12 @@ import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Limelight {
     public Limelight3A limelight3A;
     LinearOpMode opMode;
-   public int tagId = 0;
 
     public Limelight(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -35,9 +35,10 @@ public class Limelight {
         return limelight3A.getStatus();
     }
 
-    public int getTagID() {
+    public ArrayList<Double> getTagInfo() {
+        ArrayList<Double> tagInfo = new ArrayList<>();
         LLResult result = limelightResult();
-        int id = 0;
+        double id = 0;
         if(result.isValid()) {
             List<LLResultTypes.FiducialResult> fidResults = result.getFiducialResults();
             for(LLResultTypes.FiducialResult fr : fidResults) {
@@ -46,13 +47,11 @@ public class Limelight {
         } else {
             opMode.telemetry.addData("Error, no data available", limelightStatus());
         }
-        tagId = id;
-        return id;
-
-    }
-
-    public int getSingleTagID(){
-        LLResultTypes.FiducialResult fr = limelightResult().getFiducialResults().get(0);
-        return fr.getFiducialId();
+        double tx = result.getTx();
+        double ty = result.getTy();
+        tagInfo.add(id);
+        tagInfo.add(tx);
+        tagInfo.add(ty);
+        return tagInfo;
     }
 }
