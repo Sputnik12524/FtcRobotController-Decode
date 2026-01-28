@@ -64,15 +64,15 @@ public class Turret {
         } else if (getCurrentPosOfTurret() > POS_RIGHTMOST && power > 0) {
             isInLimits = false;
             turnStopByPower();
-            FtcDashboard.getInstance().getTelemetry().addLine("Максимальное право");
+            //FtcDashboard.getInstance().getTelemetry().addLine("Максимальное право");
         } else if (getCurrentPosOfTurret() < POS_LEFTMOST && power < 0) {
             isInLimits = false;
             turnStopByPower();
-            FtcDashboard.getInstance().getTelemetry().addLine("Максимальное лево");
+            //FtcDashboard.getInstance().getTelemetry().addLine("Максимальное лево");
         } else {
             isInLimits = true;
             turret.setPower(power);
-            FtcDashboard.getInstance().getTelemetry().addLine("Еду в пределах нужного");
+            //FtcDashboard.getInstance().getTelemetry().addLine("Еду в пределах нужного");
         }
         stateMagneting = isMagneting();
     }
@@ -103,12 +103,12 @@ public class Turret {
                 pastError = error;
                 timer.reset();
 
-                FtcDashboard.getInstance().getTelemetry().addData("target:", target);
+                /* FtcDashboard.getInstance().getTelemetry().addData("target:", target);
                 FtcDashboard.getInstance().getTelemetry().addData("error:", error);
                 FtcDashboard.getInstance().getTelemetry().addData("power:", power);
                 FtcDashboard.getInstance().getTelemetry().addData("CurrentPos:", getCurrentPosOfTurret());
                 FtcDashboard.getInstance().getTelemetry().addData("Encoders:", turret.getCurrentPosition());
-                FtcDashboard.getInstance().getTelemetry().update();
+                FtcDashboard.getInstance().getTelemetry().update(); */
             }
         }
     }
@@ -147,19 +147,19 @@ public class Turret {
     public void continuousTurnToGate(Alliance alliance, double x, double y, double angleOfDrivetrain) {
         switch(alliance) {
             case RED:
-                angleOfTurret = Math.atan((144-y)/(144-x));
+                angleOfTurret = Math.toDegrees(Math.atan((144-y)/(144-x)));
                 break;
             case BLUE:
-                angleOfTurret = 180 - Math.atan((144-y)/x);
+                angleOfTurret = 180 - Math.toDegrees(Math.atan((144-y)/x));
                 break;
         }
-        target = -(angleOfDrivetrain - angleOfTurret);
+        target = -(angleOfDrivetrain - angleOfTurret); //бабах в градусы НАДО ПЕРЕВОДИЬТЬ
         angleNormalising();
     }
     public void angleNormalising() {
         if (target > 180) {
             target -= 360;
-        } else if (target < 180) {
+        } else if (target < -180) {
             target += 360;
         }
     }

@@ -36,11 +36,11 @@ public class Shooter {
     public static double POS_COVER_CLOSE = 0.9;
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0;
-    public static double TIME_BETWEEN_SHOOT = 275;
+    public static double TIME_BETWEEN_SHOOT = 175;
     public static double TIME_AFTER_SHOOT = 300;
     public static double DELTA_ADJUSTER = 0.01;
     public static double DETECT_SHOOT = 3.5;
-    public static double IS_SPIN_UP = 2.5;
+    public static double IS_SPIN_UP = 2.7;
     public boolean isShooting = false;
     public boolean detected = false;
     public boolean complete = false;
