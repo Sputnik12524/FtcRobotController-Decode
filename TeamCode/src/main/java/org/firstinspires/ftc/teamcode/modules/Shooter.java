@@ -38,7 +38,7 @@ public class Shooter {
     public static double POS_LONG_THROW = 0;
     public static double TIME_BETWEEN_SHOOT = 275;
     public static double TIME_AFTER_SHOOT = 300;
-    public static double DELTA_ADJASTER = 0.01;
+    public static double DELTA_ADJUSTER = 0.01;
     public static double DETECT_SHOOT = 3.5;
     public static double IS_SPIN_UP = 2.5;
     public boolean isShooting = false;
@@ -165,8 +165,8 @@ public class Shooter {
 
     public void setMode(double pos) {
         if (pos < 0) angleAdjuster.setPosition(0);
-        else if (pos > 0.1) angleAdjuster.setPosition(0.08);
-        else angleAdjuster.setPosition(Math.min(pos, POS_SHORT_THROW));
+        else angleAdjuster.setPosition(pos);
+       // else angleAdjuster.setPosition(Math.max(pos, POS_SHORT_THROW));
     }
 
     public void threeArtefactsShooting() {
@@ -177,7 +177,7 @@ public class Shooter {
                 while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
                 }
                // angleAdjuster.setPosition(angleAdjuster.getPosition() + DELTA_ADJASTER);
-                setMode(angleAdjuster.getPosition() + DELTA_ADJASTER);
+                setMode(angleAdjuster.getPosition() + DELTA_ADJUSTER);
             }
             complete = false;
             timer.reset();

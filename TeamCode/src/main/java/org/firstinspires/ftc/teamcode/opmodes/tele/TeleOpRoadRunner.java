@@ -8,6 +8,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -51,12 +52,18 @@ public class TeleOpRoadRunner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+
         // ll = new Limelight(this);
         //     follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
         sh = new Shooter(this);
         in = new Intake(this);
         tr = new Transfer(this);
+
+        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+
         //currentPose = follower.getPose();
         isShootingLong = false;
         isShootingShort = false;
