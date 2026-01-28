@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -37,8 +38,9 @@ public class Turret {
     public double pastError;
     public double target = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = 360;  //подобрать
-    public static double POS_LEFTMOST = -360;
+    public static double POS_RIGHTMOST = 180;  //подобрать
+    public static double POS_LEFTMOST = -180;
+    private boolean stateMagneting = false;
 
     public boolean isInLimits = false;
 
@@ -56,19 +58,23 @@ public class Turret {
     }
 
     public void turnInLimits(double power) {
-        if (isMagneting()) {
+        if (isMagneting() && !stateMagneting) {
             turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         } else if (getCurrentPosOfTurret() > POS_RIGHTMOST && power > 0) {
             isInLimits = false;
             turnStopByPower();
+            FtcDashboard.getInstance().getTelemetry().addLine("Максимальное право");
         } else if (getCurrentPosOfTurret() < POS_LEFTMOST && power < 0) {
             isInLimits = false;
             turnStopByPower();
+            FtcDashboard.getInstance().getTelemetry().addLine("Максимальное лево");
         } else {
             isInLimits = true;
             turret.setPower(power);
+            FtcDashboard.getInstance().getTelemetry().addLine("Еду в пределах нужного");
         }
+        stateMagneting = isMagneting();
     }
 
 
@@ -90,11 +96,19 @@ public class Turret {
                 dError = error - pastError;
                 sumError = sumError + error * getCurrentPosOfTurret();
 
-                double powerP = error * kP + sumError * kI + dError * kD / timer.milliseconds();
+                double power = error * kP + sumError * kI + dError * kD / timer.milliseconds();
 
-                turnInLimits(powerP);
+                turnInLimits(power);
 
+                pastError = error;
                 timer.reset();
+
+                FtcDashboard.getInstance().getTelemetry().addData("target:", target);
+                FtcDashboard.getInstance().getTelemetry().addData("error:", error);
+                FtcDashboard.getInstance().getTelemetry().addData("power:", power);
+                FtcDashboard.getInstance().getTelemetry().addData("CurrentPos:", getCurrentPosOfTurret());
+                FtcDashboard.getInstance().getTelemetry().addData("Encoders:", turret.getCurrentPosition());
+                FtcDashboard.getInstance().getTelemetry().update();
             }
         }
     }
@@ -134,26 +148,19 @@ public class Turret {
         switch(alliance) {
             case RED:
                 angleOfTurret = Math.atan((144-y)/(144-x));
-                if (angleOfDrivetrain > 180) {
-                    angleOfDrivetrain = 360 - angleOfDrivetrain;
-                }
-                if (angleOfDrivetrain >= angleOfTurret) {
-                    target = angleOfDrivetrain - angleOfTurret;
-                } else {
-                    target = angleOfDrivetrain + angleOfTurret;
-                }
-
+                break;
             case BLUE:
-                angleOfTurret = Math.atan((144-y)/x);
-                if (angleOfDrivetrain > 180 - angleOfTurret && angleOfDrivetrain < 360 - angleOfTurret) {
-                    target = angleOfDrivetrain - (180 - angleOfTurret);
-                } else {
-                    if (angleOfDrivetrain > 0 && angleOfDrivetrain < 180 - angleOfTurret) {
-                        target = 180 - (angleOfTurret + angleOfDrivetrain);
-                    } else {
-                        target = (360 - angleOfDrivetrain) + (180 - angleOfTurret);
-                     }
-                }
+                angleOfTurret = 180 - Math.atan((144-y)/x);
+                break;
+        }
+        target = -(angleOfDrivetrain - angleOfTurret);
+        angleNormalising();
+    }
+    public void angleNormalising() {
+        if (target > 180) {
+            target -= 360;
+        } else if (target < 180) {
+            target += 360;
         }
     }
 

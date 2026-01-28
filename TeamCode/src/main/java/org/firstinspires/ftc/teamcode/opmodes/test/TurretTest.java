@@ -12,6 +12,8 @@ public class TurretTest extends LinearOpMode {
 
     Turret tr;
 
+    public static double TARGET = 0;
+
     @Override
     public void runOpMode() {
         tr = new Turret(this);
@@ -19,16 +21,13 @@ public class TurretTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
 
-            if (gamepad1.right_bumper) {
-                tr.turnRightByTarget();
-            } else if (gamepad1.left_bumper) {
-                tr.turnLeftByTarget();
-            }
+            tr.turnByTarget(TARGET);
 
             telemetry.addData("Magneting?", tr.isMagneting());
             telemetry.addData("speed", tr.turret.getVelocity());
-            telemetry.addData("t", tr.target);
+            telemetry.addData("target", tr.target);
             telemetry.addData("error", tr.error);
+            telemetry.addData("Pos", tr.getCurrentPosOfTurret());
             telemetry.update();
         }
         tr.turretRegulator.interrupt();
