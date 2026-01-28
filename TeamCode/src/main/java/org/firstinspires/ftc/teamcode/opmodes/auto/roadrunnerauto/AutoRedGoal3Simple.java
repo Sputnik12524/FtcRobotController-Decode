@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.roadrunnerauto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
@@ -10,22 +10,23 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "RED Long 3 Artifacts", group = "1")
-public class AutoRedLong3Simple extends LinearOpMode {
- Follower follower;
+@Autonomous(name = "RED Goal 3 Artifacts", group = "1")
+public class AutoRedGoal3Simple extends LinearOpMode {
+
+    Follower follower;
     @Override
     public void runOpMode() {
+        follower.update();
         follower = Constants.createFollower(hardwareMap);
-        Intake in = new Intake(this);
         Shooter sh = new Shooter(this, follower);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
+        Intake in = new Intake(this);
 
-
-        Pose2d startPose = new Pose2d(61, 7, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(-48, -50, Math.toRadians(45));
         dt.setPoseEstimate(startPose);
 
         sh.closeTunnel();
-        sh.setLongThrowMode();
+        sh.setShortThrowMode();
 
         waitForStart();
         if (isStopRequested()) return;
@@ -33,13 +34,9 @@ public class AutoRedLong3Simple extends LinearOpMode {
         in.rotateIn();
         sleep(1000);
 
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .back(10)
-                .build());
-        dt.turn(Math.toRadians(-20));
-        sleep(1000);
+        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose).forward(25).build());
 
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 5);
         sh.continuousShooter.start();
         sleep(2000);
 
@@ -49,18 +46,14 @@ public class AutoRedLong3Simple extends LinearOpMode {
 
         sh.closeTunnel();
         in.rotateStop();
-        sh.setVelocityTarget(0);
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .back(15)
-                .build());
+        sh.shootStop();
 
+
+   dt.turn(Math.toRadians(90));
+  dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate()).forward(20).build());
 
         in.artifactIntake.interrupt();
         sh.continuousShooter.interrupt();
 
     }
-
-
 }
-
-

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.roadrunnerauto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
@@ -10,9 +10,9 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BLUE Long 3 Artifacts", group = "1")
-public class AutoBlueLong3Simple extends LinearOpMode {
-    Follower follower;
+@Autonomous(name = "RED Long 3 Artifacts", group = "1")
+public class AutoRedLong3Simple extends LinearOpMode {
+ Follower follower;
     @Override
     public void runOpMode() {
         follower = Constants.createFollower(hardwareMap);
@@ -36,7 +36,7 @@ public class AutoBlueLong3Simple extends LinearOpMode {
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
                 .back(10)
                 .build());
-        dt.turn(Math.toRadians(22));
+        dt.turn(Math.toRadians(-20));
         sleep(1000);
 
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
