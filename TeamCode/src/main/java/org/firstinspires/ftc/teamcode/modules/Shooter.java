@@ -31,9 +31,12 @@ public class Shooter {
     public double velocityTarget = 0;
     public static double VELOCITY_FOR_LONG_THROW = 52.5;
     public static double VELOCITY_FOR_SHORT_THROW = 40;
-    public static double ERROR = 2.5;
+
+    //Cover
     public static double POS_COVER_OPEN = 0.4;
     public static double POS_COVER_CLOSE = 0.9;
+
+    //Adjuster
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0;
     public static double TIME_BETWEEN_SHOOT = 175;
@@ -44,11 +47,10 @@ public class Shooter {
     public boolean isShooting = false;
     public boolean detected = false;
     public boolean complete = false;
+    public boolean completeC = false;
     boolean isSpinUp = false;
     int timerses = 0;
 
-    public static double TIME_GATES_BETWEEN_SHOOT = 1000;
-    public static double TIME_FOR_SET_VELOCITY = 2500;
     private final ElapsedTime timer = new ElapsedTime();
 
     boolean InZone = true;
@@ -148,10 +150,10 @@ public class Shooter {
         return angleAdjuster.getPosition();
     }
 
-       public boolean ifInLaunchZoneGoal() {
-    currentPose = follower.getPose();
-           return follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 72;
-     }
+    public boolean ifInLaunchZoneGoal() {
+        currentPose = follower.getPose();
+        return follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 72;
+    }
 
     public boolean ifInLaunchZoneHuman() {
         currentPose = follower.getPose();
@@ -166,7 +168,7 @@ public class Shooter {
     public void setMode(double pos) {
         if (pos < 0) angleAdjuster.setPosition(0);
         else angleAdjuster.setPosition(pos);
-       // else angleAdjuster.setPosition(Math.max(pos, POS_SHORT_THROW));
+       // else angleAdjuster.setPosition(Math.max(pos, ADJUSTER_LIMIT));
     }
 
     public void threeArtefactsShooting() {
@@ -176,7 +178,7 @@ public class Shooter {
                 timer.reset();
                 while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
                 }
-               // angleAdjuster.setPosition(angleAdjuster.getPosition() + DELTA_ADJASTER);
+                // angleAdjuster.setPosition(angleAdjuster.getPosition() + DELTA_ADJASTER);
                 setMode(angleAdjuster.getPosition() + DELTA_ADJUSTER);
             }
             complete = false;
@@ -184,6 +186,8 @@ public class Shooter {
             while (timer.milliseconds() < TIME_AFTER_SHOOT) {
             }
             setShortThrowMode();
+            completeC = true;
+
         }
     }
 
