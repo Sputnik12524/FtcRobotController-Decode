@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import androidx.core.util.Supplier;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -14,6 +16,8 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Configurable
 @TeleOp(name = "TeleOpPP", group = "tele")
@@ -29,6 +33,10 @@ public class TeleOpPedro extends LinearOpMode {
         follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
         follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashtele = dashboard.getTelemetry();
+        Telemetry t = new MultipleTelemetry(telemetry, dashtele);
 
 
         //Lazy Curve Generation
@@ -73,6 +81,11 @@ public class TeleOpPedro extends LinearOpMode {
 
             telemetryM.debug("position", follower.getPose());
             telemetryM.debug("automatedDrive", automatedDrive);
+            telemetryM.update();
+
+            t.addData("position", follower.getPose());
+            t.addData("automatedDrive", automatedDrive);
+            t.update();
         }
     }
 }

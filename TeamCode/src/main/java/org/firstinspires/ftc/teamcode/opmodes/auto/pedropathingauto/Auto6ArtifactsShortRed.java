@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -17,9 +17,9 @@ import com.pedropathing.geometry.Pose;
 
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "6 Artifacts Long Autonomous", group = "Autonomous")
+@Autonomous(name = "Pedro Pathing Autonomous RED", group = "Autonomous")
 @Configurable // Panels
-public class Auto6ArtifactsLong extends LinearOpMode {
+public class Auto6ArtifactsShortRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
@@ -43,7 +43,7 @@ public class Auto6ArtifactsLong extends LinearOpMode {
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(22, 124, Math.toRadians(-38)));
+        follower.setStartingPose(new Pose(123, 123, Math.toRadians(35)));
 
         paths = new Paths(follower); // Build paths
 
@@ -77,28 +77,28 @@ public class Auto6ArtifactsLong extends LinearOpMode {
         public Paths(Follower follower) {
             PathFirstScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(56, 8),
+                                    new Pose(123, 123),
 
-                                    new Pose(60, 18)
+                                    new Pose(100, 102)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(35), Math.toRadians(44))
 
                     .build();
 
             PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(60, 18),
+                                    new Pose(102, 102),
 
-                                    new Pose(41, 35)
+                                    new Pose(100, 84)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(110), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(44), Math.toRadians(0))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(41, 35),
+                                    new Pose(102, 84),
 
-                                    new Pose(20, 35)
+                                    new Pose(125, 84)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -106,21 +106,21 @@ public class Auto6ArtifactsLong extends LinearOpMode {
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(20, 35),
+                                    new Pose(125, 84),
 
-                                    new Pose(60, 18)
+                                    new Pose(100, 102)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(44))
 
                     .build();
 
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(60, 18),
+                                    new Pose(100, 102),
 
-                                    new Pose(20, 15)
+                                    new Pose(90,103)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(110), Math.toRadians(0))
+                    ).setTangentHeadingInterpolation()
 
                     .build();
         }
