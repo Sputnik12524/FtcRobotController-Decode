@@ -251,16 +251,16 @@ public class Shooter {
     }
 
 
-   /* public double setContinuousVelocityByLocalize
-            (Alliance alliance, double angleOfAdjuster, double x, double y) {
+   /* public double setContinuousVelocityByLocalize(Alliance alliance, double angleOfAdjuster, double x, double y) {
         switch (alliance) {
             case BLUE:
-                //  return Math.sqrt(G*Math)
+                return Math.sqrt(G * Math.sqrt(x)) / (2 * Math.sin(angleOfAdjuster) * Math.sin(angleOfAdjuster) * (x - (Math.cos(angleOfAdjuster) * (144 - y))));
                 break;
             case RED:
-
+                return Math.sqrt(G * Math.sqrt(144 - x)) / (2*Math.cos(angleOfAdjuster)*Math.sin(angleOfAdjuster) * ((144 - x) - (Math.cos(angleOfAdjuster) * (144 - y))));
                 break;
         }
-    }
-*/
+
+    }*/
+
 }
