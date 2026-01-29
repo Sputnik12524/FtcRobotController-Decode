@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.util.Alliance;
+
 @Config
 public class Shooter {
     public final DcMotorEx shooterUpper;
@@ -44,6 +46,10 @@ public class Shooter {
     public static double DELTA_ADJUSTER = 0.01;
     public static double DETECT_SHOOT = 3.5;
     public static double IS_SPIN_UP = 2.7;
+
+    public static double HIGH_OF_ROBOT = 35;
+    public static double HIGH_OF_GATE = 136;
+    public static double G = 9.8;
     public boolean isShooting = false;
     public boolean detected = false;
     public boolean complete = false;
@@ -152,12 +158,12 @@ public class Shooter {
 
     public boolean ifInLaunchZoneGoal() {
         currentPose = follower.getPose();
-        return follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 72;
+        return follower.getPose().getY() <= Math.abs(follower.getPose().getX() - 72) + 61;
     }
 
     public boolean ifInLaunchZoneHuman() {
         currentPose = follower.getPose();
-        return follower.getPose().getY() <= -Math.abs(follower.getPose().getX() - 72) + 24;
+        return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 24;
     }
 
     public boolean shootingAllowed() {
@@ -168,7 +174,7 @@ public class Shooter {
     public void setMode(double pos) {
         if (pos < 0) angleAdjuster.setPosition(0);
         else angleAdjuster.setPosition(pos);
-       // else angleAdjuster.setPosition(Math.max(pos, ADJUSTER_LIMIT));
+        // else angleAdjuster.setPosition(Math.max(pos, ADJUSTER_LIMIT));
     }
 
     public void threeArtefactsShooting() {
@@ -244,4 +250,17 @@ public class Shooter {
         this.state = state;
     }
 
+
+   /* public double setContinuousVelocityByLocalize
+            (Alliance alliance, double angleOfAdjuster, double x, double y) {
+        switch (alliance) {
+            case BLUE:
+                //  return Math.sqrt(G*Math)
+                break;
+            case RED:
+
+                break;
+        }
+    }
+*/
 }
