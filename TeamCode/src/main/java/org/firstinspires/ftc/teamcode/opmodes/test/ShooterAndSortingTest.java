@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
@@ -12,13 +11,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Config
-@TeleOp(name = "TEST Shooter/Intake/Adjuster/Cover", group = "1")
+@TeleOp(name = "TEST Shooter, Sorting and their friends!", group = "1")
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
+    Turret tr;
     Intake in;
     Limelight ll;
     Logger logger;
@@ -34,13 +34,12 @@ public class ShooterAndSortingTest extends LinearOpMode {
     boolean isRotateIn = false;
     boolean isRotateOut = false;
     boolean isShooting = false;
-Follower follower;
+
     @Override
     public void runOpMode() {
-        follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
         logger = new Logger("ShVelocityTime");
-        sh = new Shooter(this, follower);
+        sh = new Shooter(this);
         ll = new Limelight(this);
         in = new Intake(this);
 
@@ -68,6 +67,15 @@ Follower follower;
                 isShooting = false;
             }
             stateY1 = gamepad1.y;
+
+            // TURRET
+            if (gamepad1.right_bumper) {
+                tr.turnRightByPower();
+            } else if (gamepad1.left_bumper) {
+                tr.turnLeftByPower();
+            } else {
+                tr.turnStopByPower();
+            }
 
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {
