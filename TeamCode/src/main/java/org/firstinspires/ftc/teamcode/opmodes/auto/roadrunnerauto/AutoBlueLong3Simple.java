@@ -40,10 +40,9 @@ public class AutoBlueLong3Simple extends LinearOpMode {
         sleep(1000);
 
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
-        sh.continuousShooter.start();
+
         sleep(2000);
 
-        sh.waitForShoot();
         sh.openTunnel();
         sleep(5000);
 
@@ -56,7 +55,6 @@ public class AutoBlueLong3Simple extends LinearOpMode {
 
 
         in.artifactIntake.interrupt();
-        sh.continuousShooter.interrupt();
 
     }
 

@@ -35,6 +35,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
     Follower follower;
     private Pose currentPose;
 
+    public static double TURRET_ZERO = 0;
+    public static double TURRET_MAX = 180;
+    public static double TURRET_BLUE = 25;
+    public static double TURRET_RED = -22;
+
     /// Intake
     boolean isRotateIn = false;
     boolean isShootingShort = false;
@@ -124,7 +129,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateB1 = gamepad1.b;
 
             //------------------------------------ SHOOTER
-            if (!attentionControl) {
+            if (attentionControl) {
                 sh.threeArtefactsShooting();
             }
 
@@ -172,13 +177,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             if (attentionControl) {
                 if (gamepad2.y) {
-                    tt.turnByTarget(0);
+                    tt.turnByTarget(TURRET_ZERO);
                 } else if (gamepad2.a) {
-                    tt.turnByTarget(180);
+                    tt.turnByTarget(TURRET_MAX);
                 } else if (gamepad2.x) {
-                    tt.turnByTarget(115);
+                    tt.turnByTarget(TURRET_BLUE);
                 } else if (gamepad2.b) {
-                    tt.turnByTarget(62);
+                    tt.turnByTarget(TURRET_RED);
                 }
             }
 
@@ -192,11 +197,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
             dashtele.addData("TARGET", tt.target);
             dashtele.addData("Current Pos", tt.getCurrentPosOfTurret());
             dashtele.addData("error", tt.error);
-//            dashtele.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
-//            dashtele.addData("Заброшенных артефактов", sh.artifacts);
+            dashtele.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
+            dashtele.addData("Заброшенных артефактов", sh.artifacts);
 //            dashtele.addData("Робот пустой?  ", tr.isEmpty());
-//            dashtele.addData("Potuzhnaya stenka", sh.angleAdjuster.getPosition());
-//            dashtele.addData("isSpinUp", sh.isSpinUp());
+            dashtele.addData("aNGLE aDJUSTER (potuzhni)", sh.angleAdjuster.getPosition());
+            dashtele.addData("isSpinUp", sh.isSpinUp());
 //            dashtele.addData("isDetected", sh.detected);
 
             dashtele.addData("Complete", sh.complete);

@@ -32,7 +32,7 @@ public class Shooter {
     public int timers;
     public static double POWER = 1;
     public double velocityTarget = 0;
-    public static double VELOCITY_FOR_LONG_THROW = 52.5;
+    public static double VELOCITY_FOR_LONG_THROW = 50;
     public static double VELOCITY_FOR_SHORT_THROW = 40;
 
     //Cover
@@ -62,7 +62,7 @@ public class Shooter {
 
     boolean InZone = true;
     public static boolean isTunnelOpen;
-
+    public  double shootPos = 0;
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
 
     states state = states.INIT;
@@ -89,26 +89,26 @@ public class Shooter {
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
 
-//    public Shooter(LinearOpMode opMode, Follower follower) {
-//        this.follower = follower;
-//        this.opMode = opMode;
-//        shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
-//        shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
-//        cover = opMode.hardwareMap.get(Servo.class, "cover");
-//        angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
-//      //  currentPose = follower.getPose();
-//
-//        shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-//        shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-//        shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-//        shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-//
-//        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
-//
-//        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
-//        setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
-//        setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
-//    }
+    public Shooter(LinearOpMode opMode, Follower follower) {
+        this.follower = follower;
+        this.opMode = opMode;
+        shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
+        shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
+        cover = opMode.hardwareMap.get(Servo.class, "cover");
+        angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
+      //  currentPose = follower.getPose();
+
+        shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
+        setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
+        setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+    }
 
     public void shootByVelocity() {
         shooterUpper.setVelocity(velocityTarget);
@@ -158,12 +158,12 @@ public class Shooter {
         return angleAdjuster.getPosition();
     }
 
-    public boolean ifInLaunchZoneGoal() {
+    public boolean ifNotInLaunchZoneGoal() {
         currentPose = follower.getPose();
         return follower.getPose().getY() <= Math.abs(follower.getPose().getX() - 72) + 61;
     }
 
-    public boolean ifInLaunchZoneHuman() {
+    public boolean ifNotInLaunchZoneHuman() {
         currentPose = follower.getPose();
         return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 24;
     }
@@ -179,18 +179,20 @@ public class Shooter {
     public void threeArtefactsShooting() {
         updateCalculator();
         if (complete) {
+            shootPos = angleAdjuster.getPosition();
             for (int i = 0; i < 2; i++) {
                 timer.reset();
                 while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
                 }
-                // angleAdjuster.setPosition(angleAdjuster.getPosition() + DELTA_ADJASTER);
+                // angleAdjuster.setPosition(angleAdjuster.getPosition() + DELTA_ADJASTER);\
+
                 setMode(angleAdjuster.getPosition() + DELTA_ADJUSTER);
             }
             complete = false;
             timer.reset();
             while (timer.milliseconds() < TIME_AFTER_SHOOT) {
             }
-            setShortThrowMode();
+            setMode(shootPos);
             completeC = true;
 
         }
@@ -259,7 +261,7 @@ public class Shooter {
                 return Math.sqrt(G * Math.sqrt(144 - x)) / (2*Math.cos(angleOfAdjuster)*Math.sin(angleOfAdjuster) * ((144 - x) - (Math.cos(angleOfAdjuster) * (144 - y))));
                 break;
         }
-
+        return
     }*/
 
 }

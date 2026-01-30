@@ -37,10 +37,9 @@ public class AutoRedGoal3Simple extends LinearOpMode {
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose).forward(25).build());
 
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 5);
-        sh.continuousShooter.start();
+
         sleep(2000);
 
-        sh.waitForShoot();
         sh.openTunnel();
         sleep(5000);
 
@@ -53,7 +52,7 @@ public class AutoRedGoal3Simple extends LinearOpMode {
   dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate()).forward(20).build());
 
         in.artifactIntake.interrupt();
-        sh.continuousShooter.interrupt();
+
 
     }
 }

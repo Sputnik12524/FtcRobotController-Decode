@@ -144,7 +144,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
                 break;
             case 2:
                 if (!follower.isBusy()) {
-                    sh.waitForShoot();
+                  //  sh.waitForShoot();
                     setPathState(3);
                 }
                 break;
@@ -168,7 +168,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
                 break;
             case 6:
                 if(!follower.isBusy()) {
-                    sh.waitForShoot();
+                  //  sh.waitForShoot();
                     setPathState(7);
                 }
                 break;
