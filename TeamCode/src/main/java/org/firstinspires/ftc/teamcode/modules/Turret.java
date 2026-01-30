@@ -40,6 +40,11 @@ public class Turret {
     public double angleOfTurret;
     public static double POS_RIGHTMOST = 180;  //подобрать
     public static double POS_LEFTMOST = -180;
+
+    public static double TURRET_ZERO = 0;
+    public static double TURRET_MAX = 180;
+    public static double TURRET_BLUE = 25;
+    public static double TURRET_RED = -22;
     private boolean stateMagneting = false;
 
     public boolean isInLimits = false;
@@ -132,7 +137,7 @@ public class Turret {
 
                 turnInLimits(powerP);
 
-                timer.reset();
+                   timer.reset();
             }
         }
     }
@@ -154,6 +159,7 @@ public class Turret {
                 break;
         }
         target = -(angleOfDrivetrain - angleOfTurret); //бабах в градусы НАДО ПЕРЕВОДИЬТЬ
+        target -= 180;
         angleNormalising();
     }
     public void angleNormalising() {

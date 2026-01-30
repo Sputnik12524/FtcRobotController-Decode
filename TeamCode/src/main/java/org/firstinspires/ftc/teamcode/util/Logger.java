@@ -11,11 +11,12 @@ public class Logger {
     String directoryPath = "/sdcard/FIRST/";
     BufferedReader reader;
     BufferedWriter writer;
-    String fileName;
-    String line;
-    Alliance al;
-    double x;
-    double y;
+    public String fileName;
+    public String line;
+    public Alliance al;
+    public double x;
+    public double y;
+    public double degrees;
 
     public Logger(String fileName) {
         try {
@@ -34,14 +35,14 @@ public class Logger {
         }
     }
 
-    public void writePose(Alliance alliance, double x, double y) {
+    public void writePose(Alliance alliance, double x, double y, double degrees) {
         try {
             switch (alliance) {
                 case RED:
-                    writer.write("Red" + "," + x + "," + y);
+                    writer.write("Red" + "," + x + "," + y + "," + degrees);
                     break;
                 case BLUE:
-                    writer.write("Blue" + "," + x + "," + y);
+                    writer.write("Blue" + "," + x + "," + y + "," + degrees);
                     break;
                 default:
                     writer.write("none");
@@ -56,12 +57,13 @@ public class Logger {
             this.reader = new BufferedReader(new FileReader(this.directoryPath + fileName + ".csv"));
             line = reader.readLine();
             if (line != null) {
-                String a[] = line.split(",");
+                String[] a = line.split(",");
                 if (a[0].equals("Blue")) al = Alliance.BLUE;
                 else if (a[0].equals("Red")) al = Alliance.RED;
                 else al = Alliance.NONE;
                 if (a[1] != null) x = Double.parseDouble(a[1]);
                 if (a[2] != null) y = Double.parseDouble(a[2]);
+                if(a[3] != null) degrees = Double.parseDouble(a[3]);
             }
             reader.close();
         } catch (IOException exe) {

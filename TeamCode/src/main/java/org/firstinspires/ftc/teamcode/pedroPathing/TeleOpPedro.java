@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import androidx.core.util.Supplier;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -25,16 +26,19 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Configurable
-@TeleOp(name = "Red TeleOpPP", group = "tele")
+@Config
+@TeleOp(name = "TeleOpPedroPathing", group = "tele")
 public class TeleOpPedro extends LinearOpMode {
+    Turret tt;
     Shooter sh;
     Intake in;
-    Limelight ll;
     ElapsedTime timer;
     Transfer tr;
     Follower follower;
+    Logger lg;
     private Pose currentPose;
 
     /// Intake
@@ -48,18 +52,20 @@ public class TeleOpPedro extends LinearOpMode {
     /// Shooter
     boolean stateY1 = false;
     boolean stateX1 = false;
-    boolean stateRSB2 = false;
-    private PathChain PathSecondScoring;
-    public boolean weCanShoot = false;
-    boolean detect = false;
+    boolean stateDL1 = false;
     boolean attentionControl = false;
+    boolean turretAuto = false;
+    boolean slowMode = false;
     private boolean automatedDrive;
     private TelemetryManager telemetryM;
 
+    public TurretAutomatic turretAutoAiming = new TurretAutomatic();
+
     @Override
-    public void runOpMode(){
+    public void runOpMode() {
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(72,72,0));
+        follower.setStartingPose(new Pose(lg.x, lg.y,lg.degrees));
+        //follower.setStartingPose(new Pose(72, 72, 0));
         follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
 
@@ -67,9 +73,10 @@ public class TeleOpPedro extends LinearOpMode {
         sh = new Shooter(this);
         in = new Intake(this);
         tr = new Transfer(this);
-        Turret tt = new Turret(this);
+        lg = new Logger("pospos");
+        tt = new Turret(this);
 
-        //currentPose = follower.getPose();
+        currentPose = follower.getPose();
         isShootingLong = false;
         isShootingShort = false;
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -96,7 +103,7 @@ public class TeleOpPedro extends LinearOpMode {
 
         waitForStart();
         follower.startTeleopDrive();
-        while(opModeIsActive()){
+        while (opModeIsActive()) {
             follower.update();
             telemetryM.update();
 
@@ -108,22 +115,24 @@ public class TeleOpPedro extends LinearOpMode {
             );
 
             // AUTO PARKING
-            if(gamepad2.dpadUpWasPressed() && !attentionControl){
+            if (gamepad2.dpadUpWasPressed() && !attentionControl) {
                 follower.followPath(autoParkingRed.get());
                 automatedDrive = true;
             }
-            if(gamepad1.dpadDownWasPressed() && !attentionControl){
+            if (gamepad2.dpadDownWasPressed() && !attentionControl) {
                 follower.followPath(autoParkingBlue.get());
                 automatedDrive = true;
             }
 
-            if (automatedDrive && (gamepad1.dpadLeftWasPressed() || !follower.isBusy())) {
+            if (automatedDrive && (gamepad2.dpadLeftWasPressed() || !follower.isBusy())) {
                 follower.startTeleopDrive();
                 automatedDrive = false;
             }
 
+
             if (gamepad1.a && !isRotateIn && !stateA1) {
-                in.rotateIn();
+                if (slowMode) in.catcher.setPower(0.3);
+                else in.rotateIn();
                 in.transferSetPower(Intake.TRANSFER_POWER);
                 isRotateIn = true;
                 isRotateOut = false;
@@ -134,6 +143,7 @@ public class TeleOpPedro extends LinearOpMode {
             }
             if (gamepad1.b && !isRotateOut && !stateB1) {
                 in.rotateOut();
+                // in.transferSetPower(-1);
                 isRotateOut = true;
                 isRotateIn = false;
             } else if (gamepad1.b && isRotateOut && !stateB1) {
@@ -152,6 +162,7 @@ public class TeleOpPedro extends LinearOpMode {
                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
                 sh.setLongThrowMode();
                 sh.shootByVelocity();
+                ;
                 isShootingLong = true;
                 isShootingShort = false;
             } else if (gamepad1.x && !isShootingShort && !stateX1) {
@@ -171,15 +182,32 @@ public class TeleOpPedro extends LinearOpMode {
 
             if (gamepad1.dpad_up) {
                 sh.openTunnel();
+                slowMode = true;
             } else if (gamepad1.dpad_down) {
                 sh.closeTunnel();
+                slowMode = false;
             }
 
             //---------------------------------------- TURRET
 
-            if (!attentionControl) {
-                tt.continuousTurnToGate(Alliance.RED, follower.getPose().getX(),
-                        follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
+            if (gamepad1.dpad_left && !stateDL1 && turretAuto) {
+                turretAutoAiming.interrupt();
+                if (gamepad2.y) {
+                    tt.turnByTarget(Turret.TURRET_ZERO);
+                } else if (gamepad2.a) {
+                    tt.turnByTarget(Turret.TURRET_MAX);
+                } else if (gamepad2.x) {
+                    tt.turnByTarget(Turret.TURRET_BLUE);
+                } else if (gamepad2.b) {
+                    tt.turnByTarget(Turret.TURRET_RED);
+                }
+                turretAuto = false;
+            } else if (gamepad1.dpad_left && !stateDL1 && !turretAuto) {
+                turretAutoAiming.start();
+                // tt.continuousTurnToGate(Alliance.RED, follower.getPose().getX(),
+                // follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
+                turretAuto = true;
+
             }
 
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
@@ -189,35 +217,35 @@ public class TeleOpPedro extends LinearOpMode {
             } else if (gamepad2.left_stick_button) {
                 attentionControl = false;
             }
+            stateDL1 = gamepad1.dpad_left;
 
-            if (attentionControl) {
-                if (gamepad2.y) {
-                    tt.turnByTarget(0);
-                } else if (gamepad2.a) {
-                    tt.turnByTarget(180);
-                } else if (gamepad2.x) {
-                    tt.turnByTarget(115);
-                } else if (gamepad2.b) {
-                    tt.turnByTarget(62);
-                }
-            }
-            telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-            telemetry.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
-            dashtele.addData("TARGET", tt.target);
-            dashtele.addData("Current Pos", tt.getCurrentPosOfTurret());
-            dashtele.addData("error", tt.error);
-//            dashtele.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
-//            dashtele.addData("Заброшенных артефактов", sh.artifacts);
-//            dashtele.addData("Робот пустой?  ", tr.isEmpty());
-//            dashtele.addData("Potuzhnaya stenka", sh.angleAdjuster.getPosition());
-//            dashtele.addData("isSpinUp", sh.isSpinUp());
+
+            t.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
+            t.addData("TARGET", tt.target);
+            t.addData("Current Pos", tt.getCurrentPosOfTurret());
+            t.addData("error", tt.error);
+            t.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
+            t.addData("Заброшенных артефактов", sh.artifacts);
+            t.addData("aNGLE aDJUSTER (potuzhni)", sh.angleAdjuster.getPosition());
+            t.addData("isSpinUp", sh.isSpinUp());
 //            dashtele.addData("isDetected", sh.detected);
 
-            dashtele.addData("Complete", sh.complete);
-            dashtele.update();
-            telemetry.update();
+            t.addData("Complete", sh.complete);
+            t.update();
         }
         tt.turretRegulator.interrupt();
 
     }
+
+    class TurretAutomatic extends Thread {
+        public void run() {
+            while (!isInterrupted()) {
+                tt.continuousTurnToGate(Alliance.RED, follower.getPose().getX(),
+                        follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
+                turretAuto = true;
+            }
+        }
+    }
+
+
 }

@@ -10,7 +10,7 @@ public class Transfer {
 
     enum Color {GREEN, PURPLE, NONE}
 
-    private NormalizedColorSensor colorSensor1;
+   private NormalizedColorSensor colorSensor1;
     private NormalizedColorSensor colorSensor2;
     private NormalizedColorSensor colorSensor3;
     private float[] hsv1 = new float[3];

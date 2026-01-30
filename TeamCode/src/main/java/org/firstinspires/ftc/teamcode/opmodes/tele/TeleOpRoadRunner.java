@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
+import static org.firstinspires.ftc.teamcode.modules.Turret.TURRET_ZERO;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -22,6 +24,7 @@ import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.Logger;
 //import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "TeleOpRR", group = "0")
@@ -33,12 +36,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
     ElapsedTime timer;
     Transfer tr;
     Follower follower;
+    Logger lg;
     private Pose currentPose;
 
-    public static double TURRET_ZERO = 0;
-    public static double TURRET_MAX = 180;
-    public static double TURRET_BLUE = 25;
-    public static double TURRET_RED = -22;
 
     /// Intake
     boolean isRotateIn = false;
@@ -68,8 +68,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
         sh = new Shooter(this);
         in = new Intake(this);
         tr = new Transfer(this);
+        lg = new Logger("pospos");
         Turret tt = new Turret(this);
-        follower.setStartingPose(new Pose(72, 72, 0));
+        follower.setStartingPose(new Pose(lg.x, lg.y,lg.degrees));
         follower.update();
 
         //currentPose = follower.getPose();
@@ -129,7 +130,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateB1 = gamepad1.b;
 
             //------------------------------------ SHOOTER
-            if (attentionControl) {
+            if (!attentionControl) {
                 sh.threeArtefactsShooting();
             }
 
@@ -177,13 +178,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             if (attentionControl) {
                 if (gamepad2.y) {
-                    tt.turnByTarget(TURRET_ZERO);
+                    tt.turnByTarget(Turret.TURRET_ZERO);
                 } else if (gamepad2.a) {
-                    tt.turnByTarget(TURRET_MAX);
+                    tt.turnByTarget(Turret.TURRET_MAX);
                 } else if (gamepad2.x) {
-                    tt.turnByTarget(TURRET_BLUE);
+                    tt.turnByTarget(Turret.TURRET_BLUE);
                 } else if (gamepad2.b) {
-                    tt.turnByTarget(TURRET_RED);
+                    tt.turnByTarget(Turret.TURRET_BLUE);
                 }
             }
 

@@ -33,7 +33,7 @@ public class Shooter {
     public static double POWER = 1;
     public double velocityTarget = 0;
     public static double VELOCITY_FOR_LONG_THROW = 50;
-    public static double VELOCITY_FOR_SHORT_THROW = 40;
+    public static double VELOCITY_FOR_SHORT_THROW = 38.5;
 
     //Cover
     public static double POS_COVER_OPEN = 0.4;
@@ -57,7 +57,6 @@ public class Shooter {
     public boolean complete = false;
     public boolean completeC = false;
     boolean isSpinUp = false;
-    int timerses = 0;
 
     private final ElapsedTime timer = new ElapsedTime();
 
@@ -252,16 +251,18 @@ public class Shooter {
     }
 
 
-   /* public double setContinuousVelocityByLocalize(Alliance alliance, double angleOfAdjuster, double x, double y) {
+   public double setContinuousVelocityByLocalize(Alliance alliance, double angleOfAdjuster, double x, double y) {
         switch (alliance) {
             case BLUE:
                 return Math.sqrt(G * Math.sqrt(x)) / (2 * Math.sin(angleOfAdjuster) * Math.sin(angleOfAdjuster) * (x - (Math.cos(angleOfAdjuster) * (144 - y))));
-                break;
+
             case RED:
                 return Math.sqrt(G * Math.sqrt(144 - x)) / (2*Math.cos(angleOfAdjuster)*Math.sin(angleOfAdjuster) * ((144 - x) - (Math.cos(angleOfAdjuster) * (144 - y))));
-                break;
+
+            default:
+                return velocityTarget;
         }
-        return
-    }*/
+
+    }
 
 }
