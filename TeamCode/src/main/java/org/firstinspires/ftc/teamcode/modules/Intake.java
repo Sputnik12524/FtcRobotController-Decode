@@ -18,7 +18,7 @@ public class Intake {
     CRServo transferServo;
 
 
-    public static double POWER = 1;
+    public static double POWER = .75;
     public static double IN_OUT = 300;
     public static double TRANSFER_POWER = 1;
 

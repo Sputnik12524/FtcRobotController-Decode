@@ -41,10 +41,11 @@ public class Shooter {
 
     //Adjuster
     public static double POS_SHORT_THROW = 0.05;
-    public static double POS_LONG_THROW = 0;
-    public static double TIME_BETWEEN_SHOOT = 175;
+    public static double POS_LONG_THROW = 0.01;
+    public static double TIME_BETWEEN_SHOOT = 130;
     public static double TIME_AFTER_SHOOT = 300;
     public static double DELTA_ADJUSTER = 0.01;
+    public static double DELTA_SECOND_SHOOT = 0.02;
     public static double DETECT_SHOOT = 3.5;
     public static double IS_SPIN_UP = 2.7;
 
@@ -62,7 +63,8 @@ public class Shooter {
 
     boolean InZone = true;
     public static boolean isTunnelOpen;
-    public  double shootPos = 0;
+    public double shootPos = 0;
+
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
 
     states state = states.INIT;
@@ -96,7 +98,7 @@ public class Shooter {
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
-      //  currentPose = follower.getPose();
+        //  currentPose = follower.getPose();
 
         shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -169,7 +171,6 @@ public class Shooter {
     }
 
 
-
     public void setMode(double pos) {
         if (pos < 0) angleAdjuster.setPosition(0);
         else angleAdjuster.setPosition(pos);
@@ -180,21 +181,20 @@ public class Shooter {
         updateCalculator();
         if (complete) {
             shootPos = angleAdjuster.getPosition();
-            for (int i = 0; i < 2; i++) {
-                timer.reset();
-                while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
-                }
-                // angleAdjuster.setPosition(angleAdjuster.getPosition() + DELTA_ADJASTER);\
-
-                setMode(angleAdjuster.getPosition() + DELTA_ADJUSTER);
+            timer.reset();
+            while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
             }
+            setMode(angleAdjuster.getPosition() + DELTA_ADJUSTER);
+            timer.reset();
+            while (timer.milliseconds() < TIME_BETWEEN_SHOOT) {
+            }
+            setMode(angleAdjuster.getPosition() + DELTA_SECOND_SHOOT);
             complete = false;
             timer.reset();
             while (timer.milliseconds() < TIME_AFTER_SHOOT) {
             }
             setMode(shootPos);
             completeC = true;
-
         }
     }
 
