@@ -25,6 +25,8 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
+
+import java.io.IOException;
 //import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "TeleOpRR", group = "0")
@@ -55,13 +57,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
     private PathChain PathSecondScoring;
     public boolean weCanShoot = false;
     boolean detect = false;
-    boolean attentionControl = false;
+    boolean attentionControl = true;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-
-
         // ll = new Limelight(this);
         follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
@@ -70,8 +70,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
         tr = new Transfer(this);
         lg = new Logger("pospos");
         Turret tt = new Turret(this);
-        follower.setStartingPose(new Pose(lg.x, lg.y,lg.degrees));
-        follower.update();
+        try {
+            lg.getAll();
+            follower.setStartingPose(new Pose(lg.x, lg.y, lg.degrees));
+        } catch (IOException | NullPointerException exe) {
+            follower.setStartingPose(new Pose(72, 48, 0));
+            attentionControl = true;
+        }        follower.update();
 
         //currentPose = follower.getPose();
         isShootingLong = false;
@@ -94,7 +99,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            //------------------------------------- DRIVETRAIN
+            //-------------------------------------------- DRIVETRAIN
             follower.update();
 
             if (gamepad1.right_bumper) {
@@ -130,9 +135,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateB1 = gamepad1.b;
 
             //------------------------------------ SHOOTER
-            if (!attentionControl) {
-                sh.threeArtefactsShooting();
-            }
+
+            sh.threeArtefactsShooting();
 
             if (gamepad1.y && !isShootingLong && !stateY1) {
                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);

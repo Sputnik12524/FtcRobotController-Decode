@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -21,19 +19,15 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "3 Artifacts Long Auto BLUE", group = "Autonomous")
+@Autonomous(name = "Long Park BLUE", group = "Autonomous")
 @Configurable // Panels
-public class Auto3ArtifactsLongBlue extends LinearOpMode {
+public class AutoPedroPark extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
-    Turret tt;
-
-    Intake in;
-    Shooter sh;
 
     @Override
     public void runOpMode() {
@@ -44,9 +38,6 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
         actionTimer = new Timer();
         actionTimer.resetTimer();
 
-        in = new Intake(this);
-        sh = new Shooter(this);
-        tt = new Turret(this);
         Logger lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
@@ -56,10 +47,6 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
 
         paths = new Paths(follower); // Build paths
 
-        sh.closeTunnel();
-        sh.setLongThrowMode();
-        tt.turretRegulator.start();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -68,19 +55,16 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
-            sh.threeArtefactsShooting();
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
-            t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
         }
         lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
-        tt.turretRegulator.interrupt();
     }
 
 
@@ -105,31 +89,11 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.closeTunnel();
-                sh.shootByVelocity();
-                in.rotateIn();
-                tt.continuousTurnToGate(Alliance.BLUE, follower.getPose().getX(),
-                        follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
-                setPathState(1);
-                break;
-            case 1:
-                while (!sh.isSpinUp() || follower.isBusy()) ;
-
-                sh.openTunnel();
-              //  sh.threeArtefactsShooting();
-              setPathState(2);
-                break;
-            case 2:
-                while (follower.isBusy() || actionTimer.getElapsedTime() < 4000) ;
-                sh.closeTunnel();
                 follower.followPath(paths.PathLeaving);
-                sh.shootStop();
-                in.rotateStop();
-                tt.turnByTarget(0);
                 setPathState(3);
                 break;
             case 3:
-                if (!follower.isBusy() && !Shooter.isTunnelOpen && tt.getCurrentPosOfTurret()==0) {
+                if (!follower.isBusy()) {
                     setPathState(-100);
                 }
                 break;

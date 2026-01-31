@@ -206,6 +206,15 @@ public class Shooter {
             setVelocityTarget(VELOCITY_FOR_SHORT_THROW);
         }
     }
+    public void waitForShoot() {
+        for (int i = 0; i < 5; i++) {
+            opMode.sleep(2000);
+            openTunnel();
+            opMode.sleep(200);
+            closeTunnel();
+        }
+
+    }
 
 
     public void updateCalculator() {

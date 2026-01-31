@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
@@ -18,6 +19,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 
 @Autonomous(name = "6 Artifacts Long Autonomous BLUE", group = "Autonomous")
+@Disabled
 @Configurable // Panels
 public class Auto6ArtifactsLongBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -131,25 +133,29 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                sh.closeTunnel();
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
                 sh.shootByVelocity();
                 in.rotateIn();
                 setPathState(1);
                 break;
             case 1:
-                if (sh.getVelocityRPS() >= Shooter.VELOCITY_FOR_LONG_THROW && !follower.isBusy()) {
+                if(!follower.isBusy()) {
                     follower.followPath(paths.PathFirstScoring, true);
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (!follower.isBusy()) {
+                if (sh.isSpinUp() &&!follower.isBusy()) {
+                    sh.openTunnel();
+                   // sh.threeArtefactsShooting();
                    // sh.waitForShoot();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (!Shooter.isTunnelOpen && !follower.isBusy()) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() < 4000) {
+                    sh.closeTunnel();
                     follower.followPath(paths.PathToPresetArtifacts, true);
                     setPathState(4);
                 }
@@ -163,17 +169,18 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
             case 5:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondScoring, true);
+                    sh.shootByVelocity();
                     setPathState(6);
                 }
                 break;
             case 6:
-                if(!follower.isBusy()) {
-                  //  sh.waitForShoot();
+                if(!follower.isBusy() && sh.isSpinUp()) {
+                    sh.openTunnel();
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(!follower.isBusy() && !Shooter.isTunnelOpen){
+                if(follower.isBusy() && !Shooter.isTunnelOpen){
                     follower.followPath(paths.PathLeaving);
                     setPathState(-100);
                 }
@@ -185,5 +192,6 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
+        actionTimer.resetTimer();
     }
 }

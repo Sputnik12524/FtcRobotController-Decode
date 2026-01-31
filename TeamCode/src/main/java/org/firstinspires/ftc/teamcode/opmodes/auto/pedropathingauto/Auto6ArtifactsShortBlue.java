@@ -8,6 +8,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import com.pedropathing.geometry.BezierLine;
@@ -17,7 +18,7 @@ import com.pedropathing.geometry.Pose;
 
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "Pedro Pathing Autonomous BLUE", group = "Autonomous")
+@Autonomous(name = "Auto 6 Short BLUE", group = "Autonomous")
 @Configurable // Panels
 public class Auto6ArtifactsShortBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -25,6 +26,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
     private Timer actionTimer;
+    private Turret tt;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
@@ -38,6 +40,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
 
         in = new Intake(this);
         sh = new Shooter(this);
+        tt = new Turret(this);
 
         // Panels Telemetry instance
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -137,7 +140,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                if (sh.getVelocityRPS() >= Shooter.VELOCITY_FOR_LONG_THROW && !follower.isBusy()) {
+                if (sh.isSpinUp() && !follower.isBusy()) {
                     follower.followPath(paths.PathFirstScoring, true);
                     setPathState(2);
                 }

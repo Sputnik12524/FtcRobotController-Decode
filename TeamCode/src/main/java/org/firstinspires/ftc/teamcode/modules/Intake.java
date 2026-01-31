@@ -31,14 +31,17 @@ public class Intake {
 
     public void rotateIn() {
         catcher.setPower(POWER);
+        transferSetPower(1);
     }
 
     public void rotateOut() {
         catcher.setPower(-POWER);
+        transferSetPower(-1);
     }
 
     public void rotateStop() {
         catcher.setPower(0);
+        transferServo.setPower(0);
     }
 
 

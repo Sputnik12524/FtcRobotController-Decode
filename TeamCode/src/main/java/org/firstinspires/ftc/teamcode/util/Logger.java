@@ -52,8 +52,8 @@ public class Logger {
         }
     }
 
-    public void getAll() {
-        try {
+    public void getAll() throws IOException{
+
             this.reader = new BufferedReader(new FileReader(this.directoryPath + fileName + ".csv"));
             line = reader.readLine();
             if (line != null) {
@@ -66,9 +66,7 @@ public class Logger {
                 if(a[3] != null) degrees = Double.parseDouble(a[3]);
             }
             reader.close();
-        } catch (IOException exe) {
-            exe.printStackTrace();
-        }
+
     }
 
     public void addHeader(String header) {

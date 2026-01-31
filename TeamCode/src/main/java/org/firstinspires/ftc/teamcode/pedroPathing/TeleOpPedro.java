@@ -25,8 +25,11 @@ import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
+import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
+
+import java.io.IOException;
 
 @Configurable
 @Config
@@ -58,15 +61,12 @@ public class TeleOpPedro extends LinearOpMode {
     boolean slowMode = false;
     private boolean automatedDrive;
     private TelemetryManager telemetryM;
+    DriveTrainMecanum dt;
 
-    public TurretAutomatic turretAutoAiming = new TurretAutomatic();
 
     @Override
     public void runOpMode() {
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(lg.x, lg.y,lg.degrees));
-        //follower.setStartingPose(new Pose(72, 72, 0));
-        follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
 
         timer = new ElapsedTime();
@@ -75,6 +75,17 @@ public class TeleOpPedro extends LinearOpMode {
         tr = new Transfer(this);
         lg = new Logger("pospos");
         tt = new Turret(this);
+        dt = new DriveTrainMecanum(hardwareMap);
+
+        try {
+            lg.getAll();
+            follower.setStartingPose(new Pose(lg.x, lg.y, lg.degrees));
+        } catch (IOException | NullPointerException exe) {
+            follower.setStartingPose(new Pose(72, 48, 0));
+            attentionControl = true;
+        }
+
+        follower.update();
 
         currentPose = follower.getPose();
         isShootingLong = false;
@@ -85,15 +96,15 @@ public class TeleOpPedro extends LinearOpMode {
 
 
         //Lazy Curve Generation
-        Supplier<PathChain> autoParkingRed = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(38.669, 33.4497))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(90), 0.8))
-                .build();
-
-        Supplier<PathChain> autoParkingBlue = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(105.568, 33.4497))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(90), 0.8))
-                .build();
+//        Supplier<PathChain> autoParkingRed = () -> follower.pathBuilder() //Lazy Curve Generation
+//                .addPath(new Path(new BezierLine(follower::getPose, new Pose(38.669, 33.4497))))
+//                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(90), 0.8))
+//                .build();
+//
+//        Supplier<PathChain> autoParkingBlue = () -> follower.pathBuilder() //Lazy Curve Generation
+//                .addPath(new Path(new BezierLine(follower::getPose, new Pose(105.568, 33.4497))))
+//                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(90), 0.8))
+//                .build();
 
         sh.closeTunnel();
 
@@ -105,17 +116,23 @@ public class TeleOpPedro extends LinearOpMode {
         follower.startTeleopDrive();
         while (opModeIsActive()) {
             follower.update();
-            telemetryM.update();
+            if (gamepad1.right_bumper) {
+                dt.turnRightSlowMode();
+            } else if (gamepad1.left_bumper) {
+                dt.turnLeftSlowMode();
+            } else {
+                dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
+            }
 
-            follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x,
-                    gamepad1.left_trigger - gamepad1.right_trigger,
-                    true // Robot Centric
-            );
+//             follower.setTeleOpDrive(
+//                    -gamepad1.left_stick_y,
+//                    -gamepad1.left_stick_x,
+//                    gamepad1.left_trigger - gamepad1.right_trigger,
+//                    true // Robot Centric
+//            );
 
             // AUTO PARKING
-            if (gamepad2.dpadUpWasPressed() && !attentionControl) {
+           /* if (gamepad2.dpadUpWasPressed() && !attentionControl) {
                 follower.followPath(autoParkingRed.get());
                 automatedDrive = true;
             }
@@ -127,7 +144,7 @@ public class TeleOpPedro extends LinearOpMode {
             if (automatedDrive && (gamepad2.dpadLeftWasPressed() || !follower.isBusy())) {
                 follower.startTeleopDrive();
                 automatedDrive = false;
-            }
+            }*/
 
 
             if (gamepad1.a && !isRotateIn && !stateA1) {
@@ -191,7 +208,6 @@ public class TeleOpPedro extends LinearOpMode {
             //---------------------------------------- TURRET
 
             if (gamepad1.dpad_left && !stateDL1 && turretAuto) {
-                turretAutoAiming.interrupt();
                 if (gamepad2.y) {
                     tt.turnByTarget(Turret.TURRET_ZERO);
                 } else if (gamepad2.a) {
@@ -203,9 +219,8 @@ public class TeleOpPedro extends LinearOpMode {
                 }
                 turretAuto = false;
             } else if (gamepad1.dpad_left && !stateDL1 && !turretAuto) {
-                turretAutoAiming.start();
-                // tt.continuousTurnToGate(Alliance.RED, follower.getPose().getX(),
-                // follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
+                 tt.continuousTurnToGate(Alliance.RED, follower.getPose().getX(),
+                 follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
                 turretAuto = true;
 
             }

@@ -1,10 +1,8 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.red;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -21,9 +19,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "3 Artifacts Long Auto BLUE", group = "Autonomous")
+@Autonomous(name = "3 Artifacts Long Auto RED", group = "Autonomous")
 @Configurable // Panels
-public class Auto3ArtifactsLongBlue extends LinearOpMode {
+public class Auto3ArtifactsLongRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
@@ -52,14 +50,14 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(56, 8, Math.toRadians(90)));//22,124
+        follower.setStartingPose(new Pose(90, 8, Math.toRadians(90)));//22,124
 
         paths = new Paths(follower); // Build paths
 
         sh.closeTunnel();
         sh.setLongThrowMode();
         tt.turretRegulator.start();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW+1.5);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -78,7 +76,7 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
         tt.turretRegulator.interrupt();
     }
@@ -90,11 +88,11 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
         public Paths(Follower follower) {
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(56, 8),
+                                    new Pose(83, 18),
 
-                                    new Pose(36, 8)
+                                    new Pose(100, 18)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(110))
+                    ).setConstantHeadingInterpolation(Math.toRadians(90))
 
                     .build();
         }
@@ -108,21 +106,22 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
                 sh.closeTunnel();
                 sh.shootByVelocity();
                 in.rotateIn();
-                tt.continuousTurnToGate(Alliance.BLUE, follower.getPose().getX(),
+                tt.continuousTurnToGate(Alliance.RED, follower.getPose().getX(),
                         follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
                 setPathState(1);
                 break;
             case 1:
-                while (!sh.isSpinUp() || follower.isBusy()) ;
+                while (!sh.isSpinUp()) ;
 
                 sh.openTunnel();
-              //  sh.threeArtefactsShooting();
-              setPathState(2);
+              //  sh.waitForShoot();
+               setPathState(2);
                 break;
             case 2:
                 while (follower.isBusy() || actionTimer.getElapsedTime() < 4000) ;
-                sh.closeTunnel();
                 follower.followPath(paths.PathLeaving);
+                sh.closeTunnel();
+
                 sh.shootStop();
                 in.rotateStop();
                 tt.turnByTarget(0);
@@ -140,5 +139,6 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
+        actionTimer.resetTimer();
     }
 }

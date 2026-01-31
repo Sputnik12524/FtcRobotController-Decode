@@ -27,9 +27,9 @@ public class Turret {
     public final double rSmallGear = 60;
     public final double rBigGear = 178;
 
-    public static double kP = 0.01;
+    public static double kP = 0.035;
     public static double kI = 0;
-    public static double kD = 0;
+    public static double kD = 0.02;
     public static double kF = 0;
     private final double TPR = 537.7;
     public double error;
@@ -150,6 +150,8 @@ public class Turret {
     public void turnByTarget(double target) { this.target = target; }
 
     public void continuousTurnToGate(Alliance alliance, double x, double y, double angleOfDrivetrain) {
+        if (x <= 0) x = 1;
+        if (x >= 144) x = 143;
         switch(alliance) {
             case RED:
                 angleOfTurret = Math.toDegrees(Math.atan((144-y)/(144-x)));
