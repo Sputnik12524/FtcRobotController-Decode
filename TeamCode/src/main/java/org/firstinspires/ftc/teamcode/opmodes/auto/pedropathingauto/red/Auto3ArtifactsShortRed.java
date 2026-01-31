@@ -81,14 +81,22 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain PathScoring;
+        public PathChain PathScoring, PathLeaving;
 
         public Paths(Follower follower) {
             PathScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(56, 8),
+                                    new Pose(123, 123),
 
-                                    new Pose(43.541, 103.509)
+                                    new Pose(100, 102)
+                            )
+                    ).setTangentHeadingInterpolation()
+
+                    .build();
+            PathLeaving = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(100, 102),
+                                    new Pose(100, 18)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -110,10 +118,8 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                while (sh.isSpinUp() || !follower.isBusy()) ;
+                while (!sh.isSpinUp() || follower.isBusy());
                 sh.openTunnel();
-                // sh.threeArtefactsShooting();
-                //if(sh.complete)
                 setPathState(2);
                 break;
             case 2:
@@ -137,5 +143,6 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
+        actionTimer.resetTimer();
     }
 }
