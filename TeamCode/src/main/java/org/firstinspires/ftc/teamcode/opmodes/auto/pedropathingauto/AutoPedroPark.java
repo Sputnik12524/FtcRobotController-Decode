@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "Long Park BLUE", group = "Autonomous")
+@Autonomous(name = "0 Long Park BLUE", group = "Autonomous")
 @Configurable // Panels
 public class AutoPedroPark extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -55,7 +55,6 @@ public class AutoPedroPark extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
-
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
@@ -69,9 +68,16 @@ public class AutoPedroPark extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain PathLeaving;
+        public PathChain PathLeaving, PathA;
 
         public Paths(Follower follower) {
+            PathA = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(56, 8),
+                                    new Pose(56, 10)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(90))
+                    .build();
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(56, 8),
@@ -89,14 +95,18 @@ public class AutoPedroPark extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                follower.followPath(paths.PathLeaving);
-                setPathState(3);
+                follower.followPath(paths.PathA, true);
+                setPathState(1);
                 break;
-            case 3:
-                if (!follower.isBusy()) {
+            case 1:
+                while (follower.isBusy());
+                follower.followPath(paths.PathLeaving, true);
+                setPathState(2);
+                break;
+            case 2:
+                if(!follower.isBusy()){
                     setPathState(-100);
                 }
-                break;
         }
 
     }
