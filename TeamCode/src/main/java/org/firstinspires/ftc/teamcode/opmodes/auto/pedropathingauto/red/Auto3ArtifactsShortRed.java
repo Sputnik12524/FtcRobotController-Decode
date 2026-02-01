@@ -50,14 +50,14 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(123, 123, Math.toRadians(35)));//22,124
+        follower.setStartingPose(new Pose(121, 127, Math.toRadians(-136)));
 
         paths = new Paths(follower); // Build paths
 
         sh.closeTunnel();
         sh.setLongThrowMode();
         tt.turretRegulator.start();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -86,19 +86,19 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
         public Paths(Follower follower) {
             PathScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(123, 123),
+                                    new Pose(121, 127),
 
-                                    new Pose(100, 102)
+                                    new Pose(101, 111)
                             )
-                    ).setTangentHeadingInterpolation()
+                    ).setConstantHeadingInterpolation(Math.toRadians(-136)) //was tangent
 
                     .build();
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(100, 102),
-                                    new Pose(100, 18)
+                                    new Pose(103, 111),
+                                    new Pose(85, 125)
                             )
-                    ).setTangentHeadingInterpolation()
+                    ).setConstantHeadingInterpolation(Math.toRadians(-136)) //was tangent
 
                     .build();
         }
@@ -113,26 +113,27 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
                 sh.closeTunnel();
                 sh.shootByVelocity();
                 in.rotateIn();
-                tt.continuousTurnToGate(Alliance.RED, follower.getPose().getX(),
-                        follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
+                tt.turnByTarget(0);
                 setPathState(1);
                 break;
             case 1:
-                while (!sh.isSpinUp() || follower.isBusy());
+                if (!sh.isSpinUp() || follower.isBusy()) break;
+                //while (!sh.isSpinUp() || follower.isBusy());
                 sh.openTunnel();
                 setPathState(2);
                 break;
             case 2:
-                while (follower.isBusy() || actionTimer.getElapsedTime() < 4000) ;
+                if(follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                // while (follower.isBusy() || actionTimer.getElapsedTime() < 4000) ;
                 sh.closeTunnel();
-                follower.followPath(paths.PathScoring);
+                follower.followPath(paths.PathLeaving);
                 sh.shootStop();
                 in.rotateStop();
                 tt.turnByTarget(0);
                 setPathState(3);
                 break;
             case 3:
-                if (!follower.isBusy() && !Shooter.isTunnelOpen && tt.getCurrentPosOfTurret() == 0) {
+                if (!follower.isBusy() && !Shooter.isTunnelOpen) {
                     setPathState(-100);
                 }
                 break;

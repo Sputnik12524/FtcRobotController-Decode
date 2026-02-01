@@ -111,14 +111,14 @@ public class Auto3ArtifactsLongRed extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                while (!sh.isSpinUp()) ;
+                if (!sh.isSpinUp()) break;
 
-                sh.openTunnel();
-              //  sh.waitForShoot();
+              //  sh.openTunnel();
+                sh.waitForShoot();
                setPathState(2);
                 break;
             case 2:
-                while (follower.isBusy() || actionTimer.getElapsedTime() < 4000) ;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
                 follower.followPath(paths.PathLeaving);
                 sh.closeTunnel();
 

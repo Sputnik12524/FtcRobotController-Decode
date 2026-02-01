@@ -32,7 +32,7 @@ public class Shooter {
     public int timers;
     public static double POWER = 1;
     public double velocityTarget = 0;
-    public static double VELOCITY_FOR_LONG_THROW = 50;
+    public static double VELOCITY_FOR_LONG_THROW = 47;
     public static double VELOCITY_FOR_SHORT_THROW = 38.5;
 
     //Cover

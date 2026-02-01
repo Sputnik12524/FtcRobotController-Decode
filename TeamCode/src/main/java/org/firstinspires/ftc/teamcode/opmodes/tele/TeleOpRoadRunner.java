@@ -52,7 +52,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     private PathChain PathSecondScoring;
     public boolean weCanShoot = false;
     boolean detect = false;
-    boolean attentionControl = false;
+    boolean attentionControl = true;
 
 
     @Override
@@ -63,7 +63,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         sh = new Shooter(this);
         in = new Intake(this);
         tr = new Transfer(this);
-        Turret tt = new Turret(this);
+        //Turret tt = new Turret(this);
         t = new ElapsedTime();
         tS = new ElapsedTime();
 
@@ -83,7 +83,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
        // Telemetry t = new MultipleTelemetry(telemetry, dashtele);
         sh.closeTunnel();
 
-        tt.turretRegulator.start();
+      //  tt.turretRegulator.start();
         follower.update();
 
 
@@ -169,11 +169,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
             //---------------------------------------- TURRET
             t.reset();
 
-            if (!attentionControl) {
-                tt.continuousTurnToGate(Alliance.RED, follower.getPose().getX(),
-                        follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
-            }
-            telemetry.addData("TT", t);
+           // if (!attentionControl) {
+             //   tt.continuousTurnToGate(Alliance.RED, follower.getPose().getX(),
+               //         follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
+           // }
+           // telemetry.addData("TT", t);
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
 
             t.reset();
@@ -184,7 +184,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 attentionControl = false;
             }
 
-            if (attentionControl) {
+           /* if (attentionControl) {
                 if (gamepad2.y) {
                     tt.turnByTarget(0);
                 } else if (gamepad2.a) {
@@ -194,7 +194,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 } else if (gamepad2.b) {
                     tt.turnByTarget(62);
                 }
-            }
+            }*/
             telemetry.addData("Att", t);
             telemetry.addData("ALL", tS);
 
@@ -203,16 +203,16 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
 
-//            telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-//            telemetry.addData("Velocity shooter", sh.shooterUpper.getVelocity() / 28);
-//            dashtele.addData("TARGET", tt.target);
+            telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
+            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
+            telemetry.addData("TARGET", sh.velocityTarget);
 //            dashtele.addData("Current Pos", tt.getCurrentPosOfTurret());
 //            dashtele.addData("error", tt.error);
 //            dashtele.addData("Complete", sh.complete);
 //            dashtele.update();
             telemetry.update();
         }
-        tt.turretRegulator.interrupt();
+     //   tt.turretRegulator.interrupt();
 
     }
 
