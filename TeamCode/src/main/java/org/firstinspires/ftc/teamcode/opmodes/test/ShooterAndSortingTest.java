@@ -11,14 +11,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Config
 @TeleOp(name = "TEST Shooter, Sorting and their friends!", group = "1")
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
-    Turret tr;
     Intake in;
     Limelight ll;
     Logger logger;
@@ -69,13 +67,13 @@ public class ShooterAndSortingTest extends LinearOpMode {
             stateY1 = gamepad1.y;
 
             // TURRET
-            if (gamepad1.right_bumper) {
+          /*  if (gamepad1.right_bumper) {
                 tr.turnRightByPower();
             } else if (gamepad1.left_bumper) {
                 tr.turnLeftByPower();
             } else {
                 tr.turnStopByPower();
-            }
+            }*/
 
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {

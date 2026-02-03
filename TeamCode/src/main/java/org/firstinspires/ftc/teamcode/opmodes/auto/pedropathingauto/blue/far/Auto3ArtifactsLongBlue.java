@@ -1,10 +1,8 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.blue.far;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -16,7 +14,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -30,7 +27,7 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
-    Turret tt;
+ //   Turret tt;
 
     Intake in;
     Shooter sh;
@@ -46,7 +43,7 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
 
         in = new Intake(this);
         sh = new Shooter(this);
-        tt = new Turret(this);
+      //  tt = new Turret(this);
         Logger lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
@@ -58,7 +55,7 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
 
         sh.closeTunnel();
         sh.setLongThrowMode();
-        tt.turretRegulator.start();
+      //  tt.turretRegulator.start();
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
 
         waitForStart();
@@ -80,7 +77,7 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
         }
         lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
-        tt.turretRegulator.interrupt();
+     //   tt.turretRegulator.interrupt();
     }
 
 
@@ -108,8 +105,6 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
                 sh.closeTunnel();
                 sh.shootByVelocity();
                 in.rotateIn();
-                tt.continuousTurnToGate(Alliance.BLUE, follower.getPose().getX(),
-                        follower.getPose().getY(), Math.toDegrees(follower.getPose().getHeading()));
                 setPathState(1);
                 break;
             case 1:
@@ -125,11 +120,11 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
                 follower.followPath(paths.PathLeaving);
                 sh.shootStop();
                 in.rotateStop();
-                tt.turnByTarget(0);
+              //  tt.turnByTarget(0);
                 setPathState(3);
                 break;
             case 3:
-                if (!follower.isBusy() && !Shooter.isTunnelOpen && tt.getCurrentPosOfTurret()==0) {
+                if (!follower.isBusy() && !Shooter.isTunnelOpen ) {
                     setPathState(-100);
                 }
                 break;

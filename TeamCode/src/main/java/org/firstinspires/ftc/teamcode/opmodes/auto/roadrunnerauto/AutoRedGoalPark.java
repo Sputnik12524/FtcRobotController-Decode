@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.roadrunnerauto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
 @Autonomous(name = "RED Goal Park", group = "RedPark")
+@Disabled
 public class AutoRedGoalPark extends LinearOpMode {
 
     @Override

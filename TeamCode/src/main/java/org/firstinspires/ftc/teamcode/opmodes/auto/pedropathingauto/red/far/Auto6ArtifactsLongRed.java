@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.red;
+package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.red.far;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
@@ -18,6 +19,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 
 @Autonomous(name = "6 Artifacts Long Autonomous RED", group = "Autonomous")
+@Disabled
 @Configurable // Panels
 public class Auto6ArtifactsLongRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance

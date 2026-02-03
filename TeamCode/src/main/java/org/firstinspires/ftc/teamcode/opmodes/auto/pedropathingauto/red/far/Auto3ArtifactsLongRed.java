@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.red.far;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -14,21 +14,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "3 Artifacts Short Auto BLUE", group = "Autonomous")
+@Autonomous(name = "3 Artifacts Long Auto RED", group = "Autonomous")
 @Configurable // Panels
-public class Auto3ArtifactsShortBlue extends LinearOpMode {
+public class Auto3ArtifactsLongRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
-    Turret tt;
 
     Intake in;
     Shooter sh;
@@ -44,20 +42,18 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
 
         in = new Intake(this);
         sh = new Shooter(this);
-        tt = new Turret(this);
         Logger lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(22, 127, Math.toRadians(-36)));
+        follower.setStartingPose(new Pose(90, 8, Math.toRadians(90)));//22,124
 
         paths = new Paths(follower); // Build paths
 
         sh.closeTunnel();
         sh.setLongThrowMode();
-        tt.turretRegulator.start();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW+1.5);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -66,39 +62,32 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
+            sh.threeArtefactsShooting();
+
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
-            t.addData("Shooter Velo", sh.getVelocityRPS());
+            t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
-        tt.turretRegulator.interrupt();
     }
 
 
     public static class Paths {
-        public PathChain PathScoring, PathLeaving;
+        public PathChain PathLeaving;
 
         public Paths(Follower follower) {
-            PathScoring = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(22, 127),
-
-                                    new Pose(50, 104)
-                            )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-36)) //was tangent
-
-                    .build();
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(50, 104),
-                                    new Pose(54, 130)
+                                    new Pose(83, 18),
+
+                                    new Pose(100, 18)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-36)) //was tangent
+                    ).setConstantHeadingInterpolation(Math.toRadians(90))
 
                     .build();
         }
@@ -109,27 +98,25 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                follower.followPath(paths.PathScoring);
                 sh.closeTunnel();
                 sh.shootByVelocity();
                 in.rotateIn();
-                tt.turnByTarget(0);
                 setPathState(1);
                 break;
             case 1:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
-                //while (!sh.isSpinUp() || follower.isBusy());
-                sh.openTunnel();
-                setPathState(2);
+                if (!sh.isSpinUp()) break;
+
+              //  sh.openTunnel();
+                sh.waitForShoot();
+               setPathState(2);
                 break;
             case 2:
-                if(follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                // while (follower.isBusy() || actionTimer.getElapsedTime() < 4000) ;
-                sh.closeTunnel();
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
                 follower.followPath(paths.PathLeaving);
+                sh.closeTunnel();
+
                 sh.shootStop();
                 in.rotateStop();
-                tt.turnByTarget(0);
                 setPathState(3);
                 break;
             case 3:

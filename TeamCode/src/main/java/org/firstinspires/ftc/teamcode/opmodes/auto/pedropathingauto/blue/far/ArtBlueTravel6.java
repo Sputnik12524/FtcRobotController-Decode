@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.red;
+package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.blue.far;
 
-import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.bylazar.telemetry.TelemetryManager;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -11,15 +10,15 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "Pedro Pathing Autonomous RED", group = "Autonomous")
-@Configurable // Panels
-public class Auto6ArtifactsShortRed extends LinearOpMode {
+@Autonomous(name = "Long Blue 6", group = "Autonomous")
+public class ArtBlueTravel6 extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
@@ -29,33 +28,30 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
 
     Intake in;
     Shooter sh;
-    Logger lg;
 
     @Override
     public void runOpMode() {
         pathTimer = new Timer();
         Timer opmodeTimer = new Timer();
+        opmodeTimer.resetTimer();
+
         actionTimer = new Timer();
         actionTimer.resetTimer();
-        opmodeTimer.resetTimer();
 
         in = new Intake(this);
         sh = new Shooter(this);
-        lg = new Logger("pospos");
+        Logger lg = new Logger("pospos");
 
-        // Panels Telemetry instance
-        TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-
+        Telemetry dash = FtcDashboard.getInstance().getTelemetry();
+        Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(121, 127, Math.toRadians(-136)));
+        follower.setStartingPose(new Pose(60, 8, Math.toRadians(90)));//22,124
 
         paths = new Paths(follower); // Build paths
 
-        panelsTelemetry.debug("Status", "Initialized");
-        panelsTelemetry.update(telemetry);
-
         sh.closeTunnel();
         sh.setShortThrowMode();
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -64,68 +60,70 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
+            sh.threeArtefactsShooting();
+
             // Log values to Panels and Driver Station
-            panelsTelemetry.debug("Path State", pathState);
-            panelsTelemetry.debug("X", follower.getPose().getX());
-            panelsTelemetry.debug("Y", follower.getPose().getY());
-            panelsTelemetry.debug("Heading", follower.getPose().getHeading());
-            panelsTelemetry.update(telemetry);
+            t.addData("Path State", pathState);
+            t.addData("X", follower.getPose().getX());
+            t.addData("Y", follower.getPose().getY());
+            t.addData("Heading", follower.getPose().getHeading());
+            t.addData("Shooter Velocity", sh.getVelocityRPS());
+            t.update();
         }
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.fileClose();
     }
 
 
     public static class Paths {
-        public PathChain PathFirstScoring, PathToPresetArtifacts, PathIntakingArtifacts,
-                PathSecondScoring, PathLeaving;
+        public PathChain PathScoring, PathLeaving, PathToPresetArtifacts, PathIntakingArtifacts, PathSecondScoring;
 
         public Paths(Follower follower) {
-            PathFirstScoring = follower.pathBuilder().addPath(
+            PathScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(121, 127),
+                                    new Pose(60, 8),
 
-                                    new Pose(103, 111)
+                                    new Pose(47, 115)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-136))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-36))
 
                     .build();
-
             PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(103, 111),
+                                    new Pose(47, 115),
 
-                                    new Pose(102, 83)
+                                    new Pose(55, 100)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-136), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(180))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(102, 83),
+                                    new Pose(55, 100),
 
-                                    new Pose(126, 83)
+                                    new Pose(35, 100)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                     .build();
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(126, 83),
+                                    new Pose(35, 100),
 
-                                    new Pose(103, 111)
+                                    new Pose(45, 115)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(36))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-36))
 
                     .build();
 
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(103, 111),
+                                    new Pose(45, 115),
 
-                                    new Pose(85, 127)
+                                    new Pose(35, 95)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(36))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-36))
 
                     .build();
         }
@@ -136,26 +134,28 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                sh.closeTunnel();
                 sh.shootByVelocity();
                 in.rotateIn();
-                follower.followPath(paths.PathFirstScoring, true);
+                follower.followPath(paths.PathScoring);
                 setPathState(1);
                 break;
             case 1:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp()) break;
+
                 sh.openTunnel();
-                setPathState(3);
+                //  sh.waitForShoot();
+                setPathState(2);
                 break;
-            case 3:
-                if (actionTimer.getElapsedTime() >= 4000 && !follower.isBusy()) {
-                    sh.closeTunnel();
-                    follower.followPath(paths.PathToPresetArtifacts, true);
-                    setPathState(4);
-                }
+            case 2:
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                follower.followPath(paths.PathToPresetArtifacts);
+                setPathState(4);
                 break;
             case 4:
                 if (!follower.isBusy()) {
+                    in.rotateIn();
+                    sh.closeTunnel();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(5);
                 }
@@ -169,18 +169,18 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
             case 6:
                 if (!follower.isBusy()) {
                     sh.openTunnel();
-                    //   sh.waitForShoot();
+                    // sh.waitForShoot();
                     setPathState(7);
                 }
                 break;
             case 7:
-                if (actionTimer.getElapsedTime() >= 4000 && !follower.isBusy()) {
-                    sh.shootStop();
-                    in.rotateStop();
-                    follower.followPath(paths.PathLeaving);
-                    setPathState(-1);
-                }
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                in.rotateStop();
+                follower.followPath(paths.PathLeaving);
+                setPathState(-100);
+
                 break;
+
         }
 
     }
