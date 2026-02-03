@@ -73,8 +73,11 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain PathFirstScoring, PathToPresetArtifacts, PathIntakingArtifacts,
-                PathSecondScoring, PathLeaving;
+        public final PathChain PathFirstScoring;
+        public final PathChain PathToPresetArtifacts;
+        public final PathChain PathIntakingArtifacts;
+        public final PathChain PathSecondScoring;
+        public final PathChain PathLeaving;
 
         public Paths(Follower follower) {
             PathFirstScoring = follower.pathBuilder().addPath(

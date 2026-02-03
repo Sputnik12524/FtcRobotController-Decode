@@ -76,7 +76,11 @@ public class ArtBlueTravel6 extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain PathScoring, PathLeaving, PathToPresetArtifacts, PathIntakingArtifacts, PathSecondScoring;
+        public final PathChain PathScoring;
+        public final PathChain PathLeaving;
+        public final PathChain PathToPresetArtifacts;
+        public final PathChain PathIntakingArtifacts;
+        public final PathChain PathSecondScoring;
 
         public Paths(Follower follower) {
             PathScoring = follower.pathBuilder().addPath(

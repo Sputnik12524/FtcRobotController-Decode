@@ -35,14 +35,6 @@ public class AutoBlueGoal extends LinearOpMode {
                 .forward(20)
                 //capturing
                 .build());
-/*
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(-29, -25, Math.toRadians(45)))
-        //scoring
-                .build());
-        dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(-50, -25, Math.toRadians(0))) //that's parking
-                .build());*/
 
     }
 }

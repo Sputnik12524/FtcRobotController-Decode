@@ -82,7 +82,7 @@ public class Auto3ArtifactsLongBlue extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain PathLeaving;
+        public final PathChain PathLeaving;
 
         public Paths(Follower follower) {
             PathLeaving = follower.pathBuilder().addPath(

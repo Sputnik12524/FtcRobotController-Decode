@@ -26,7 +26,6 @@ public class AutoTestForLogger extends LinearOpMode {
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
-    private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
@@ -41,7 +40,7 @@ public class AutoTestForLogger extends LinearOpMode {
         opmodeTimer.resetTimer();
         lg = new Logger("pospos");
 
-        actionTimer = new Timer();
+        Timer actionTimer = new Timer();
         actionTimer.resetTimer();
 
         in = new Intake(this);
@@ -81,7 +80,7 @@ public class AutoTestForLogger extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain PathLeaving;
+        public final PathChain PathLeaving;
 
         public Paths(Follower follower) {
             PathLeaving = follower.pathBuilder().addPath(

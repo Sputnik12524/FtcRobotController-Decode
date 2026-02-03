@@ -12,7 +12,6 @@ import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -22,8 +21,6 @@ public class TeleOpPedro extends LinearOpMode {
     private Follower follower;
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive;
-    private TelemetryManager telemetryM;
-    private ElapsedTime t;
     private ElapsedTime tS;
 
     @Override
@@ -31,8 +28,8 @@ public class TeleOpPedro extends LinearOpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
         follower.update();
-        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
-        t = new ElapsedTime();
+        TelemetryManager telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+        ElapsedTime t = new ElapsedTime();
 
 
         //Lazy Curve Generation

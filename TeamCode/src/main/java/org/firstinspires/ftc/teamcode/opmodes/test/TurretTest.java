@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
 @TeleOp(name = "TEST Turret", group = "1")
@@ -28,13 +27,13 @@ public class TurretTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             follower.update();
-//            if (gamepad1.right_bumper) {
-//                tr.turnRightByTarget();
-//            } else if (gamepad1.left_bumper) {
-//                tr.turnLeftByTarget();
-//            }
+            if (gamepad1.right_bumper) {
+                tr.turnRightByTarget();
+            } else if (gamepad1.left_bumper) {
+                tr.turnLeftByTarget();
+            }
 
-//
+
         }
     }
 }

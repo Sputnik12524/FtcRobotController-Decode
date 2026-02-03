@@ -67,13 +67,6 @@ public class ShooterAndSortingTest extends LinearOpMode {
             stateY1 = gamepad1.y;
 
             // TURRET
-          /*  if (gamepad1.right_bumper) {
-                tr.turnRightByPower();
-            } else if (gamepad1.left_bumper) {
-                tr.turnLeftByPower();
-            } else {
-                tr.turnStopByPower();
-            }*/
 
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {

@@ -13,8 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.modules.Intake;
-import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -27,7 +25,6 @@ public class AutoPedroPark extends LinearOpMode {
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
-    private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
 
     @Override
@@ -36,7 +33,7 @@ public class AutoPedroPark extends LinearOpMode {
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
-        actionTimer = new Timer();
+        Timer actionTimer = new Timer();
         actionTimer.resetTimer();
 
         Logger lg = new Logger("pospos");
@@ -69,7 +66,8 @@ public class AutoPedroPark extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain PathLeaving, PathA;
+        public final PathChain PathLeaving;
+        public final PathChain PathA;
 
         public Paths(Follower follower) {
             PathA = follower.pathBuilder().addPath(

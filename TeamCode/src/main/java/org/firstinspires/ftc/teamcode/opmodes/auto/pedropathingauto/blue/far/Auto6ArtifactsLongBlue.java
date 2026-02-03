@@ -73,8 +73,11 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain PathFirstScoring, PathToPresetArtifacts, PathIntakingArtifacts,
-                PathSecondScoring, PathLeaving;
+        public final PathChain PathFirstScoring;
+        public final PathChain PathToPresetArtifacts;
+        public final PathChain PathIntakingArtifacts;
+        public final PathChain PathSecondScoring;
+        public final PathChain PathLeaving;
 
         public Paths(Follower follower) {
             PathFirstScoring = follower.pathBuilder().addPath(
@@ -148,8 +151,6 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
             case 2:
                 if (sh.isSpinUp() &&!follower.isBusy()) {
                     sh.openTunnel();
-                   // sh.threeArtefactsShooting();
-                   // sh.waitForShoot();
                     setPathState(3);
                 }
                 break;
