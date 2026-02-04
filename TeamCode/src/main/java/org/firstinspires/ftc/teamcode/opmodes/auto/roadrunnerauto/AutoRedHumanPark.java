@@ -1,25 +1,27 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.roadrunnerauto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 
-@Autonomous(name = "BLUE Goal Park", group = "BluePark")
-public class AutoBlueGoalPark extends LinearOpMode {
+@Autonomous(name = "RED Human Park", group = "RedPark")
+@Disabled
+public class AutoRedHumanPark extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
-        Pose2d startPose = new Pose2d(-49, -49, Math.toRadians(45));
+        DriveTrainMecanum dt = new DriveTrainMecanum(this.hardwareMap);
+        Pose2d startPose = new Pose2d(61, 7, Math.toRadians(180));
         dt.setPoseEstimate(startPose);
 
         waitForStart();
 
         if (isStopRequested()) return;
         dt.followTrajectorySequence(dt.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-36, -15, Math.toRadians(-120)))
+                .lineToLinearHeading(new Pose2d(36, 30, Math.toRadians(180)))
                 .build());
 
     }

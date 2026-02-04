@@ -17,7 +17,6 @@ import com.pedropathing.math.*;
 import com.pedropathing.paths.*;
 import com.pedropathing.telemetry.SelectableOpMode;
 import com.pedropathing.util.*;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -33,7 +32,6 @@ import java.util.List;
  * @version 1.0, 6/26/2025
  */
 @Config
-@Disabled
 @TeleOp(name = "Tuning Dash", group = "Pedro Pathing")
 public class TuningDashboard extends SelectableOpMode {
     public static Follower follower;
@@ -1055,6 +1053,7 @@ class Line extends OpMode {
  * @author Anyi Lin - 10158 Scott's Bots
  * @author Aaron Yang - 10158 Scott's Bots
  * @author Harrison Womack - 10158 Scott's Bots
+ * @author Sputnik 12524
  * @version 1.0, 3/13/2024
  */
 class CentripetalTuner extends OpMode {

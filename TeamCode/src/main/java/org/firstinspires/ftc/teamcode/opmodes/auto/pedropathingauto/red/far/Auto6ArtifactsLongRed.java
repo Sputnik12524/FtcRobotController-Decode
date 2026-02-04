@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.red.far;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
@@ -8,6 +9,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.follower.Follower;
@@ -16,9 +18,10 @@ import com.pedropathing.geometry.Pose;
 
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "Pedro Pathing Autonomous", group = "Autonomous")
+@Autonomous(name = "6 Artifacts Long Autonomous RED", group = "Autonomous")
+@Disabled
 @Configurable // Panels
-public class AutoPedro extends LinearOpMode {
+public class Auto6ArtifactsLongRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
@@ -42,7 +45,7 @@ public class AutoPedro extends LinearOpMode {
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(22, 124, Math.toRadians(-38)));
+        follower.setStartingPose(new Pose(90, 8, Math.toRadians(90)));
 
         paths = new Paths(follower); // Build paths
 
@@ -70,56 +73,59 @@ public class AutoPedro extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain Path1;
-        public PathChain Path2, Path3, Path4, Path5;
+        public final PathChain PathFirstScoring;
+        public final PathChain PathToPresetArtifacts;
+        public final PathChain PathIntakingArtifacts;
+        public final PathChain PathSecondScoring;
+        public final PathChain PathLeaving;
 
         public Paths(Follower follower) {
-            Path1 = follower.pathBuilder().addPath(
+            PathFirstScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(22.000, 124.000),
+                                    new Pose(90, 8),
 
-                                    new Pose(43.541, 103.509)
+                                    new Pose(83, 18)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(62))
+
+                    .build();
+
+            PathToPresetArtifacts = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(83, 18),
+
+                                    new Pose(102, 35)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(62), Math.toRadians(0))
+
+                    .build();
+            PathIntakingArtifacts = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(102, 35),
+
+                                    new Pose(125, 35)
                             )
                     ).setTangentHeadingInterpolation()
 
                     .build();
 
-            Path2 = follower.pathBuilder().addPath(
+            PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(43.541, 103.509),
+                                    new Pose(125, 35),
 
-                                    new Pose(43.258, 84.561)
+                                    new Pose(83, 18)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-38), Math.toRadians(180))
-
-                    .build();
-            Path3 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(43.258, 84.561),
-
-                                    new Pose(16.940, 83.897)
-                            )
-                    ).setTangentHeadingInterpolation()
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(62))
 
                     .build();
 
-            Path4 = follower.pathBuilder().addPath(
+            PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(16.940, 83.897),
+                                    new Pose(83, 18),
 
-                                    new Pose(43.777, 103.708)
+                                    new Pose(100, 18)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-38))
-
-                    .build();
-
-            Path5 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(43.777, 103.708),
-
-                                    new Pose(58.119, 132.225)
-                            )
-                    ).setTangentHeadingInterpolation()
+                    ).setLinearHeadingInterpolation(Math.toRadians(62), Math.toRadians(62))
 
                     .build();
         }
@@ -130,49 +136,50 @@ public class AutoPedro extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                sh.shootByVelocity();
                 in.rotateIn();
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW-5);
-                sh.continuousShooter.start();
-                pathTimer.resetTimer();
-                while (pathTimer.getElapsedTime() < 2000);
-                follower.followPath(paths.Path1, true);
-                sh.waitForShoot();
-                pathTimer.resetTimer();
-                while (pathTimer.getElapsedTime() < 5000);
                 setPathState(1);
                 break;
             case 1:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.Path2, true);
+                if (sh.getVelocityRPS() >= Shooter.VELOCITY_FOR_LONG_THROW && !follower.isBusy()) {
+                    follower.followPath(paths.PathFirstScoring, true);
                     setPathState(2);
                 }
                 break;
             case 2:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.Path3, true);
+                   // sh.waitForShoot();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.Path4, true);
+                if (!Shooter.isTunnelOpen && !follower.isBusy()) {
+                    follower.followPath(paths.PathToPresetArtifacts, true);
                     setPathState(4);
                 }
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    sh.waitForShoot();
-                    sh.openTunnel();
-                    sleep(5000);
-                    follower.followPath(paths.Path5, true);
+                    follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(5);
                 }
                 break;
             case 5:
                 if (!follower.isBusy()) {
-                    sh.continuousShooter.interrupt();
-                    in.rotateStop();
-                    sh.closeTunnel();
+                    follower.followPath(paths.PathSecondScoring, true);
+                    setPathState(6);
+                }
+                break;
+            case 6:
+                if(!follower.isBusy()) {
+                   // sh.waitForShoot();
+                    setPathState(7);
+                }
+                break;
+            case 7:
+                if(!follower.isBusy() && !Shooter.isTunnelOpen){
+                    follower.followPath(paths.PathLeaving);
                     setPathState(-100);
                 }
                 break;

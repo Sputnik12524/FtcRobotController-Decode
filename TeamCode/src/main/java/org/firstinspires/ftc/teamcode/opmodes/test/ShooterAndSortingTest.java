@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Config
-@TeleOp(name = "TEST Shooter/Intake/Adjuster/Cover", group = "1")
+@TeleOp(name = "TEST Shooter, Sorting and their friends!", group = "1")
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
     Intake in;
@@ -65,6 +65,8 @@ public class ShooterAndSortingTest extends LinearOpMode {
                 isShooting = false;
             }
             stateY1 = gamepad1.y;
+
+            // TURRET
 
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {

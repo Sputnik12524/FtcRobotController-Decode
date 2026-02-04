@@ -9,8 +9,6 @@ public class Parking {
     public final DcMotor upMotor;
 
     public static double POWER = 1;
-    public static int MAX_POSITION = 1000;
-    public static int MIN_POSITION = 0;
 
     public Parking(LinearOpMode linearOpMode) {
         this.upMotor = linearOpMode.hardwareMap.get(DcMotor.class, "park");
@@ -18,17 +16,11 @@ public class Parking {
         upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    //---------------------------------------------- MOVING BY POWER
     public void setParkingPowerUp() { upMotor.setPower(POWER); }
     public void setParkingPowerDown() { upMotor.setPower(-POWER); }
     public  void parkingStop(){
         upMotor.setPower(0);
     }
 
-    public void switchUpOrDownMode() {
-        if (upMotor.getCurrentPosition() <= MAX_POSITION){
-            upMotor.setTargetPosition(MAX_POSITION);
-        } else if (upMotor.getCurrentPosition() == MAX_POSITION){
-            upMotor.setTargetPosition(MIN_POSITION);
-        }
-    }
 }
