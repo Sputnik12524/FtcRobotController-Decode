@@ -16,12 +16,11 @@ public class DriveTrain {
     public static final double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
     public static double multiplier = 1;
 
-
-    public DriveTrain(LinearOpMode linearOpMode) {
-        this.leftFront = linearOpMode.hardwareMap.get(DcMotor.class, "leftFront");
-        this.leftBack = linearOpMode.hardwareMap.get(DcMotor.class, "leftBack");
-        this.rightFront = linearOpMode.hardwareMap.get(DcMotor.class, "rightFront");
-        this.rightBack = linearOpMode.hardwareMap.get(DcMotor.class, "rightBack");
+    public DriveTrain(LinearOpMode opMode) {
+        this.leftFront = opMode.hardwareMap.get(DcMotor.class, "leftFront");
+        this.leftBack = opMode.hardwareMap.get(DcMotor.class, "leftBack");
+        this.rightFront = opMode.hardwareMap.get(DcMotor.class, "rightFront");
+        this.rightBack = opMode.hardwareMap.get(DcMotor.class, "rightBack");
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         leftBack.setDirection(DcMotor.Direction.FORWARD);

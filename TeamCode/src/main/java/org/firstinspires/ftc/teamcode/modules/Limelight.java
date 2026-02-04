@@ -21,18 +21,11 @@ public class Limelight {
     }
 
     public void startOrStopLL(boolean isStarted) {
-        if (isStarted){
+        if (isStarted) {
             limelight3A.stop();
         } else {
             limelight3A.start();
         }
-    }
-
-    public LLResult limelightResult() {
-        return limelight3A.getLatestResult();
-    }
-    public LLStatus limelightStatus() {
-        return limelight3A.getStatus();
     }
 
     public ArrayList<Double> getTagInfo() {
@@ -53,5 +46,13 @@ public class Limelight {
         tagInfo.add(tx);
         tagInfo.add(ty);
         return tagInfo;
+    }
+
+    //---------------------------------------------- GETTING
+    public LLResult limelightResult() {
+        return limelight3A.getLatestResult();
+    }
+    public LLStatus limelightStatus() {
+        return limelight3A.getStatus();
     }
 }

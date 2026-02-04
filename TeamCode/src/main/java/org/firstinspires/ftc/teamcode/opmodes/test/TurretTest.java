@@ -25,15 +25,6 @@ public class TurretTest extends LinearOpMode {
 
 
         waitForStart();
-        while (opModeIsActive()) {
-            follower.update();
-            if (gamepad1.right_bumper) {
-                tr.turnRightByTarget();
-            } else if (gamepad1.left_bumper) {
-                tr.turnLeftByTarget();
-            }
 
-
-        }
     }
 }

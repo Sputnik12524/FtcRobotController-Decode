@@ -7,15 +7,18 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import java.util.ArrayList;
 
 public class Transfer {
-
-    enum Color {GREEN, PURPLE, NONE}
-
-   private NormalizedColorSensor colorSensor1;
+    private NormalizedColorSensor colorSensor1;
     private NormalizedColorSensor colorSensor2;
     private NormalizedColorSensor colorSensor3;
-    private float[] hsv1 = new float[3];
-    private float[] hsv2 = new float[3];
-    private float[] hsv3 = new float[3];
+
+    enum Color {GREEN, PURPLE, NONE}
+    private final float[] hsv1 = new float[3];
+    private final float[] hsv2 = new float[3];
+    private final float[] hsv3 = new float[3];
+
+
+
+    //---------------------------------------------- DASHBOARD
     public static double GREEN_MAX = 175;
     public static double GREEN_MIN = 115;
     public static double PURPLE_MAX = 245;

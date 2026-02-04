@@ -2,33 +2,32 @@ package org.firstinspires.ftc.teamcode.opmodes.tele;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
-import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Transfer;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-//import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
 
 @TeleOp(name = "TeleOpRR", group = "0")
 @Config
 public class TeleOpRoadRunner extends LinearOpMode {
     Shooter sh;
     Intake in;
-    Limelight ll;
+    Turret tt;
     ElapsedTime timer;
     Transfer tr;
     Follower follower;
-    private Pose currentPose;
 
     /// Intake
     boolean isRotateIn = false;
@@ -41,24 +40,17 @@ public class TeleOpRoadRunner extends LinearOpMode {
     /// Shooter
     boolean stateY1 = false;
     boolean stateX1 = false;
-    boolean stateRSB2 = false;
-    private PathChain PathSecondScoring;
-    public boolean weCanShoot = false;
-    boolean detect = false;
     boolean attentionControl = true;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // ll = new Limelight(this);
         follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
         sh = new Shooter(this);
         in = new Intake(this);
         tr = new Transfer(this);
-        //Turret tt = new Turret(this);
-        ElapsedTime t = new ElapsedTime();
-        ElapsedTime tS = new ElapsedTime();
+        tt = new Turret(this);
 
         follower.setStartingPose(new Pose(72, 72, 0));
         follower.update();
@@ -73,20 +65,17 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
-       // Telemetry t = new MultipleTelemetry(telemetry, dashtele);
+        Telemetry t = new MultipleTelemetry(telemetry, dashtele);
         sh.closeTunnel();
 
-      //  tt.turretRegulator.start();
         follower.update();
 
 
         waitForStart();
 
         while (opModeIsActive()) {
-            tS.reset();
 
             //------------------------------------- DRIVETRAIN
-            t.reset();
             follower.update();
 
             if (gamepad1.right_bumper) {
@@ -96,20 +85,16 @@ public class TeleOpRoadRunner extends LinearOpMode {
             } else {
                 dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
             }
-            telemetry.addData("DT", t);
 
 
             //-------------------------------------- INTAKE
-            t.reset();
 
             if (gamepad1.a && !isRotateIn && !stateA1) {
                 in.rotateIn();
-                in.transferSetPower(Intake.TRANSFER_POWER);
                 isRotateIn = true;
                 isRotateOut = false;
             } else if (gamepad1.a && isRotateIn && !stateA1) {
                 in.rotateStop();
-                in.transferSetPower(0);
                 isRotateIn = false;
             }
             if (gamepad1.b && !isRotateOut && !stateB1) {
@@ -123,10 +108,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
 
-            telemetry.addData("IN", t);
 
             //------------------------------------ SHOOTER
-            t.reset();
             if (!attentionControl) {
                 sh.threeArtefactsShooting();
             }
@@ -157,14 +140,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
             } else if (gamepad1.dpad_down) {
                 sh.closeTunnel();
             }
-            telemetry.addData("SH and TN", t);
 
             //---------------------------------------- TURRET
-            t.reset();
+
 
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
-
-            t.reset();
 
             if (gamepad2.right_stick_button) {
                 attentionControl = true;
@@ -172,23 +152,14 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 attentionControl = false;
             }
 
-            telemetry.addData("Att", t);
-            telemetry.addData("ALL", tS);
-
-
-
-
-
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("Velocity shooter", sh.getVelocityRPS());
             telemetry.addData("TARGET", sh.velocityTarget);
             telemetry.update();
         }
-     //   tt.turretRegulator.interrupt();
 
     }
-
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }

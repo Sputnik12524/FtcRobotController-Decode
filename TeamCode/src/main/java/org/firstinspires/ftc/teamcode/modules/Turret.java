@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules;
 
-
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -18,11 +16,8 @@ public class Turret {
     public DcMotorEx turret;
     DigitalChannel magneticSensor;
     Limelight camera;
-    public TurretRegulator turretRegulator = new TurretRegulator();
-
     Alliance alliance = Alliance.NONE;
-
-    public static double POWER = 1;
+    public TurretRegulator turretRegulator = new TurretRegulator();
 
     public final double rSmallGear = 60;
     public final double rBigGear = 178;
@@ -30,7 +25,6 @@ public class Turret {
     public static double kP = 0.035;
     public static double kI = 0;
     public static double kD = 0.02;
-    public static double kF = 0;
     private final double TPR = 537.7;
     public double error;
     public double dError;
@@ -38,13 +32,9 @@ public class Turret {
     public double pastError;
     public double target = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = 180;  //подобрать
+    public static double POS_RIGHTMOST = 180;
     public static double POS_LEFTMOST = -180;
 
-    public static double TURRET_ZERO = 0;
-    public static double TURRET_MAX = 180;
-    public static double TURRET_BLUE = 25;
-    public static double TURRET_RED = -22;
     private boolean stateMagneting = false;
 
     public boolean isInLimits = false;
@@ -58,37 +48,9 @@ public class Turret {
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
-    public double getCurrentPosOfTurret() {
-        return turret.getCurrentPosition()/TPR * rSmallGear/rBigGear * 360;
-    }
 
-    public void turnInLimits(double power) {
-        if (isMagneting() && !stateMagneting) {
-            turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        } else if (getCurrentPosOfTurret() > POS_RIGHTMOST && power > 0) {
-            isInLimits = false;
-            turnStopByPower();
-            //FtcDashboard.getInstance().getTelemetry().addLine("Максимальное право");
-        } else if (getCurrentPosOfTurret() < POS_LEFTMOST && power < 0) {
-            isInLimits = false;
-            turnStopByPower();
-            //FtcDashboard.getInstance().getTelemetry().addLine("Максимальное лево");
-        } else {
-            isInLimits = true;
-            turret.setPower(power);
-            //FtcDashboard.getInstance().getTelemetry().addLine("Еду в пределах нужного");
-        }
-        stateMagneting = isMagneting();
-    }
-
-
-    public boolean isMagneting() {
-        return !magneticSensor.getState();
-    }
-
+    //---------------------------------------------- BY LOCALIZATION
     public class TurretRegulator extends Thread {
-
         private final ElapsedTime timer = new ElapsedTime();
 
         @Override
@@ -107,13 +69,6 @@ public class Turret {
 
                 pastError = error;
                 timer.reset();
-
-                /* FtcDashboard.getInstance().getTelemetry().addData("target:", target);
-                FtcDashboard.getInstance().getTelemetry().addData("error:", error);
-                FtcDashboard.getInstance().getTelemetry().addData("power:", power);
-                FtcDashboard.getInstance().getTelemetry().addData("CurrentPos:", getCurrentPosOfTurret());
-                FtcDashboard.getInstance().getTelemetry().addData("Encoders:", turret.getCurrentPosition());
-                FtcDashboard.getInstance().getTelemetry().update(); */
             }
         }
     }
@@ -126,9 +81,6 @@ public class Turret {
         public void run() {
             timer.reset();
             while (!isInterrupted()) {
-                while(camera.getTagInfo().get(0) != 21){
-                   turnRightByPower();
-                }
 
                 error = target - getCurrentPosOfTurret();
                 // error = центр - координаты_эйприл_тега
@@ -137,16 +89,37 @@ public class Turret {
 
                 turnInLimits(powerP);
 
-                   timer.reset();
+                timer.reset();
             }
         }
     }
-    public void turnRightByTarget() {
-        this.target += 1;
+
+    public double getCurrentPosOfTurret() {
+        return turret.getCurrentPosition()/TPR * rSmallGear/rBigGear * 360;
     }
-    public void turnLeftByTarget() {
-        this.target -= 1;
+
+    public void turnInLimits(double power) {
+        if (isMagneting() && !stateMagneting) {
+            turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        } else if (getCurrentPosOfTurret() > POS_RIGHTMOST && power > 0) {
+            isInLimits = false;
+            turnStopByPower();
+        } else if (getCurrentPosOfTurret() < POS_LEFTMOST && power < 0) {
+            isInLimits = false;
+            turnStopByPower();
+        } else {
+            isInLimits = true;
+            turret.setPower(power);
+        }
+        stateMagneting = isMagneting();
     }
+
+
+    public boolean isMagneting() {
+        return !magneticSensor.getState();
+    }
+
     public void turnByTarget(double target) { this.target = target; }
 
     public void continuousTurnToGate(Alliance alliance, double x, double y, double angleOfDrivetrain) {
@@ -160,7 +133,7 @@ public class Turret {
                 angleOfTurret = 180 - Math.toDegrees(Math.atan((144-y)/x));
                 break;
         }
-        target = -(angleOfDrivetrain - angleOfTurret); //бабах в градусы НАДО ПЕРЕВОДИЬТЬ
+        target = -(angleOfDrivetrain - angleOfTurret);
         target -= 180;
         angleNormalising();
     }
@@ -172,12 +145,6 @@ public class Turret {
         }
     }
 
-    public void turnLeftByPower() {
-        turret.setPower(POWER);
-    }
-    public void turnRightByPower() {
-        turret.setPower(-POWER);
-    }
     public void turnStopByPower() {
         turret.setPower(0);
     }

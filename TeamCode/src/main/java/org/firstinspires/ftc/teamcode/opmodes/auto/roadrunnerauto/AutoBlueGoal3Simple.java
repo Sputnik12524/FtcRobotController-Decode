@@ -19,7 +19,7 @@ public class AutoBlueGoal3Simple extends LinearOpMode {
     @Override
     public void runOpMode() {
         follower = Constants.createFollower(hardwareMap);
-        Shooter sh = new Shooter(this, follower);
+        Shooter sh = new Shooter(this);
         DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
         Intake in = new Intake(this);
 
@@ -50,8 +50,6 @@ public class AutoBlueGoal3Simple extends LinearOpMode {
 
         dt.turn(Math.toRadians(90));
            dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate()).forward(18).build());
-
-        in.artifactIntake.interrupt();
 
     }
 }
