@@ -181,7 +181,6 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
             case 1:
                 if (!sh.isSpinUp()) break;
-
                 sh.openTunnel();
                 //  sh.waitForShoot();
                 setPathState(2);
@@ -214,15 +213,16 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 7:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.PathSecondPresentArtefacts, true);
-                    setPathState(8);
-                }
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                sh.closeTunnel();
+                in.rotateIn();
+                follower.followPath(paths.PathSecondPresentArtefacts, true);
+                setPathState(8);
+
                 break;
 
             case 8:
-                sh.closeTunnel();
-                in.rotateIn();
+
                 if (!follower.isBusy())
                     follower.followPath(paths.PathSecondIntakingArtefacts, true);
                 setPathState(9);

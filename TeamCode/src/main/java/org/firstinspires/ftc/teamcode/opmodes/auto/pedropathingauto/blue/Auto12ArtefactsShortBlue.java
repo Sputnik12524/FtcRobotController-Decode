@@ -215,7 +215,6 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                 break;
             case 1:
                 if (!sh.isSpinUp()) break;
-
                 sh.openTunnel();
                 //  sh.waitForShoot();
                 setPathState(2);
@@ -248,15 +247,15 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 7:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.PathSecondPresentArtefacts, true);
-                    setPathState(8);
-                }
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                follower.followPath(paths.PathSecondPresentArtefacts, true);
+                sh.closeTunnel();
+                in.rotateIn();
+                setPathState(8);
+
                 break;
 
             case 8:
-                sh.closeTunnel();
-                in.rotateIn();
                 if (!follower.isBusy())
                     follower.followPath(paths.PathSecondIntakingArtefacts, true);
                 setPathState(9);
@@ -267,29 +266,29 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                 setPathState(10);
 
             case 10:
-                if (!sh.isSpinUp())
-                    sh.openTunnel();
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                sh.openTunnel();
                 setPathState(11);
 
             case 11:
                 sh.closeTunnel();
-                if(!follower.isBusy())
+                if (!follower.isBusy())
                     follower.followPath(paths.PathThirdPresentArtefacts, true);
                 setPathState(12);
 
             case 12:
                 in.rotateIn();
-                if(!follower.isBusy())
+                if (!follower.isBusy())
                     follower.followPath(paths.PathThirdIntakingArtefacts, true);
                 setPathState(13);
 
             case 13:
-                if(!follower.isBusy())
+                if (!follower.isBusy())
                     follower.followPath(paths.PathFourScorying, true);
                 setPathState(14);
 
             case 14:
-                if(!follower.isBusy())
+                if (!follower.isBusy())
                     follower.followPath(paths.PathThirdIntakingArtefacts, true);
                 setPathState(15);
 
