@@ -71,7 +71,6 @@ public class Shooter {
     //---------------------------------------------- BOOLEANS
     public boolean detected = false;
     public boolean complete = false;
-    public boolean completeC = false;
     public static boolean isTunnelOpen;
 
     public Shooter(LinearOpMode opMode) {
@@ -92,6 +91,7 @@ public class Shooter {
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
+
     public Shooter(LinearOpMode opMode, Follower follower) {
         this.opMode = opMode;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
@@ -111,7 +111,6 @@ public class Shooter {
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
-
 
 
     //---------------------------------------------- VELOCITY
@@ -156,7 +155,6 @@ public class Shooter {
         angleAdjuster.setPosition(POS_LONG_THROW);
     }
 
-
     //---------------------------------------------- TUNNEL
     public void openTunnel() {
         isTunnelOpen = true;
@@ -178,7 +176,7 @@ public class Shooter {
         return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 24;
     }
 
-    public boolean inZone(){
+    public boolean inZone() {
         return ifNotInLaunchZoneHuman() || ifNotInLaunchZoneGoal();
     }
 
@@ -186,12 +184,12 @@ public class Shooter {
 
     public void setMode(double pos) {
         if (pos < 0) angleAdjuster.setPosition(0);
-        else if(pos > MAX_POS) angleAdjuster.setPosition(0.25);
+        else if (pos > MAX_POS) angleAdjuster.setPosition(0.25);
         else angleAdjuster.setPosition(pos);
     }
 
-    public void threeArtefactsShooting(){
-        if(isTunnelOpen){
+    public void threeArtefactsShooting() {
+        if (isTunnelOpen) {
             shootPos = angleAdjuster.getPosition();
             timer.reset();
             while (timer.milliseconds() < TIME_BETWEEN_SHOOT) ;
@@ -203,19 +201,17 @@ public class Shooter {
             while (timer.milliseconds() < TIME_AFTER_SHOOT) ;
             setMode(shootPos);
             complete = true;
-            if(tr.isEmpty()) canShoot = false;
+            if (tr.isEmpty()) canShoot = false;
         }
     }
 
-    public void switchCover(){
-        if(!inZone()){
+    public void switchCover() {
+        if (!inZone()) {
             canShoot = false;
         }
-        if(canShoot) openTunnel();
+        if (canShoot) openTunnel();
         else closeTunnel();
     }
-
-
 
     public void updateCalculator() {
         if (isDetected() && detected) {
