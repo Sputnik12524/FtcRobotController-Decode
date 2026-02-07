@@ -84,13 +84,13 @@
 //            /// INTAKE
 //            if (g1.A.isPressed()) {
 //                if (g1.A.getToggleState()) {
-//                    in.transferSetPower(Intake.TRANSFER_POWER);
+//                    
 //                    in.rotateIn();
 //                    isRotateIn = true;
 //                    isRotateOut = false;
 //                } else {
 //                    in.rotateStop();
-//                    in.transferSetPower(0);
+//                    
 //                    isRotateIn = false;
 //                }
 //            }
@@ -144,13 +144,13 @@
 //                /// INTAKE
 //                if (g1.A.isPressed()) {
 //                    if (g1.A.getToggleState()) {
-//                        in.transferSetPower(Intake.TRANSFER_POWER);
+//                        
 //                        in.rotateIn();
 //                        isRotateIn = true;
 //                        isRotateOut = false;
 //                    } else {
 //                        in.rotateStop();
-//                        in.transferSetPower(0);
+//                        
 //                        isRotateIn = false;
 //                    }
 //                }

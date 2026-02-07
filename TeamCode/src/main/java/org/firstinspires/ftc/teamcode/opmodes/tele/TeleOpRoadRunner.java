@@ -112,6 +112,10 @@ public class TeleOpRoadRunner extends LinearOpMode {
             //------------------------------------ SHOOTER
             if (!attentionControl) {
                 sh.threeArtefactsShooting();
+                sh.switchCover();
+            }
+            if(!attentionControl){
+                if(gamepad2.x) sh.canShoot = true;
             }
 
             if (gamepad1.y && !isShootingLong && !stateY1) {
@@ -156,6 +160,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("Velocity shooter", sh.getVelocityRPS());
             telemetry.addData("TARGET", sh.velocityTarget);
+            telemetry.addData("Empty", tr.isEmpty());
+            telemetry.addData("0", tr.getColor().get(0));
+            telemetry.addData("1", tr.getColor().get(1));
+            telemetry.addData("2", tr.getColor().get(2));
+
             telemetry.update();
         }
 
@@ -163,4 +172,5 @@ public class TeleOpRoadRunner extends LinearOpMode {
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }
+
 }

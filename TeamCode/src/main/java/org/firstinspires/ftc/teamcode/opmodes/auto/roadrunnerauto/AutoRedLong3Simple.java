@@ -55,7 +55,6 @@ public class AutoRedLong3Simple extends LinearOpMode {
                 .build());
 
 
-        in.artifactIntake.interrupt();
 
     }
 

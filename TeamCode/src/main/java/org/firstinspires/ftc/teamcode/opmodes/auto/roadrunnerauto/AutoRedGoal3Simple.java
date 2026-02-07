@@ -53,7 +53,6 @@ public class AutoRedGoal3Simple extends LinearOpMode {
    dt.turn(Math.toRadians(90));
   dt.followTrajectorySequence(dt.trajectorySequenceBuilder(dt.getPoseEstimate()).forward(20).build());
 
-        in.artifactIntake.interrupt();
 
 
     }

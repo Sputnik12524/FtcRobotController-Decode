@@ -58,11 +58,11 @@ public class DetectorTest extends LinearOpMode{
             // INTAKE
             if (gamepad1.a && !isRotateIn && !stateA1) {
                 in.rotateIn();
-                in.transferSetPower(Intake.TRANSFER_POWER);
+                
                 isRotateIn = true;
             } else if (gamepad1.a && isRotateIn && !stateA1) {
                 in.rotateStop();
-                in.transferSetPower(0);
+                
                 isRotateIn = false;
             }
 

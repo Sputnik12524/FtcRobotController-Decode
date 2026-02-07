@@ -19,12 +19,7 @@ public class Logger {
     public double degrees;
 
     public Logger(String fileName) {
-        try {
-            this.fileName = fileName;
-            this.writer = new BufferedWriter(new FileWriter(this.directoryPath + fileName + ".csv", false));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.fileName = fileName;
     }
 
     public void addLine(double time, double velocity) {
@@ -37,6 +32,8 @@ public class Logger {
 
     public void writePose(Alliance alliance, double x, double y, double degrees) {
         try {
+            this.writer = new BufferedWriter(new FileWriter(this.directoryPath + fileName + ".csv", false));
+
             switch (alliance) {
                 case RED:
                     writer.write("Red" + "," + x + "," + y + "," + degrees);
@@ -52,21 +49,20 @@ public class Logger {
         }
     }
 
-    public void getAll() throws IOException{
+    public void getAll(String fileName) throws IOException{
 
-            this.reader = new BufferedReader(new FileReader(this.directoryPath + fileName + ".csv"));
-            line = reader.readLine();
-            if (line != null) {
-                String[] a = line.split(",");
-                if (a[0].equals("Blue")) al = Alliance.BLUE;
-                else if (a[0].equals("Red")) al = Alliance.RED;
-                else al = Alliance.NONE;
-                if (a[1] != null) x = Double.parseDouble(a[1]);
-                if (a[2] != null) y = Double.parseDouble(a[2]);
-                if(a[3] != null) degrees = Double.parseDouble(a[3]);
-            }
-            reader.close();
-
+        this.reader = new BufferedReader(new FileReader(this.directoryPath + fileName + ".csv"));
+        line = reader.readLine();
+        if (line != null) {
+            String[] a = line.split(",");
+            if (a[0].equals("Blue")) al = Alliance.BLUE;
+            else if (a[0].equals("Red")) al = Alliance.RED;
+            else al = Alliance.NONE;
+            if (a[1] != null) x = Double.parseDouble(a[1]);
+            if (a[2] != null) y = Double.parseDouble(a[2]);
+            if(a[3] != null) degrees = Double.parseDouble(a[3]);
+        }
+        reader.close();
     }
 
     public void addHeader(String header) {
@@ -84,5 +80,6 @@ public class Logger {
             e.printStackTrace();
         }
     }
-
 }
+
+
