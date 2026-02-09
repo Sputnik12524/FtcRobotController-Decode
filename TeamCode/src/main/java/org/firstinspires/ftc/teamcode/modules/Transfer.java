@@ -12,8 +12,9 @@ public class Transfer {
     private NormalizedColorSensor colorSensor3;
 
     public enum Color {GREEN, PURPLE, NONE}
-
-    enum Pos {GGG, GGP, GPP, PGG, PPG, PPP, NONE}
+    public enum Num{FIRST, SECOND, THIRD}
+    enum Comb {GGG, GGP, GPP, PGG, PPG, PPP, NONE}
+    Comb comb = Comb.NONE;
 
     public final float[] hsv1 = new float[3];
     public final float[] hsv2 = new float[3];
@@ -93,6 +94,20 @@ public class Transfer {
         return colorSensors;
     }
 
+    public int howMany(){
+        int art = 0;
+        ArrayList<Color> list = getColor();
+        for(Color c: list){
+            if(c != Color.NONE) art++;
+        }
+        return art;
+    }
+
+//    public Comb scanArt(){
+//        ArrayList<Color> list = getColor();
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN)
+//
+//    }
 
     public boolean isEmpty() {
        ArrayList<Color> list = getColor();
