@@ -5,18 +5,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.Backlight;
+import org.firstinspires.ftc.teamcode.modules.Transfer;
 
 @TeleOp(name="Backlight test", group="test")
 @Config
 public class BacklightTest extends LinearOpMode {
     Backlight blt;
+    Transfer transfer;
     @Override
     public void runOpMode() throws InterruptedException {
-        blt = new Backlight(this);
+        blt = new Backlight(this, transfer);
+        blt.lights();
         waitForStart();
-        if(gamepad1.aWasPressed()) blt.detectedGreen();
-        else if (gamepad1.bWasPressed()) blt.detectedPurple();
-        else if (gamepad1.xWasPressed()) blt.glowWhite();
-        else blt.turnOffBacklight();
+
     }
 }

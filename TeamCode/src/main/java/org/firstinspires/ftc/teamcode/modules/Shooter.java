@@ -73,6 +73,25 @@ public class Shooter {
     public boolean complete = false;
     public static boolean isTunnelOpen;
 
+    public Shooter(LinearOpMode opMode) {
+        this.opMode = opMode;
+        shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
+        shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
+        angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
+        cover = opMode.hardwareMap.get(Servo.class, "cover");
+        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
+
+        shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
+        setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+    }
+
     public Shooter(LinearOpMode opMode, Transfer transfer) {
         this.opMode = opMode;
         tr = transfer;

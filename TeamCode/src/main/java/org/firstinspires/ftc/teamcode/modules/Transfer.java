@@ -13,8 +13,8 @@ public class Transfer {
 
     public enum Color {GREEN, PURPLE, NONE}
     public enum Num{FIRST, SECOND, THIRD}
-    enum Comb {GGG, GGP, GPP, PGG, PPG, PPP, NONE}
-    Comb comb = Comb.NONE;
+    enum Comb {GGG, GGP, GPP, PGG, PPG, PPP, NNN, GNN, GGN, PNN,PPN, PG}
+    Comb state = Comb.NNN;
 
     public final float[] hsv1 = new float[3];
     public final float[] hsv2 = new float[3];
@@ -105,7 +105,13 @@ public class Transfer {
 
 //    public Comb scanArt(){
 //        ArrayList<Color> list = getColor();
-//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN)
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.PURPLE && list.get(2) == Color.PURPLE) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//
 //
 //    }
 
