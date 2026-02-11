@@ -25,7 +25,7 @@ public class VeloPIDTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Shooter sh = new Shooter(this);
+    Shooter sh = new Shooter(this);
         // Change my id
         DcMotorEx myMotor = sh.shooterUpper;
         DcMotorEx myMotor1 = sh.shooterLower;
