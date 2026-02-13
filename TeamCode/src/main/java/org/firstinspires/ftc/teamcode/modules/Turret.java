@@ -135,9 +135,9 @@ public class Turret {
         }
         target = -(angleOfDrivetrain - angleOfTurret);
         target -= 180;
-        angleNormalising();
+        angleNormalising(target);
     }
-    public void angleNormalising() {
+    public void angleNormalising(double target) {
         if (target > 180) {
             target -= 360;
         } else if (target < -180) {
