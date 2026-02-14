@@ -155,6 +155,20 @@ public class Shooter {
         }
     }
 
+    public void shootByVelocityUpper() {
+        shooterUpper.setVelocity(velocityTarget);
+    }
+
+    public void shootByVelocityLower() {
+        shooterLower.setVelocity(velocityTarget);
+    }
+    public void shootStopUpper() {
+        shooterUpper.setVelocity(0);
+    }
+    public void shootStopLower() {
+        shooterLower.setVelocity(0);
+    }
+
     public void shootByVelocity() {
         shooterUpper.setVelocity(velocityTarget);
         shooterLower.setVelocity(velocityTarget);
@@ -267,6 +281,15 @@ public class Shooter {
     }
 
     //---------------------------------------------- GETTING
+
+    public double getVelocityRPSLower() {
+        return shooterLower.getVelocity() / TPR;
+    }
+
+    public double getVelocityTPSLower() {
+        return shooterLower.getVelocity();
+    }
+
 
     public double getVelocityRPS() {
         return shooterUpper.getVelocity() / TPR;
