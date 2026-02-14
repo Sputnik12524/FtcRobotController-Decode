@@ -87,7 +87,8 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
         public final PathChain PathThirdScoring; // 47.115
         public final PathChain PathThirdPresentArtefacts;
         public final PathChain PathThirdIntakingArtefacts;
-        public final PathChain PathFourScorying;
+        public final PathChain PathFourScoring;
+        public  final Pose scoringPose = new Pose(47,115);
 
 
         public Paths(Follower follower) {
@@ -95,14 +96,14 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(21, 125),
 
-                                    new Pose(47, 111)
+                                    scoringPose
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-40))
 
                     .build();
             PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(47, 111),
+                                    scoringPose,
 
                                     new Pose(48, 95) //55,100
                             )
@@ -111,11 +112,11 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(48, 95),  //55,100
+                                    new Pose(48, 95), //55,100
 
                                     new Pose(20, 95) //35,100
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
@@ -123,15 +124,15 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(20, 95), //35,100
 
-                                    new Pose(47, 111) //45,125
+                                    scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-40)) // -36 Degrees
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-40)) //-36
 
                     .build();
 
             PathSecondPresentArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(47, 111),
+                                    scoringPose,
 
                                     new Pose(47, 65)
                             )
@@ -145,7 +146,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
 
                                     new Pose(20, 65)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
@@ -153,7 +154,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(20, 65),
 
-                                    new Pose(47, 111)
+                                    scoringPose
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-40))
 
@@ -180,7 +181,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
                     .build();
 
-            PathFourScorying = follower.pathBuilder().addPath(
+            PathFourScoring = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(20, 43),
 
@@ -291,7 +292,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
 
             case 13:
                 if (!follower.isBusy())
-                    follower.followPath(paths.PathFourScorying, true);
+                    follower.followPath(paths.PathFourScoring, true);
                 setPathState(14);
                 break;
 

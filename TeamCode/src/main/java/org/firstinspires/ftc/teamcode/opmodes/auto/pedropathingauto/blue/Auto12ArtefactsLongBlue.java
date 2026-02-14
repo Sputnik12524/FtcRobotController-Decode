@@ -89,6 +89,7 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
         public final PathChain PathThirdPresentArtefacts;
         public final PathChain PathThirdIntakingArtefacts;
         public final PathChain PathFourScoring;
+        public final Pose scoringPose = new Pose(60, 15);
 
 
         public Paths(Follower follower) {
@@ -96,14 +97,14 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(60, 8),
 
-                                    new Pose(60, 15)
+                                    scoringPose
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(110))
 
                     .build();
             PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(60, 15),
+                                    scoringPose,
 
                                     new Pose(44, 30) //ровно в педре на 35
                             )
@@ -124,7 +125,7 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(20, 44),
 
-                                    new Pose(60, 15)
+                                    scoringPose
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
 
@@ -132,7 +133,7 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
 
             PathSecondPresentArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(60, 15),
+                                    scoringPose,
 
                                     new Pose(47, 65)
                             )
@@ -154,7 +155,7 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(20, 70),
 
-                                    new Pose(60, 15)
+                                    scoringPose
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(110))
 
@@ -162,7 +163,7 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
 
             PathThirdPresentArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(60, 15),
+                                    scoringPose,
 
                                     new Pose(40, 95)
                             )
@@ -184,7 +185,7 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(20, 95),
 
-                                    new Pose(60, 15)
+                                    scoringPose
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
 
@@ -193,7 +194,7 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
 
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(60, 15),
+                                    scoringPose,
 
                                     new Pose(35, 28)
                             )
