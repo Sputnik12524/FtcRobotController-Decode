@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.tele;
+package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -21,21 +21,15 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import java.util.ArrayList;
 
 
-@TeleOp(name = "TeleOpRR", group = "0")
+@TeleOp(name = "2 MOTORS SHOOTER", group = "1")
 @Config
-public class TeleOpRoadRunner extends LinearOpMode {
+public class Shooter2MotorsSepareitTest extends LinearOpMode {
     Shooter sh;
-    Intake in;
-    Turret tt;
-    ElapsedTime timer;
-    Transfer tr;
     Follower follower;
 
     /// Intake
-    boolean isRotateIn = false;
     boolean isShootingShort = false;
     boolean isShootingLong = false;
-    boolean isRotateOut = false;
     boolean stateA1 = false;
     boolean stateB1 = false;
 
@@ -48,11 +42,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         follower = Constants.createFollower(hardwareMap);
-        timer = new ElapsedTime();
         sh = new Shooter(this);
-        in = new Intake(this);
-        tr = new Transfer(this);
-        tt = new Turret(this);
 
         follower.setStartingPose(new Pose(72, 72, 0));
         follower.update();
@@ -88,57 +78,39 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
             }
 
-
-            //-------------------------------------- INTAKE
-
-            if (gamepad1.a && !isRotateIn && !stateA1) {
-                in.rotateIn();
-                isRotateIn = true;
-                isRotateOut = false;
-            } else if (gamepad1.a && isRotateIn && !stateA1) {
-                in.rotateStop();
-                isRotateIn = false;
-            }
-            if (gamepad1.b && !isRotateOut && !stateB1) {
-                in.rotateOut();
-                isRotateOut = true;
-                isRotateIn = false;
-            } else if (gamepad1.b && isRotateOut && !stateB1) {
-                in.rotateStop();
-                isRotateOut = false;
-            }
-            stateA1 = gamepad1.a;
-            stateB1 = gamepad1.b;
-
-
             //------------------------------------ SHOOTER
             if (!attentionControl) {
                 sh.threeArtefactsShooting();
                 sh.switchCover();
             }
-            if(!attentionControl){
-                if(gamepad2.x) sh.canShoot = true;
+            if (!attentionControl) {
+                if (gamepad2.x) sh.canShoot = true;
             }
 
             if (gamepad1.y && !isShootingLong && !stateY1) {
                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
                 sh.setLongThrowMode();
-                sh.shootByVelocity();
+                sh.shootByVelocityUpper();
                 isShootingLong = true;
-                isShootingShort = false;
-            } else if (gamepad1.x && !isShootingShort && !stateX1) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-                sh.setShortThrowMode();
-                sh.shootByVelocity();
-                isShootingLong = false;
-                isShootingShort = true;
-            } else if ((gamepad1.y && !stateY1 && isShootingLong) || (gamepad1.x && !stateX1 && isShootingShort)) {
+            } else if (gamepad1.y && !stateY1 && isShootingLong){
                 sh.closeTunnel();
-                sh.shootStop();
+                sh.shootStopUpper();
                 isShootingLong = false;
-                isShootingShort = false;
             }
             stateY1 = gamepad1.y;
+
+
+            if (gamepad1.x && !isShootingLong && !stateX1) {
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+                sh.setLongThrowMode();
+                sh.shootByVelocityLower();
+                isShootingLong = true;
+                isShootingShort = false;
+            }else if (gamepad1.x && !stateX1 && isShootingLong) {
+                sh.closeTunnel();
+                sh.shootStopLower();
+                isShootingLong = false;
+            }
             stateX1 = gamepad1.x;
 
             if (gamepad1.dpad_up) {
@@ -147,36 +119,14 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 sh.closeTunnel();
             }
 
-            //---------------------------------------- TURRET
 
-
-            /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
-
-            if (gamepad2.right_stick_button) {
-                attentionControl = true;
-            } else if (gamepad2.left_stick_button) {
-                attentionControl = false;
-            }
-
-
-            telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("Velocity shooter", sh.getVelocityRPS());
             telemetry.addData("TARGET", sh.velocityTarget);
-//           telemetry.addData("Empty", tr.isEmpty());
-//            ArrayList<Transfer.Color> colors = tr.getColor();
-//            telemetry.addData("0", colors.get(0));
-//            telemetry.addData("1", colors.get(1));
-//            telemetry.addData("2", colors.get(2));
-            telemetry.addData("howMany", tr.howMany());
-//            telemetry.addData("HSV1", "%.1f %.2f %.2f", tr.hsv1[0], tr.hsv1[1], tr.hsv1[2]);
-//            telemetry.addData("HSV2", "%.1f %.2f %.2f", tr.hsv2[0], tr.hsv2[1], tr.hsv2[2]);
-
-
-
             telemetry.update();
         }
 
     }
+
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }

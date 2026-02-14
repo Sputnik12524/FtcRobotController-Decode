@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
 public class Shooter {
+    Transfer tr;
     public final DcMotorEx shooterUpper;
     public final DcMotorEx shooterLower;
     public final Servo angleAdjuster;
@@ -25,7 +26,6 @@ public class Shooter {
     LinearOpMode opMode;
     Follower follower;
     Pose currentPose;
-    Transfer tr;
 
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(26, 0, 10, 15);
     private final ElapsedTime timer = new ElapsedTime();
@@ -92,13 +92,13 @@ public class Shooter {
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
 
-    public Shooter(LinearOpMode opMode, Follower follower) {
+    public Shooter(LinearOpMode opMode, Transfer transfer) {
         this.opMode = opMode;
+        tr = transfer;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
-        tr = new Transfer(opMode);
         batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
 
         shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -111,6 +111,26 @@ public class Shooter {
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
+
+    public Shooter(LinearOpMode opMode, Follower follower, Transfer transfer) {
+        this.opMode = opMode;
+        shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
+        shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
+        angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
+        cover = opMode.hardwareMap.get(Servo.class, "cover");
+        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
+
+        shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
+        setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+    }
+
 
 
     //---------------------------------------------- VELOCITY
@@ -133,6 +153,20 @@ public class Shooter {
             default:
                 return velocityTarget;
         }
+    }
+
+    public void shootByVelocityUpper() {
+        shooterUpper.setVelocity(velocityTarget);
+    }
+
+    public void shootByVelocityLower() {
+        shooterLower.setVelocity(velocityTarget);
+    }
+    public void shootStopUpper() {
+        shooterUpper.setVelocity(0);
+    }
+    public void shootStopLower() {
+        shooterLower.setVelocity(0);
     }
 
     public void shootByVelocity() {
@@ -189,6 +223,7 @@ public class Shooter {
     }
 
     public void threeArtefactsShooting() {
+        switchCover();
         if (isTunnelOpen) {
             shootPos = angleAdjuster.getPosition();
             timer.reset();
@@ -246,6 +281,15 @@ public class Shooter {
     }
 
     //---------------------------------------------- GETTING
+
+    public double getVelocityRPSLower() {
+        return shooterLower.getVelocity() / TPR;
+    }
+
+    public double getVelocityTPSLower() {
+        return shooterLower.getVelocity();
+    }
+
 
     public double getVelocityRPS() {
         return shooterUpper.getVelocity() / TPR;
