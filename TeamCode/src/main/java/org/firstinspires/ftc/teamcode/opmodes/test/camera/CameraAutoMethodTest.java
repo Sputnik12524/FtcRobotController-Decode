@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes.test.camera;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 
 @TeleOp(name = "TEST Auto Limelight")
+@Disabled
+
 public class CameraAutoMethodTest extends LinearOpMode {
     Limelight limelight3A;
 

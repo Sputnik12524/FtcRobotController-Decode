@@ -11,12 +11,14 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Configurable
 @TeleOp(name = "TeleOpPP", group = "tele")
+@Disabled
 public class TeleOpPedro extends LinearOpMode {
     private Follower follower;
     public static Pose startingPose; //See ExampleAuto to understand how to use this

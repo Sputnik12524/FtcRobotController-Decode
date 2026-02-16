@@ -31,14 +31,15 @@ public class ServoTest extends LinearOpMode {
         waitForStart();
         resetRuntime();
 
-        while (opModeIsActive()){
+        while (opModeIsActive()) {
             serv.setPosition(POSITION);
-            if(gamepad1.aWasPressed()) POSITION += DIFF;
-            if(gamepad1.bWasPressed()) POSITION -= DIFF;
-        }
+            if (gamepad1.aWasPressed()) POSITION += DIFF;
+            if (gamepad1.bWasPressed()) POSITION -= DIFF;
 
-        t.addData("Potuzhnaya stenka", serv.getPosition());
-        t.addData("DIFF", DIFF);
-        t.update();
+
+            t.addData("Potuzhnaya stenka", serv.getPosition());
+            t.addData("DIFF", DIFF);
+            t.update();
+        }
     }
 }
