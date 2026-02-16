@@ -92,13 +92,14 @@ public class Shooter {
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
 
-    public Shooter(LinearOpMode opMode, Follower follower) {
+    public Shooter(LinearOpMode opMode, Follower follower, Transfer transfer) {
         this.opMode = opMode;
+        tr = transfer;
+        this.follower = follower;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
-        tr = new Transfer(opMode);
         batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
 
         shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -111,6 +112,8 @@ public class Shooter {
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
+
+
 
 
     //---------------------------------------------- VELOCITY
@@ -189,6 +192,7 @@ public class Shooter {
     }
 
     public void threeArtefactsShooting() {
+        switchCover();
         if (isTunnelOpen) {
             shootPos = angleAdjuster.getPosition();
             timer.reset();
@@ -204,7 +208,6 @@ public class Shooter {
             if (tr.isEmpty()) canShoot = false;
         }
     }
-
     public void switchCover() {
         if (!inZone()) {
             canShoot = false;

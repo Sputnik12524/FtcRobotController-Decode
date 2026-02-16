@@ -1,22 +1,48 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.Backlight;
+import org.firstinspires.ftc.teamcode.util.GamepadManager;
 
 @TeleOp(name="Backlight test", group="test")
 @Config
+@Disabled
 public class BacklightTest extends LinearOpMode {
-    Backlight blt;
+    Backlight bl;
+    GamepadManager g1;
+    GamepadManager g2;
     @Override
     public void runOpMode() throws InterruptedException {
-        blt = new Backlight(this);
+        bl = new Backlight(this);
+        g1 = new GamepadManager(gamepad1);
+        g2 = new GamepadManager(gamepad2);
+
         waitForStart();
-        if(gamepad1.aWasPressed()) blt.detectedGreen();
-        else if (gamepad1.bWasPressed()) blt.detectedPurple();
-        else if (gamepad1.xWasPressed()) blt.glowWhite();
-        else blt.turnOffBacklight();
+
+        while(opModeIsActive()){
+            g1.update();
+            g2.update();
+            if(g1.A.isPressed() && g1.A.getToggleState()){
+                bl.G1.setState(true);
+                bl.P1.setState(false);
+            }
+            else if(g1.A.isPressed() && !g1.A.getToggleState()){
+                bl.G1.setState(false);
+                bl.P1.setState(true);
+            }
+            if(g1.B.isPressed() && g1.B.getToggleState()){
+                bl.G1.setState(true);
+                bl.P1.setState(true);
+            }
+            else if(g1.B.isPressed() && !g1.B.getToggleState()){
+                bl.G1.setState(false);
+                bl.P1.setState(false);
+            }
+        }
+
     }
 }

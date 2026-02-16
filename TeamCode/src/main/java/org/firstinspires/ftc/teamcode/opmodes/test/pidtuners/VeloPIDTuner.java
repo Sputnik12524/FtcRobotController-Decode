@@ -70,7 +70,8 @@ public class VeloPIDTuner extends LinearOpMode {
             telemetry.addData("targetVelocity", targetVelo);
 
             double motorVelo = myMotor.getVelocity();
-            telemetry.addData("velocity", motorVelo);
+            telemetry.addData("velocityUpper", motorVelo);
+            telemetry.addData("shooterLower", myMotor1.getVelocity());
             telemetry.addData("error", targetVelo - motorVelo);
 
             telemetry.addData("upperBound", TuningController.rpmToTicksPerSecond(TuningController.TESTING_MAX_SPEED * 1.15));
