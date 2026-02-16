@@ -37,7 +37,7 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 47;
+    public static double VELOCITY_FOR_LONG_THROW = 43;  //47
     public static double VELOCITY_FOR_SHORT_THROW = 38.5;
     public static double POWER = 1;
 

@@ -160,7 +160,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
             telemetry.addData("TARGET", sh.velocityTarget);
 //           telemetry.addData("Empty", tr.isEmpty());
 //            ArrayList<Transfer.Color> colors = tr.getColor();
@@ -170,6 +169,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
             telemetry.addData("howMany", tr.howMany());
 //            telemetry.addData("HSV1", "%.1f %.2f %.2f", tr.hsv1[0], tr.hsv1[1], tr.hsv1[2]);
 //            telemetry.addData("HSV2", "%.1f %.2f %.2f", tr.hsv2[0], tr.hsv2[1], tr.hsv2[2]);
+
+            dashtele.addData("Velocity shooter", sh.getVelocityRPS());
+            dashtele.update();
 
 
 
