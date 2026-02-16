@@ -37,7 +37,7 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 47;
+    public static double VELOCITY_FOR_LONG_THROW = 43;  //47
     public static double VELOCITY_FOR_SHORT_THROW = 38.5;
     public static double POWER = 1;
 
@@ -134,6 +134,22 @@ public class Shooter {
                 return velocityTarget;
         }
     }
+
+    public void shootByVelocityUpper() {
+        shooterUpper.setVelocity(velocityTarget);
+    }
+
+    public void shootByVelocityLower() {
+        shooterLower.setVelocity(velocityTarget);
+    }
+    public void shootStopLower() {
+        shooterLower.setVelocity(0);
+    }
+
+    public void shootStopUpper() {
+        shooterUpper.setVelocity(0);
+    }
+
 
     public void shootByVelocity() {
         shooterUpper.setVelocity(velocityTarget);
@@ -253,6 +269,14 @@ public class Shooter {
 
     public double getVelocityTPS() {
         return shooterUpper.getVelocity();
+    }
+
+    public double getVelocityRPSLower() {
+        return shooterLower.getVelocity() / TPR;
+    }
+
+    public double getVelocityTPSLower() {
+        return shooterLower.getVelocity();
     }
 
     public double getAngleAdjusterPos() {
