@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -37,9 +38,10 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
         actionTimer = new Timer();
         actionTimer.resetTimer();
+        Transfer tr = new Transfer(this);
 
         in = new Intake(this);
-        sh = new Shooter(this);
+        sh = new Shooter(this, follower, tr);
         Logger lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
@@ -129,7 +131,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
             PathSecondPresentArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                   scoringPose,
+                                    scoringPose,
 
                                     new Pose(47, 65)
                             )
@@ -222,16 +224,17 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.closeTunnel();
-                sh.shootByVelocity();
+                //  sh.closeTunnel();
+                // sh.shootByVelocity();
                 in.rotateIn();
                 follower.followPath(paths.PathScoring);
                 setPathState(1);
                 break;
 
             case 1:
-                if (!sh.isSpinUp()) break;
-                sh.openTunnel();
+                // if (!sh.isSpinUp()) break;
+                // sh.openTunnel();
+                if (follower.isBusy()) break;
                 setPathState(2);
                 break;
 
@@ -243,7 +246,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
             case 4:
                 if (!follower.isBusy()) {
-                    sh.closeTunnel();
+                    //  sh.closeTunnel();
                     in.rotateIn();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(5);
@@ -258,8 +261,9 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 break;
 
             case 6:
-                if (!sh.isSpinUp()) break;
-                sh.openTunnel();
+                //   if (!sh.isSpinUp()) break;
+                //  sh.openTunnel();
+                if (follower.isBusy()) break;
                 setPathState(7);
 
                 break;
@@ -272,22 +276,25 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 break;
 
             case 8:
-                sh.closeTunnel();
+
+                if (follower.isBusy()) break;
+                //  sh.closeTunnel();
                 in.rotateIn();
-                if (!follower.isBusy())
-                    follower.followPath(paths.PathSecondIntakingArtefacts, true);
+                follower.followPath(paths.PathSecondIntakingArtefacts, true);
                 setPathState(9);
                 break;
 
             case 9:
-                if (!follower.isBusy())
+                if (!follower.isBusy()) {
                     follower.followPath(paths.PathThirdScoring, true);
-                setPathState(10);
+                    setPathState(10);
+                }
                 break;
 
             case 10:
-                if (!sh.isSpinUp()) break;
-                sh.openTunnel();
+               // if (!sh.isSpinUp()) break;
+               // sh.openTunnel();
+                if (follower.isBusy()) break;
                 setPathState(11);
                 break;
 

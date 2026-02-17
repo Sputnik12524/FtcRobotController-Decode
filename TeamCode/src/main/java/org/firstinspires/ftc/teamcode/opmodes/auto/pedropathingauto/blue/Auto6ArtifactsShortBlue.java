@@ -8,6 +8,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import com.pedropathing.geometry.BezierLine;
@@ -27,6 +28,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
     private Timer actionTimer;
     //private Turret tt;
     public Pose currentPose; // Current pose of the robot
+    public Transfer tr;
 
     Intake in;
     Shooter sh;
@@ -37,8 +39,9 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
+        tr = new Transfer(this);
         in = new Intake(this);
-        sh = new Shooter(this);
+        sh = new Shooter(this, follower, tr);
         //tt = new Turret(this);
 
         // Panels Telemetry instance
@@ -52,7 +55,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry);
 
-        sh.closeTunnel();
+      //  sh.closeTunnel();
         sh.setShortThrowMode();
 
         waitForStart();
@@ -136,13 +139,13 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+               sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
                 sh.shootByVelocity();
                 in.rotateIn();
                 setPathState(1);
                 break;
             case 1:
-                if (sh.isSpinUp() && !follower.isBusy()) {
+                if ( !follower.isBusy()) { //sh.isSpinUp() &&
                     follower.followPath(paths.PathFirstScoring, true);
                     setPathState(2);
                 }
@@ -154,7 +157,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
                 }
                 break;
             case 3:
-                if (!Shooter.isTunnelOpen && !follower.isBusy()) {
+                if (!follower.isBusy()) {//!Shooter.isTunnelOpen &&
                     follower.followPath(paths.PathToPresetArtifacts, true);
                     setPathState(4);
                 }
@@ -178,7 +181,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
                 }
                 break;
             case 7:
-                if(!follower.isBusy() && !Shooter.isTunnelOpen){
+                if(!follower.isBusy() ){ //&& !Shooter.isTunnelOpen
                     follower.followPath(paths.PathLeaving);
                     setPathState(-100);
                 }

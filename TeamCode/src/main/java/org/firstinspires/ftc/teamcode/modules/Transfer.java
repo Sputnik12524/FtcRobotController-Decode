@@ -94,14 +94,6 @@ public class Transfer {
         return colorSensors;
     }
 
-    public int howMany(){
-        int art = 0;
-        ArrayList<Color> list = getColor();
-        for(Color c: list){
-            if(c != Color.NONE) art++;
-        }
-        return art;
-    }
 
 //    public Comb scanArt(){
 //        ArrayList<Color> list = getColor();
@@ -114,15 +106,6 @@ public class Transfer {
 //
 //
 //    }
-
-    public int howMany(){
-        int art = 0;
-        ArrayList<Color> list = getColor();
-        for(Color c: list){
-            if(c != Color.NONE) art++;
-        }
-        return art;
-    }
 
     public int howMany(){
         int art = 0;

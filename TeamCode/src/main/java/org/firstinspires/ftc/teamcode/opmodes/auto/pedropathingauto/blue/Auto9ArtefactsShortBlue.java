@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -38,8 +39,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         actionTimer = new Timer();
         actionTimer.resetTimer();
 
+        Transfer tr = new Transfer(this);
         in = new Intake(this);
-        sh = new Shooter(this);
+        sh = new Shooter(this, follower, tr);
         Logger lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
@@ -182,8 +184,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 1:
-                if (!sh.isSpinUp()) break;
-                sh.openTunnel();
+               // if (!sh.isSpinUp()) break;
+              //  sh.openTunnel();
+                if(follower.isBusy()) break;
                 setPathState(2);
                 break;
 

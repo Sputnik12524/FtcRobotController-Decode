@@ -114,6 +114,8 @@ public class Shooter {
 
     public Shooter(LinearOpMode opMode, Follower follower, Transfer transfer) {
         this.opMode = opMode;
+        tr = transfer;
+        this.follower = follower;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
