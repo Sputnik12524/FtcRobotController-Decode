@@ -49,9 +49,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
-        sh = new Shooter(this);
-        in = new Intake(this);
         tr = new Transfer(this);
+        sh = new Shooter(this, follower, tr);
+        in = new Intake(this);
         tt = new Turret(this);
 
         follower.setStartingPose(new Pose(72, 72, 0));
@@ -112,10 +112,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
             //------------------------------------ SHOOTER
-            if (!attentionControl) {
+
                 sh.threeArtefactsShooting();
-                sh.switchCover();
-            }
+
             if(!attentionControl){
                 if(gamepad2.x) sh.canShoot = true;
             }
