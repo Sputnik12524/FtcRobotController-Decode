@@ -1,17 +1,26 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+
 import java.util.ArrayList;
 import java.util.List;
-
+@Config
 public class Limelight {
     public Limelight3A limelight3A;
     LinearOpMode opMode;
+    public double X_RESOLUTION = 1280;
+    public double X_MIDDLE = X_RESOLUTION/2;
+    public double Y_RESOLUTION = 960;
+    public double Y_MIDDLE = Y_RESOLUTION/2;
 
     public Limelight(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -54,5 +63,11 @@ public class Limelight {
     }
     public LLStatus limelightStatus() {
         return limelight3A.getStatus();
+    }
+    public Position getPoseByAprilTag(){
+        Position pose;
+        if(limelightResult().isValid()) pose = limelightResult().getBotpose().getPosition();
+        else pose = null;
+        return pose;
     }
 }
