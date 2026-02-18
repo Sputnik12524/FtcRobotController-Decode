@@ -254,6 +254,10 @@ public class Shooter {
         return shooterUpper.getVelocity() / TPR;
     }
 
+    public double getVelocityRPSLower() {
+        return shooterLower.getVelocity() / TPR;
+    }
+
     public double getVelocityTPS() {
         return shooterUpper.getVelocity();
     }

@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -47,6 +48,10 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     boolean stateY1 = false;
     boolean stateX1 = false;
     boolean attentionControl = true;
+
+    /// AutoPark and tunnel close auto
+    boolean isTunnelOpen = false;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -132,11 +137,19 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
             if (g2.dpadUp.isHeldFor(2500)) {
                 attentionControl = true;
+                sh.inZone();
             }
             if (g2.dpadDown.isHeldFor(2500)) {
                 attentionControl = false;
             }
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
+            if (g2.A.isPressed() && !isTunnelOpen) {
+                sh.openTunnel();
+                isTunnelOpen = false;
+            } else if (g2.A.isPressed() && isTunnelOpen) {
+                sh.closeTunnel();
+                isTunnelOpen = true;
+            }
 
             //---------------------------------------- TURRET
 
