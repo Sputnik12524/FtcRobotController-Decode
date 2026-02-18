@@ -135,14 +135,16 @@ public class Turret {
         }
         target = -(angleOfDrivetrain - angleOfTurret);
         target -= 180;
-        angleNormalising(target);
+        target = angleNormalising(target);
     }
-    public void angleNormalising(double target) {
-        if (target > 180) {
-            target -= 360;
-        } else if (target < -180) {
-            target += 360;
+    public double angleNormalising(double targetNew) {
+        double normTarget = target;
+        if (targetNew > 180) {
+            normTarget = targetNew - 360;
+        } else if (targetNew < -180) {
+            normTarget = targetNew + 360;
         }
+        return normTarget;
     }
 
     public void turnStopByPower() {

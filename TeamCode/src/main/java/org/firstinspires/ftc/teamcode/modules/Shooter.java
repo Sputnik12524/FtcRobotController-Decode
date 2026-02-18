@@ -191,6 +191,10 @@ public class Shooter {
         angleAdjuster.setPosition(POS_LONG_THROW);
     }
 
+    public void setAngleAdjuster(double angle) {
+        angleAdjuster.setPosition(angle);
+    }
+
     //---------------------------------------------- TUNNEL
     public void openTunnel() {
         isTunnelOpen = true;
