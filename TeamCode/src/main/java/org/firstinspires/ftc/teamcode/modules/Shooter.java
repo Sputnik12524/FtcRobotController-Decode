@@ -37,18 +37,18 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 43;  //47
-    public static double VELOCITY_FOR_SHORT_THROW = 38.5;
+    public static double VELOCITY_FOR_LONG_THROW = 64;  //47
+    public static double VELOCITY_FOR_SHORT_THROW = 57;
     public static double POWER = 1;
 
     ///  Cover
-    public static double POS_COVER_OPEN = 0.4;
-    public static double POS_COVER_CLOSE = 0.9;
+    public static double POS_COVER_OPEN = 0.5;
+    public static double POS_COVER_CLOSE = 0.8;
     public boolean canShoot = false;
 
     /// Adjuster
     public static double POS_SHORT_THROW = 0.05;
-    public static double POS_LONG_THROW = 0.01;
+    public static double POS_LONG_THROW = 0.05;
     public static double TIME_BETWEEN_SHOOT = 130;
     public static double TIME_AFTER_SHOOT = 300;
     public static double DELTA_ADJUSTER = 0.01;
@@ -225,19 +225,20 @@ public class Shooter {
     }
 
     public void threeArtefactsShooting() {
-        switchCover();
+      //  switchCover();
         if (isTunnelOpen) {
             shootPos = angleAdjuster.getPosition();
             timer.reset();
             while (timer.milliseconds() < TIME_BETWEEN_SHOOT) ;
-            setMode(angleAdjuster.getPosition() + DELTA_ADJUSTER);
+            setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
             timer.reset();
             while (timer.milliseconds() < TIME_BETWEEN_SHOOT) ;
-            setMode(angleAdjuster.getPosition() + DELTA_SECOND_SHOOT);
+            setMode(angleAdjuster.getPosition() - DELTA_SECOND_SHOOT);
             timer.reset();
             while (timer.milliseconds() < TIME_AFTER_SHOOT) ;
             setMode(shootPos);
             complete = true;
+            closeTunnel(); //УДАЛИИИИИИИТТЬ
             if (tr.isEmpty()) canShoot = false;
         }
     }
