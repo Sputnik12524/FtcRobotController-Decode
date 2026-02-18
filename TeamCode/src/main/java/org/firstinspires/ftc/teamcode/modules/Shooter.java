@@ -37,7 +37,7 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 47;
+    public static double VELOCITY_FOR_LONG_THROW = 43;  //47
     public static double VELOCITY_FOR_SHORT_THROW = 38.5;
     public static double POWER = 1;
 
@@ -114,6 +114,8 @@ public class Shooter {
 
     public Shooter(LinearOpMode opMode, Follower follower, Transfer transfer) {
         this.opMode = opMode;
+        tr = transfer;
+        this.follower = follower;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");

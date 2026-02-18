@@ -18,7 +18,9 @@ import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.GamepadManager;
+import org.firstinspires.ftc.teamcode.util.Logger;
 
+import java.io.IOException;
 
 @TeleOp(name = "TeleOpRRV2", group = "0")
 @Config
@@ -28,9 +30,12 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     Shooter sh;
     Intake in;
     Turret tt;
+    Logger lg;
     ElapsedTime timer;
     Transfer tr;
     Follower follower;
+
+    boolean canStart = true;
 
     /// Intake
     boolean isRotateIn = false;
@@ -43,20 +48,26 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     boolean stateX1 = false;
     boolean attentionControl = true;
 
-
     @Override
     public void runOpMode() throws InterruptedException {
         follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
         g1 = new GamepadManager(gamepad1);
         g2 = new GamepadManager(gamepad2);
-        sh = new Shooter(this);
-        in = new Intake(this);
         tr = new Transfer(this);
+        sh = new Shooter(this, follower, tr);
+        in = new Intake(this);
         tt = new Turret(this);
 
-        follower.setStartingPose(new Pose(72, 72, 0));
-        follower.update();
+        try {
+            lg.getAll("pospos");
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            canStart = false;
+            follower.setStartingPose(new Pose(72, 72, 0));
+            attentionControl = true;
+        }
+        if (canStart) follower.setStartingPose(new Pose(lg.x, lg.y, lg.degrees));
 
         //currentPose = follower.getPose();
         isShootingLong = false;
@@ -111,49 +122,51 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             //------------------------------------ SHOOTER
             if (!attentionControl) {
                 sh.threeArtefactsShooting();
-                sh.switchCover();
             }
             if (!attentionControl) {
                 if (g2.X.isPressed()) sh.canShoot = true;
             }
 
-            if (g1.Y.isPressed() && !isShootingLong) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
-                sh.setLongThrowMode();
-                sh.shootByVelocity();
-                isShootingLong = true;
-                isShootingShort = false;
-            } else if (g1.X.isPressed() && !isShootingShort) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-                sh.setShortThrowMode();
-                sh.shootByVelocity();
-                isShootingLong = false;
-                isShootingShort = true;
-            } else if ((g1.Y.isPressed() && isShootingLong) || (g1.X.isPressed() && isShootingShort)) {
-                sh.closeTunnel();
-                sh.shootStop();
-                isShootingLong = false;
-                isShootingShort = false;
-            }
-            stateY1 = gamepad1.y;
-            stateX1 = gamepad1.x;
 
-            if (g1.dpadUp.isPressed()) {
-                sh.openTunnel();
-            } else if (g1.dpadDown.isPressed()) {
-                sh.closeTunnel();
-            }
-
-            //---------------------------------------- TURRET
-
-
-            /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
+            /// -------------------------------------- ПЕРЕКЛЮЧЕНИЕ ЭКСТРЕННОГО УПРАВЛЕНИЕ
 
             if (g2.dpadUp.isHeldFor(2500)) {
                 attentionControl = true;
             }
             if (g2.dpadDown.isHeldFor(2500)) {
                 attentionControl = false;
+            }
+            /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
+
+            //---------------------------------------- TURRET
+
+            if (attentionControl) {
+                if (g1.Y.isPressed() && !isShootingLong) {
+                    sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+                    sh.setLongThrowMode();
+                    sh.shootByVelocity();
+                    isShootingLong = true;
+                    isShootingShort = false;
+                } else if (g1.X.isPressed() && !isShootingShort) {
+                    sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                    sh.setShortThrowMode();
+                    sh.shootByVelocity();
+                    isShootingLong = false;
+                    isShootingShort = true;
+                } else if ((g1.Y.isPressed() && isShootingLong) || (g1.X.isPressed() && isShootingShort)) {
+                    sh.closeTunnel();
+                    sh.shootStop();
+                    isShootingLong = false;
+                    isShootingShort = false;
+                }
+            }
+
+            if (attentionControl) {
+                if (g1.dpadUp.isPressed()) {
+                    sh.openTunnel();
+                } else if (g1.dpadDown.isPressed()) {
+                    sh.closeTunnel();
+                }
             }
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);

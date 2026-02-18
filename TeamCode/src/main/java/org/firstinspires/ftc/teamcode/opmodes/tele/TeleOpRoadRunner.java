@@ -49,9 +49,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
-        sh = new Shooter(this);
-        in = new Intake(this);
         tr = new Transfer(this);
+        sh = new Shooter(this, follower, tr);
+        in = new Intake(this);
         tt = new Turret(this);
 
         follower.setStartingPose(new Pose(72, 72, 0));
@@ -112,10 +112,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
             //------------------------------------ SHOOTER
-            if (!attentionControl) {
+
                 sh.threeArtefactsShooting();
-                sh.switchCover();
-            }
+
             if(!attentionControl){
                 if(gamepad2.x) sh.canShoot = true;
             }
@@ -160,7 +159,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
             telemetry.addData("TARGET", sh.velocityTarget);
 //           telemetry.addData("Empty", tr.isEmpty());
 //            ArrayList<Transfer.Color> colors = tr.getColor();
@@ -170,6 +168,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
             telemetry.addData("howMany", tr.howMany());
 //            telemetry.addData("HSV1", "%.1f %.2f %.2f", tr.hsv1[0], tr.hsv1[1], tr.hsv1[2]);
 //            telemetry.addData("HSV2", "%.1f %.2f %.2f", tr.hsv2[0], tr.hsv2[1], tr.hsv2[2]);
+
+            dashtele.addData("Velocity shooter", sh.getVelocityRPS());
+            dashtele.update();
 
 
 

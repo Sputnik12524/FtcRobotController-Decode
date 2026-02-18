@@ -25,7 +25,7 @@ public class VeloPIDTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-    Shooter sh = new Shooter(this);
+        Shooter sh = new Shooter(this);
         // Change my id
         DcMotorEx myMotor = sh.shooterUpper;
         DcMotorEx myMotor1 = sh.shooterLower;
@@ -70,8 +70,11 @@ public class VeloPIDTuner extends LinearOpMode {
             telemetry.addData("targetVelocity", targetVelo);
 
             double motorVelo = myMotor.getVelocity();
-            telemetry.addData("velocity", motorVelo);
-            telemetry.addData("error", targetVelo - motorVelo);
+            double motorVelo1 = myMotor1.getVelocity();
+            telemetry.addData("velocityUp", motorVelo);
+            telemetry.addData("errorUp", targetVelo - motorVelo);
+            telemetry.addData("velocityDown", motorVelo1);
+            telemetry.addData("errorDown", targetVelo - motorVelo1);
 
             telemetry.addData("upperBound", TuningController.rpmToTicksPerSecond(TuningController.TESTING_MAX_SPEED * 1.15));
             telemetry.addData("lowerBound", 0);
