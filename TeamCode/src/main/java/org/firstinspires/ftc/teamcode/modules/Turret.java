@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 public class Turret {
     LinearOpMode opMode;
     public DcMotorEx turret;
+    Limelight limelight3A;
     DigitalChannel magneticSensor;
-    Limelight camera;
     Alliance alliance = Alliance.NONE;
     public TurretRegulator turretRegulator = new TurretRegulator();
 
@@ -82,7 +82,7 @@ public class Turret {
             timer.reset();
             while (!isInterrupted()) {
 
-                error = target - getCurrentPosOfTurret();
+                error = limelight3A.X_MIDDLE - limelight3A.getTagInfo().get(1);
                 // error = центр - координаты_эйприл_тега
 
                 double powerP = error * kP;
@@ -135,14 +135,16 @@ public class Turret {
         }
         target = -(angleOfDrivetrain - angleOfTurret);
         target -= 180;
-        angleNormalising();
+        target = angleNormalising(target);
     }
-    public void angleNormalising() {
-        if (target > 180) {
-            target -= 360;
-        } else if (target < -180) {
-            target += 360;
+    public double angleNormalising(double targetNew) {
+        double normTarget = target;
+        if (targetNew > 180) {
+            normTarget = targetNew - 360;
+        } else if (targetNew < -180) {
+            normTarget = targetNew + 360;
         }
+        return normTarget;
     }
 
     public void turnStopByPower() {

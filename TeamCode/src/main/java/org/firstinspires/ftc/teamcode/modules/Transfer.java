@@ -12,8 +12,9 @@ public class Transfer {
     private NormalizedColorSensor colorSensor3;
 
     public enum Color {GREEN, PURPLE, NONE}
-
-    enum Pos {GGG, GGP, GPP, PGG, PPG, PPP, NONE}
+    public enum Num{FIRST, SECOND, THIRD}
+    enum Comb {GGG, GGP, GPP, PGG, PPG, PPP, NNN, GNN, GGN, PNN,PPN, PG}
+    Comb state = Comb.NNN;
 
     public final float[] hsv1 = new float[3];
     public final float[] hsv2 = new float[3];
@@ -93,6 +94,18 @@ public class Transfer {
         return colorSensors;
     }
 
+
+//    public Comb scanArt(){
+//        ArrayList<Color> list = getColor();
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.PURPLE && list.get(2) == Color.PURPLE) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
+//
+//
+//    }
 
     public int howMany(){
         int art = 0;
