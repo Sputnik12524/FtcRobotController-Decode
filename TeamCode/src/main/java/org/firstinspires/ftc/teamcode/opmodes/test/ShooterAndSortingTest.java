@@ -15,12 +15,12 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Config
-@Disabled
+
 @TeleOp(name = "TEST Shooter, Sorting and their friends!", group = "1")
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
     Intake in;
-    Logger logger;
+   // Logger logger;
     ElapsedTime timer;
 
     public static double RPS = 25;
@@ -50,7 +50,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
         sh.shooterUpper.setMotorType(motorConfigurationType);
 
         timer.reset();
-        logger.addHeader("Time,Velocity");
+       // logger.addHeader("Time,Velocity");
 
         waitForStart();
         while (opModeIsActive()) {
@@ -104,7 +104,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
             }
 
             // LOGGER
-            logger.addLine(timer.milliseconds(), sh.getVelocityRPS());
+          //  logger.addLine(timer.milliseconds(), sh.getVelocityRPS());
 
             telemetry.addData("real PRS", sh.getVelocityRPS());
             telemetry.addData("real TPS", sh.getVelocityTPS());
@@ -113,14 +113,14 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
             dashTele.addLine("SHOOTER:");
             dashTele.addData("target of RPS:", RPS);
-            dashTele.addData("real RPS:", sh.getVelocityRPS());
-            dashTele.addData("real RPS LOWER:", sh.shooterLower.getVelocity());
+            dashTele.addData("real RPS: Upper", sh.getVelocityRPS());
+            dashTele.addData("real RPS LOWER:", sh.getVelocityRPSLower());
             dashTele.addData("real TPS HIGHER:", sh.shooterUpper.getVelocity());
             dashTele.addData("Value of encoders:", sh.shooterUpper.getCurrentPosition());
             dashTele.addData("ADJUSTER POS", POS_ADJUSTER);
             dashTele.update();
         }
-        logger.fileClose();
+       // logger.fileClose();
     }
 }
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.blue;
+package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.blue.far;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;

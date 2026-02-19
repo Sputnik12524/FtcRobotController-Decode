@@ -27,8 +27,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
 
-    Intake in;
-    Shooter sh;
+//    Intake in;
+//    Shooter sh;
 
     @Override
     public void runOpMode() {
@@ -40,8 +40,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         actionTimer.resetTimer();
 
         Transfer tr = new Transfer(this);
-        in = new Intake(this);
-        sh = new Shooter(this, follower, tr);
+//        in = new Intake(this);
+//        sh = new Shooter(this, follower, tr);
         Logger lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
@@ -51,9 +51,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
         paths = new Paths(follower); // Build paths
 
-        sh.closeTunnel();
-        sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+//        sh.closeTunnel();
+//        sh.setShortThrowMode();
+//        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -62,14 +62,14 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
-            sh.threeArtefactsShooting();
+           // sh.threeArtefactsShooting();
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
-            t.addData("Shooter Velocity", sh.getVelocityRPS());
+          //  t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
         }
         lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
@@ -112,7 +112,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(48, 95), //55,100
 
-                                    new Pose(20, 95) //35,100
+                                    new Pose(35, 95) //35,100
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -120,7 +120,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(20, 95), //35,100
+                                    new Pose(35, 95), //35,100
 
                                     scoringPose
                             )
@@ -176,9 +176,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.closeTunnel();
-                sh.shootByVelocity();
-                in.rotateIn();
+//                sh.closeTunnel();
+//                sh.shootByVelocity();
+//                in.rotateIn();
                 follower.followPath(paths.PathScoring);
                 setPathState(1);
                 break;
@@ -198,8 +198,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             case 4:
                 if (!follower.isBusy()) {
-                    in.rotateIn();
-                    sh.closeTunnel();
+//                    in.rotateIn();
+//                    sh.closeTunnel();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(5);
                 }
@@ -213,15 +213,16 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 6:
-                if (!sh.isSpinUp()) break;
-                sh.openTunnel();
+                if(follower.isBusy()) break;
+//                if (!sh.isSpinUp()) break;
+//                sh.openTunnel();
                 setPathState(7);
                 break;
 
             case 7:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                sh.closeTunnel();
-                in.rotateIn();
+//                sh.closeTunnel();
+//                in.rotateIn();
                 follower.followPath(paths.PathSecondPresentArtefacts, true);
                 setPathState(8);
                 break;
@@ -241,14 +242,15 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 }
 
             case 10:
-                if (!sh.isSpinUp()) break;
-                sh.openTunnel();
+                if(follower.isBusy()) break;
+//                if (!sh.isSpinUp()) break;
+//                sh.openTunnel();
                 setPathState(11);
                 break;
 
             case 11:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                in.rotateStop();
+               // in.rotateStop();
                 follower.followPath(paths.PathLeaving);
                 setPathState(-100);
                 break;
