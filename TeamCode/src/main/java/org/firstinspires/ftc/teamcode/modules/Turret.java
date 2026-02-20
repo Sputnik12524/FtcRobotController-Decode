@@ -138,7 +138,7 @@ public class Turret {
         target = angleNormalising(target);
     }
     public double angleNormalising(double targetNew) {
-        double normTarget = target;
+        double normTarget = targetNew;
         if (targetNew > 180) {
             normTarget = targetNew - 360;
         } else if (targetNew < -180) {

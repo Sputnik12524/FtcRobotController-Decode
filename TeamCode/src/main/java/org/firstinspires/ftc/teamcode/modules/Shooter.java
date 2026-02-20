@@ -27,7 +27,7 @@ public class Shooter {
     Follower follower;
     Pose currentPose;
 
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(10, 0, 19, 15);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(10, 0, 16.5, 15.25);
     private final ElapsedTime timer = new ElapsedTime();
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
@@ -37,7 +37,7 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 64;  //47
+    public static double VELOCITY_FOR_LONG_THROW = 68.5;  //47 //64
     public static double VELOCITY_FOR_SHORT_THROW = 57;
     public static double POWER = 1;
 
@@ -48,7 +48,7 @@ public class Shooter {
 
     /// Adjuster
     public static double POS_SHORT_THROW = 0.05;
-    public static double POS_LONG_THROW = 0.05;
+    public static double POS_LONG_THROW = 0.005;
     public static double TIME_BETWEEN_SHOOT = 130;
     public static double TIME_AFTER_SHOOT = 300;
     public static double DELTA_ADJUSTER = 0.01;
@@ -134,7 +134,6 @@ public class Shooter {
     }
 
 
-
     //---------------------------------------------- VELOCITY
     private void setPIDFCoefficients(DcMotorEx motor, PIDFCoefficients coefficients) {
         motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
@@ -164,9 +163,11 @@ public class Shooter {
     public void shootByVelocityLower() {
         shooterLower.setVelocity(velocityTarget);
     }
+
     public void shootStopUpper() {
         shooterUpper.setVelocity(0);
     }
+
     public void shootStopLower() {
         shooterLower.setVelocity(0);
     }
@@ -229,7 +230,7 @@ public class Shooter {
     }
 
     public void threeArtefactsShooting() {
-      //  switchCover();
+        //  switchCover();
         if (isTunnelOpen) {
             shootPos = angleAdjuster.getPosition();
             timer.reset();
@@ -300,10 +301,6 @@ public class Shooter {
 
     public double getVelocityRPS() {
         return shooterUpper.getVelocity() / TPR;
-    }
-
-    public double getVelocityRPSLower() {
-        return shooterLower.getVelocity() / TPR;
     }
 
     public double getVelocityTPS() {

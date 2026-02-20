@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.util.Logger;
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
     Intake in;
-    Limelight ll;
+   // Limelight ll;
    // Logger logger;
     ElapsedTime timer;
 
@@ -40,7 +40,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
         timer = new ElapsedTime();
        // logger = new Logger("ShVelocityTime");
         sh = new Shooter(this);
-        ll = new Limelight(this);
+       // ll = new Limelight(this);
         in = new Intake(this);
 
 

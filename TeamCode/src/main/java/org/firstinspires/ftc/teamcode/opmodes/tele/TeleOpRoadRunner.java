@@ -113,7 +113,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             //------------------------------------ SHOOTER
 
-           sh.threeArtefactsShooting();
+          // sh.threeArtefactsShooting();
 
             if(!attentionControl){
                 if(gamepad2.x) sh.canShoot = true;
@@ -160,7 +160,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("TARGET", sh.velocityTarget);
             telemetry.addData("howMany", tr.howMany());
+            dashtele.addData("Target ", sh.velocityTarget);
             dashtele.addData("Velocity shooter", sh.getVelocityRPS());
+            dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
             dashtele.update();
             telemetry.update();
         }

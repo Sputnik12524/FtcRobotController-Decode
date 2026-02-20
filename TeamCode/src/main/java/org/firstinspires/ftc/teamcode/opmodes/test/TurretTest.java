@@ -20,27 +20,34 @@ public class TurretTest extends LinearOpMode {
     AutoSniper as;
     Turret tt;
 
-    public static double TARGET = 0;
 
     @Override
     public void runOpMode() {
-        as = new AutoSniper();
         tt = new Turret(this);
+        as = new AutoSniper(tt);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(72,72, 0));
         follower.update();
+
+        tt.turretRegulator.start();
 
         as.setAlliance(Alliance.RED);
 
         waitForStart();
 
         while (opModeIsActive()) {
+            follower.update();
 
             as.continuousTurnTurretToGate( follower.getPose().getX(), follower.getPose().getY() ,follower.getHeading());
             telemetry.addData("target", tt.target);
+            telemetry.addData("x:", follower.getPose().getX());
+            telemetry.addData("y:", follower.getPose().getY());
+            telemetry.addData("head", follower.getPose().getHeading());
             telemetry.update();
 
         }
+
+        tt.turretRegulator.interrupt();
 
     }
 }

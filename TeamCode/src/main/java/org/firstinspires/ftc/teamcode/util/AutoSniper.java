@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.roadrunner.util.Angle;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
@@ -20,7 +21,7 @@ public class AutoSniper {
 
     public double z = gateZ - highOfShooting;
 
-    public double sv = cMTI(0.017);
+   public double sv = cMTI(0.017);
 
     public double target = 0;
     public double angleOfTurret = 0;
@@ -32,12 +33,14 @@ public class AutoSniper {
     double minAngle = 45;
     double minServoPos = 0;
     double maxServoPos = 0.5;
+    LinearOpMode opMode;
 
 
 
 
 
-    public AutoSniper() {
+    public AutoSniper(Turret turret) {
+        tt = turret;
     }
 
     public void setAlliance(Alliance alliance) {
