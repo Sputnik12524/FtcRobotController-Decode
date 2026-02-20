@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.util.Logger;
 public class ShooterAndSortingTest extends LinearOpMode {
     Shooter sh;
     Intake in;
+    Limelight ll;
    // Logger logger;
     ElapsedTime timer;
 
@@ -39,6 +40,7 @@ public class ShooterAndSortingTest extends LinearOpMode {
         timer = new ElapsedTime();
        // logger = new Logger("ShVelocityTime");
         sh = new Shooter(this);
+        ll = new Limelight(this);
         in = new Intake(this);
 
 
@@ -113,8 +115,8 @@ public class ShooterAndSortingTest extends LinearOpMode {
 
             dashTele.addLine("SHOOTER:");
             dashTele.addData("target of RPS:", RPS);
-            dashTele.addData("real RPS: Upper", sh.getVelocityRPS());
-            dashTele.addData("real RPS LOWER:", sh.getVelocityRPSLower());
+            dashTele.addData("real RPS:", sh.getVelocityRPS());
+            dashTele.addData("real RPS LOWER:", sh.shooterLower.getVelocity());
             dashTele.addData("real TPS HIGHER:", sh.shooterUpper.getVelocity());
             dashTele.addData("Value of encoders:", sh.shooterUpper.getCurrentPosition());
             dashTele.addData("ADJUSTER POS", POS_ADJUSTER);
