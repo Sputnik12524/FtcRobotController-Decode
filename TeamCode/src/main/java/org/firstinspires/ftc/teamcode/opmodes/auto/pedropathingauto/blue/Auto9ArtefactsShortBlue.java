@@ -92,7 +92,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         public Paths(Follower follower) {
             PathScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(21, 125),
+                                    new Pose(47, 115),
 
                                     scoringPose
                             )
@@ -112,7 +112,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(48, 95), //55,100
 
-                                    new Pose(35, 95) //35,100
+                                    new Pose(25, 95) //35,100
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -120,7 +120,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(35, 95), //35,100
+                                    new Pose(25, 95), //35,100
 
                                     scoringPose
                             )
@@ -132,7 +132,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     scoringPose,
 
-                                    new Pose(47, 65)
+                                    new Pose(45, 60)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-40), Math.toRadians(-180))
 
@@ -140,9 +140,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathSecondIntakingArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(47, 65),
+                                    new Pose(45, 60),
 
-                                    new Pose(20, 65)
+                                    new Pose(35, 60)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -150,7 +150,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathThirdScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(20, 65),
+                                    new Pose(35, 60),
 
                                    scoringPose
                             )
@@ -163,7 +163,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                    scoringPose,
 
-                                    new Pose(125, 103) //
+                                    new Pose(42, 130) //
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-136))
 
@@ -230,7 +230,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             case 8:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondIntakingArtefacts, true);
-
+                    sleep(1500);
                     setPathState(9);
                 }
                 break;
