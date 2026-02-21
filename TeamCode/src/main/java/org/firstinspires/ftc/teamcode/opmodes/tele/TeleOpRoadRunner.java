@@ -17,13 +17,13 @@ import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-
-import java.util.ArrayList;
+import org.firstinspires.ftc.teamcode.util.GamepadManager;
 
 
 @TeleOp(name = "TeleOpRR", group = "0")
 @Config
 public class TeleOpRoadRunner extends LinearOpMode {
+
     Shooter sh;
     Intake in;
     Turret tt;
@@ -47,6 +47,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        GamepadManager g1 = new GamepadManager(gamepad1);
+        GamepadManager g2 = new GamepadManager(gamepad2);
         follower = Constants.createFollower(hardwareMap);
         timer = new ElapsedTime();
         tr = new Transfer(this);
@@ -69,13 +71,15 @@ public class TeleOpRoadRunner extends LinearOpMode {
         Telemetry dashtele = dashboard.getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dashtele);
         sh.closeTunnel();
+        tt.turretRegulator.start();
 
         follower.update();
-
 
         waitForStart();
 
         while (opModeIsActive()) {
+            g1.update();
+            g2.update();
 
             //------------------------------------- DRIVETRAIN
             follower.update();
@@ -112,12 +116,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
             //------------------------------------ SHOOTER
+            if (!attentionControl) sh.threeArtefactsShooting();
+            if (!attentionControl) if (gamepad1.dpad_up) sh.canShoot = true;
 
-          // sh.threeArtefactsShooting();
-
-            if(!attentionControl){
-                if(gamepad2.x) sh.canShoot = true;
-            }
 
             if (gamepad1.y && !isShootingLong && !stateY1) {
                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
@@ -140,26 +141,37 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
 
-            if (gamepad1.dpad_up) {
-                sh.openTunnel();
-            } else if (gamepad1.dpad_down) {
-                sh.closeTunnel();
-            }
 
             //---------------------------------------- TURRET
 
 
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
 
-            if (gamepad2.right_stick_button) {
+            if (g1.dpadLeft.isHeldFor(1500) && !attentionControl) {
                 attentionControl = true;
-            } else if (gamepad2.left_stick_button) {
+            } else if (g1.dpadLeft.isHeldFor(1500) && attentionControl) {
                 attentionControl = false;
             }
 
+            if (gamepad2.aWasPressed()) {
+                tt.turnByTarget(180);            }
+
+            if (attentionControl) {
+                if (gamepad1.dpad_up) {
+                    sh.openTunnel();
+                } else if (gamepad1.dpad_down) {
+                    sh.closeTunnel();
+                }
+            }
+
+
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("TARGET", sh.velocityTarget);
+            telemetry.addData("Human", sh.ifNotInLaunchZoneHuman());
+            telemetry.addData("Goal", sh.ifNotInLaunchZoneGoal());
+            telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
+
             dashtele.addData("Target ", sh.velocityTarget);
             dashtele.addData("Velocity shooter", sh.getVelocityRPS());
             dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
@@ -168,6 +180,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         }
 
     }
+
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }
