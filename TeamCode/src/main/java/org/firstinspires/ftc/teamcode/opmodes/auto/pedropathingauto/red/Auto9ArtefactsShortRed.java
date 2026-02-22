@@ -84,7 +84,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         public final PathChain ThirdPathPresetArtefacts;
         public final PathChain ThirdPathIntakingArtefacts;
         public final PathChain ThirdPathScoring;
-        public final Pose scoringPath = new Pose(101, 101);
+        public final Pose scoringPath = new Pose(101, 111);
 
 
         public Paths(Follower follower) {
@@ -183,6 +183,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             case 1:
 //                if (!sh.isSpinUp()) break;
 //                sh.openTunnel();
+                if(follower.isBusy()) break;
                 setPathState(2);
                 break;
             case 2:
@@ -207,6 +208,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             case 6:
 //                if (!sh.isSpinUp()) break;
 //                sh.openTunnel();
+                if(follower.isBusy()) break;
                 setPathState(7);
 
                 break;
@@ -238,6 +240,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             case 10:
 //                if (!sh.isSpinUp()) break;
 //                sh.openTunnel();
+                if(follower.isBusy()) break;
                 setPathState(11);
                 break;
 

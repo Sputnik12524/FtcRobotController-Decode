@@ -47,7 +47,7 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(121, 127, Math.toRadians(-136)));
+        follower.setStartingPose(new Pose(123, 122, Math.toRadians(-136)));
 
         paths = new Paths(follower); // Build paths
 
@@ -78,21 +78,21 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
     public static class Paths {
         public PathChain PathFirstScoring, PathToPresetArtifacts, PathIntakingArtifacts,
                 PathSecondScoring, PathLeaving;
-        public final Pose scoringPath = new Pose(100, 106);
+        public final Pose scoringPose = new Pose(100, 111);
 
         public Paths(Follower follower) {
             PathFirstScoring = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(123, 122),
 
-                                    scoringPath
+                                    scoringPose
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-136)) //was tangent
 
                     .build();
             PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    scoringPath,
+                                    scoringPose,
 
                                     new Pose(100, 84) // 93,95
                             )
@@ -113,7 +113,7 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     new Pose(125, 84),
 
-                                    scoringPath
+                                    scoringPose
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-136))
 
@@ -121,7 +121,7 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
 
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(103, 111),
+                                    scoringPose,
 
                                     new Pose(85, 127)
                             )
