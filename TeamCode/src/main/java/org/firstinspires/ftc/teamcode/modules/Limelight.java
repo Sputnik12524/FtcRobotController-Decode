@@ -41,6 +41,7 @@ public class Limelight {
     }
 
     public ArrayList<Double> getTagInfo() {
+        tagInfo.clear();
         LLResult result = limelightResult();
         double id = 0;
         List<LLResultTypes.FiducialResult> fidResults = result.getFiducialResults();

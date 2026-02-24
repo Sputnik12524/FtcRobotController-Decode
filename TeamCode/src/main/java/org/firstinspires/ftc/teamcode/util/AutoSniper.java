@@ -61,8 +61,8 @@ public class AutoSniper {
 
         angleOfTurret = Math.toDegrees(Math.atan( (gateY - (y+sY)) / (gateX - (x+sX)) ));
 
-        target = -(angleOfDrivetrain - angleOfTurret) - 180;
-        target = tt.angleNormalising(target);
+        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) - 180;
+        target = tt.angleNormalising(tt.stabilizeTargetByCamera(target));
         tt.turnByTarget(target);
     }
 
