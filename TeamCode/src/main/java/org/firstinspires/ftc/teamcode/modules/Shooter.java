@@ -214,11 +214,11 @@ public class Shooter {
 
     public boolean ifNotInLaunchZoneHuman() {
         currentPose = follower.getPose();
-        return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 24;
+        return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 30;
     }
 
     public boolean inZone() {
-        return ifNotInLaunchZoneHuman() || ifNotInLaunchZoneGoal();
+        return !ifNotInLaunchZoneHuman() || !ifNotInLaunchZoneGoal();
     }
 
     //---------------------------------------------- CALCULATOR
@@ -230,7 +230,7 @@ public class Shooter {
     }
 
     public void threeArtefactsShooting() {
-        //  switchCover();
+        switchCover();
         if (isTunnelOpen) {
             shootPos = angleAdjuster.getPosition();
             timer.reset();
@@ -243,7 +243,6 @@ public class Shooter {
             while (timer.milliseconds() < TIME_AFTER_SHOOT) ;
             setMode(shootPos);
             complete = true;
-            closeTunnel(); //УДАЛИИИИИИИТТЬ
             if (tr.isEmpty()) canShoot = false;
         }
     }
