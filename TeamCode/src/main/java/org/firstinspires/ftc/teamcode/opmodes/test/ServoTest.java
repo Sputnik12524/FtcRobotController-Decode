@@ -13,8 +13,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 @TeleOp
 public class ServoTest extends LinearOpMode {
-    public static double POSITION = 0.0;
-    public static double DIFF = 0.05;
+    public static double POSITION = 0.05;
+    public static double DIFF = 0.005;
 
     @Override
     public void runOpMode() throws InterruptedException {

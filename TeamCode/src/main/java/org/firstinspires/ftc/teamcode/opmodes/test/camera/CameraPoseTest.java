@@ -35,16 +35,20 @@ public class CameraPoseTest extends LinearOpMode {
                             gamepad1.left_trigger - gamepad1.right_trigger,
                             true // Robot Centric
                     );
-            telemetry.addData("Tag ID", limelight3A.getTagInfo());
-            telemetry.addData("X by Tag", limelight3A.getPoseByAprilTag().x);
-            telemetry.addData("Y by Tag", limelight3A.getPoseByAprilTag().y);
-            telemetry.addData("Z by Tag", limelight3A.getPoseByAprilTag().z);
-            telemetry.addData("botpose", new Pose(limelight3A.getPoseByAprilTag().x,
-                    limelight3A.getPoseByAprilTag().y,
-                    limelight3A.getPoseByAprilTag().z,
-                    FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE));
+            try {
+                telemetry.addData("Tag ID", limelight3A.getTagInfo());
+                telemetry.addData("X by Tag", limelight3A.getPoseByAprilTag().x);
+                telemetry.addData("Y by Tag", limelight3A.getPoseByAprilTag().y);
+                telemetry.addData("Z by Tag", limelight3A.getPoseByAprilTag().z);
+                telemetry.addData("botpose", new Pose(limelight3A.getPoseByAprilTag().x,
+                        limelight3A.getPoseByAprilTag().y,
+                        limelight3A.getPoseByAprilTag().z,
+                        FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE));
 
-            telemetry.update();
+                telemetry.update();
+            } catch(Exception e){
+                telemetry.addLine("Ахахахахаха лохи наллпойнтер");
+            }
         }
         limelight3A.startOrStopLL(true);
     }

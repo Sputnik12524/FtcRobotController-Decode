@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 
 public class AutoSniper {
+
     Turret tt;
     Shooter sh;
 
@@ -16,12 +16,12 @@ public class AutoSniper {
     public double gateZ = 0;
 
     public double highOfShooting = 0;
-    public double R = 0.1;
+    public double R = 0.1; // meters
     public double differenceVelocity = 8;
 
     public double z = gateZ - highOfShooting;
 
-   public double sv = cMTI(0.017);
+   public double sv = 0.017; // meters
 
     public double target = 0;
     public double angleOfTurret = 0;
@@ -29,18 +29,17 @@ public class AutoSniper {
     public double angleOfAdjuster;
     double ITM = 0.0254;
     double g = 9.81;
-    double maxAngle = 60;
-    double minAngle = 45;
-    double minServoPos = 0;
-    double maxServoPos = 0.5;
-    LinearOpMode opMode;
+    public static double MAX_ANGLE = 60;
+    public static double MIN_ANGLE = 45;
+    public static double POS_FOR_MAX_ANGLE = 0.125;
+    public static double POS_FOR_MIN_ANGLE = 0.005;
 
 
 
 
-
-    public AutoSniper(Turret turret) {
+    public AutoSniper(Turret turret, Shooter shooter) {
         tt = turret;
+        sh = shooter;
     }
 
     public void setAlliance(Alliance alliance) {
@@ -91,14 +90,14 @@ public class AutoSniper {
         } else {
             angleOfAdjuster = lastAngleOfAdjuster;
         }
-        if (angleOfAdjuster >= maxAngle) angleOfAdjuster = maxAngle;
-        if (angleOfAdjuster <= minAngle) angleOfAdjuster = minAngle;
+        if (angleOfAdjuster >= MAX_ANGLE) angleOfAdjuster = MAX_ANGLE;
+        if (angleOfAdjuster <= MIN_ANGLE) angleOfAdjuster = MIN_ANGLE;
         sh.setAngleAdjuster(convertAngleToServoPos(angleOfAdjuster));
     }
 
     public void continuousSetVelocity(double x, double y, double angleOfDrivetrain, double servoPos, double lastAngularVelocity) {
         double angleOfAdjuster = convertServoPosToAngle(servoPos);
-        if (angleOfAdjuster <= minAngle || angleOfAdjuster >= maxAngle) {
+        if (angleOfAdjuster <= MIN_ANGLE || angleOfAdjuster >= MAX_ANGLE) {
             double sY = cMTI(sv * Math.sin(angleOfDrivetrain));
             double sX = cMTI(sv * Math.cos(angleOfDrivetrain));
             double l = Math.sqrt( (gateY - (y+sY)) + (gateX - (x+sX)) );
@@ -114,10 +113,10 @@ public class AutoSniper {
 
 
     public double convertAngleToServoPos(double angle) {
-        return angle * ((maxServoPos-minServoPos) / (maxAngle-minAngle));
+        return angle * ( Math.abs(POS_FOR_MIN_ANGLE - POS_FOR_MAX_ANGLE) / Math.abs(MAX_ANGLE - MIN_ANGLE) );
     }
     public double convertServoPosToAngle(double servoPos) {
-        return servoPos / ((maxServoPos-minServoPos) / (maxAngle-minAngle));
+        return servoPos / ( Math.abs(POS_FOR_MIN_ANGLE - POS_FOR_MAX_ANGLE) / Math.abs(MAX_ANGLE - MIN_ANGLE) );
     }
     public double cITM(double inch) { //Convert inches to meters
         return inch * ITM;

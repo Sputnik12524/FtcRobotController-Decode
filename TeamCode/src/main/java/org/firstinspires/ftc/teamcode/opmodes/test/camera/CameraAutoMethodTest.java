@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 
 @TeleOp(name = "TEST Auto Limelight")
-@Disabled
 
 public class CameraAutoMethodTest extends LinearOpMode {
     Limelight limelight3A;
@@ -20,7 +19,7 @@ public class CameraAutoMethodTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-           telemetry.addData("Tag ID", limelight3A.getTagInfo());
+           telemetry.addData("Tag ID", limelight3A.getTagInfo().get(0));
            telemetry.update();
         }
         limelight3A.startOrStopLL(true);

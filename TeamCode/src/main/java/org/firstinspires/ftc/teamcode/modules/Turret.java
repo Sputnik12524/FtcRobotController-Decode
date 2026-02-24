@@ -38,7 +38,17 @@ public class Turret {
     private boolean stateMagneting = false;
 
     public boolean isInLimits = false;
+    public TurretCameraAiming cameraAiming = new TurretCameraAiming();
 
+    public Turret(LinearOpMode opMode, Limelight ll) {
+        this.opMode = opMode;
+        limelight3A = ll;
+        turret = opMode.hardwareMap.get(DcMotorEx.class, "turret");
+        magneticSensor = opMode.hardwareMap.get(DigitalChannel.class, "magneticSensor");
+
+        turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+    }
     public Turret(LinearOpMode opMode) {
         this.opMode = opMode;
         turret = opMode.hardwareMap.get(DcMotorEx.class, "turret");
@@ -82,7 +92,7 @@ public class Turret {
             timer.reset();
             while (!isInterrupted()) {
 
-                error = limelight3A.X_MIDDLE - limelight3A.getTagInfo().get(1);
+                error = -limelight3A.getTagInfo().get(1);
                 // error = центр - координаты_эйприл_тега
 
                 double powerP = error * kP;
@@ -93,6 +103,8 @@ public class Turret {
             }
         }
     }
+
+
 
     public double getCurrentPosOfTurret() {
         return turret.getCurrentPosition()/TPR * rSmallGear/rBigGear * 360;
@@ -121,6 +133,9 @@ public class Turret {
     }
 
     public void turnByTarget(double target) { this.target = target; }
+    public double stabilizeTargetByCamera(){
+        return (this.target - limelight3A.getTagInfo().get(1));
+    }
 
     public void continuousTurnToGate(Alliance alliance, double x, double y, double angleOfDrivetrain) {
         if (x <= 0) x = 1;
