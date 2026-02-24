@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -24,8 +26,8 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
 
-  //  Intake in;
-  //  Shooter sh;
+    Intake in;
+    Shooter sh;
 
     @Override
     public void runOpMode() {
@@ -36,8 +38,8 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
         actionTimer = new Timer();
         actionTimer.resetTimer();
 
-//        in = new Intake(this);
-//        sh = new Shooter(this);
+        in = new Intake(this);
+        sh = new Shooter(this);
         Logger lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
@@ -47,9 +49,9 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
 
         paths = new Auto12ArtefactsLongBlue.Paths(follower); // Build paths
 
-//        sh.closeTunnel();
-//        sh.setLongThrowMode();
-//        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        sh.openTunnel();
+        sh.setLongThrowMode();
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -90,22 +92,22 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-//                sh.closeTunnel();
-//                sh.shootByVelocity();
-//                in.rotateIn();
+                sh.openTunnel();
+                sh.shootByVelocity();
                 follower.followPath(paths.PathScoring);
                 setPathState(1);
                 break;
 
             case 1:
-                if(follower.isBusy()) break;
-//                if (!sh.isSpinUp()) break;
-//                sh.openTunnel();
+                if (!sh.isSpinUp()) break;
+                in.rotateIn();
                 setPathState(2);
                 break;
 
             case 2:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                in.rotateStop();
+                sh.closeTunnel();
                 follower.followPath(paths.PathToPresetArtifacts);
                 setPathState(-100);
                 break;

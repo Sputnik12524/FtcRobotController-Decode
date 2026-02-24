@@ -52,7 +52,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry);
 
-        sh.closeTunnel();
+        sh.openTunnel();
         sh.setShortThrowMode();
 
         waitForStart();
@@ -82,50 +82,48 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
         public Paths(Follower follower) {
             PathFirstScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(22.000, 124.000),
+                                    new Pose(22, 124),
 
-                                    new Pose(43.541, 103.509)
-                            )
-                    ).setTangentHeadingInterpolation()
+                                    new Pose(44, 104)))
+
+                    .setConstantHeadingInterpolation(Math.toRadians(-40))
 
                     .build();
 
             PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(43.541, 103.509),
+                                    new Pose(44, 104),
 
-                                    new Pose(43.258, 84.561)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-38), Math.toRadians(180))
+                                    new Pose(44, 85)))
+                    .setLinearHeadingInterpolation(Math.toRadians(-38), Math.toRadians(-180))
 
                     .build();
+
             PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(43.258, 84.561),
+                                    new Pose(44, 85),
 
-                                    new Pose(16.940, 83.897)
-                            )
-                    ).setTangentHeadingInterpolation()
+                                    new Pose(30, 85)))
+                    .setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(16.940, 83.897),
+                                    new Pose(30, 85),
 
-                                    new Pose(43.777, 103.708)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-38))
+                                    new Pose(44, 104)))
+
+                    .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-40))
 
                     .build();
 
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(43.777, 103.708),
+                                    new Pose(44, 104),
 
-                                    new Pose(58.119, 132.225)
-                            )
-                    ).setTangentHeadingInterpolation()
+                                    new Pose(58, 132)))
+                    .setConstantHeadingInterpolation(Math.toRadians(-40))
 
                     .build();
         }
@@ -136,62 +134,66 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                sh.openTunnel();
                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
                 sh.shootByVelocity();
-                in.rotateIn();
                 setPathState(1);
                 break;
+
             case 1:
-                if(!follower.isBusy()){
-              //  if (sh.isSpinUp() && !follower.isBusy()) {
+                if (sh.isSpinUp() && !follower.isBusy()) {
                     follower.followPath(paths.PathFirstScoring, true);
+                    in.rotateIn();
                     setPathState(2);
                 }
+
                 break;
+
             case 2:
-                if (!follower.isBusy()) {
-                  //  sh.waitForShoot();
+                if (!follower.isBusy() && actionTimer.getElapsedTime() < 4000) {
+                    sh.closeTunnel();
+                    in.rotateStop();
+                    follower.followPath(paths.PathToPresetArtifacts, true);
+                    in.rotateIn();
                     setPathState(3);
                 }
                 break;
+
             case 3:
-                if(!follower.isBusy()){
-                //if (!Shooter.isTunnelOpen && !follower.isBusy()) {
-                    follower.followPath(paths.PathToPresetArtifacts, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(4);
                 }
                 break;
+
             case 4:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.PathIntakingArtifacts, true);
-                    setPathState(5);
-                }
-                break;
-            case 5:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondScoring, true);
                     setPathState(6);
                 }
                 break;
+
             case 6:
-                if(!follower.isBusy()) {
-                  //  sh.waitForShoot();
+                if (!sh.isSpinUp()) {
+                    in.rotateIn();
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(!follower.isBusy()){
-                //if(!follower.isBusy() && !Shooter.isTunnelOpen){
+                if (!follower.isBusy()) {
                     follower.followPath(paths.PathLeaving);
+                    sh.closeTunnel();
                     setPathState(-100);
                 }
-                break;
-        }
+                    break;
 
+        }
     }
+
 
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
     }
+
 }

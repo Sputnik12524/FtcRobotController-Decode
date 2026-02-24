@@ -19,7 +19,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 
 @Autonomous(name = "6 Artifacts Long Autonomous BLUE", group = "Autonomous")
-@Disabled
 @Configurable // Panels
 public class Auto6ArtifactsLongBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -34,6 +33,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        actionTimer = new Timer();
         pathTimer = new Timer();
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
@@ -52,7 +52,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry);
 
-        sh.closeTunnel();
+        sh.openTunnel();
         sh.setShortThrowMode();
 
         waitForStart();
@@ -67,6 +67,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
             panelsTelemetry.debug("X", follower.getPose().getX());
             panelsTelemetry.debug("Y", follower.getPose().getY());
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+            panelsTelemetry.debug("Velocity", sh.getVelocityRPS());
             panelsTelemetry.update(telemetry);
         }
     }
@@ -105,7 +106,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
                                     new Pose(20, 35)
                             )
-                    ).setTangentHeadingInterpolation()
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                     .build();
 
@@ -136,52 +137,55 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.closeTunnel();
+                sh.openTunnel();
                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
                 sh.shootByVelocity();
-                in.rotateIn();
                 setPathState(1);
                 break;
+
             case 1:
-                if(!follower.isBusy()) {
+                if (!follower.isBusy() && sh.isSpinUp()) {
                     follower.followPath(paths.PathFirstScoring, true);
+                    in.rotateIn();
                     setPathState(2);
                 }
                 break;
+
             case 2:
-                if (sh.isSpinUp() &&!follower.isBusy()) {
-                    sh.openTunnel();
+                if (!follower.isBusy() && actionTimer.getElapsedTime() < 4000) {
+                    sh.closeTunnel();
+                    in.rotateStop();
+                    follower.followPath(paths.PathToPresetArtifacts, true);
+                    in.rotateIn();
                     setPathState(3);
                 }
                 break;
+
             case 3:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() < 4000) {
-                    sh.closeTunnel();
-                    follower.followPath(paths.PathToPresetArtifacts, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(4);
                 }
                 break;
+
             case 4:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.PathIntakingArtifacts, true);
+                    in.rotateStop();;
+                    follower.followPath(paths.PathSecondScoring, true);
+                    sh.shootByVelocity();
                     setPathState(5);
                 }
                 break;
+
             case 5:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.PathSecondScoring, true);
-                    sh.shootByVelocity();
+                if (!follower.isBusy() && sh.isSpinUp()) {
+                    in.rotateIn();
                     setPathState(6);
                 }
                 break;
+
             case 6:
-                if(!follower.isBusy() && sh.isSpinUp()) {
-                    sh.openTunnel();
-                    setPathState(7);
-                }
-                break;
-            case 7:
-                if(follower.isBusy() && !Shooter.isTunnelOpen){
+                if (follower.isBusy() && !Shooter.isTunnelOpen) {
                     follower.followPath(paths.PathLeaving);
                     setPathState(-100);
                 }

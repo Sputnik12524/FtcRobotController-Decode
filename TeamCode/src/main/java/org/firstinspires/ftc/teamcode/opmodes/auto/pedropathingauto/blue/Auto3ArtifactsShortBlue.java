@@ -27,10 +27,10 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
-  //  Turret tt;
+    //  Turret tt;
 
-//    Intake in;
-//    Shooter sh;
+    Intake in;
+    Shooter sh;
 
     @Override
     public void runOpMode() {
@@ -41,9 +41,9 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
         actionTimer = new Timer();
         actionTimer.resetTimer();
 
-//        in = new Intake(this);
-//        sh = new Shooter(this);
-      //  tt = new Turret(this);
+        in = new Intake(this);
+        sh = new Shooter(this);
+        // tt = new Turret(this);
         Logger lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
@@ -53,10 +53,10 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
 
         paths = new Paths(follower); // Build paths
 
-//        sh.closeTunnel();
-//        sh.setLongThrowMode();
-//        tt.turretRegulator.start();
-//        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+        sh.closeTunnel();
+        sh.setLongThrowMode();
+        // tt.turretRegulator.start();
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -70,12 +70,12 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
             t.addData("X", follower.getPose().getX());
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
-           // t.addData("Shooter Velo", sh.getVelocityRPS());
+            t.addData("Shooter Velo", sh.getVelocityRPS());
             t.update();
         }
         lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
-     //   tt.turretRegulator.interrupt();
+        //   tt.turretRegulator.interrupt();
     }
 
 
@@ -109,32 +109,25 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                sh.openTunnel();
+                sh.shootByVelocity();
                 follower.followPath(paths.PathScoring);
-//                sh.closeTunnel();
-//                sh.shootByVelocity();
-//                in.rotateIn();
                 setPathState(1);
                 break;
+
             case 1:
-                if(follower.isBusy()) break;
-//                if (!sh.isSpinUp() || follower.isBusy()) break;
-//                while (!sh.isSpinUp() || follower.isBusy());
-//                sh.openTunnel();
+                if (!sh.isSpinUp() || follower.isBusy()) break;
+                in.rotateIn();
                 setPathState(2);
                 break;
+
             case 2:
-                if(follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                // while (follower.isBusy() || actionTimer.getElapsedTime() < 4000) ;
-                //sh.closeTunnel();
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                in.rotateStop();
+                sh.closeTunnel();
+                sh.shootStop();
                 follower.followPath(paths.PathLeaving);
-//                sh.shootStop();
-//                in.rotateStop();
-                setPathState(3);
-                break;
-            case 3:
-                if (!follower.isBusy()){ //&& !Shooter.isTunnelOpen) {
-                    setPathState(-100);
-                }
+                setPathState(-100);
                 break;
         }
 
