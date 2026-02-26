@@ -76,19 +76,18 @@ public class TeleOpRoadRunner extends LinearOpMode {
             logger.getAll("pospos");
             follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
         } catch (IOException | NullPointerException e) {
-            try {
-                follower.setStartingPose(new Pose(ll.getPoseByAprilTag().x, ll.getPoseByAprilTag().y, ll.getPoseByAprilTag().z));
-            } catch (Exception exe) {
-                canStart = false;
-                follower.setStartingPose(new Pose(72, 72, 0));
-                attentionControl = true;
-            }
+            canStart = false;
+            follower.setStartingPose(new Pose(72, 72, 0));
+            attentionControl = true;
         }
 
-        if (canStart)
-            autoS.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-        autoS.setAlliance(Alliance.RED);
         follower.update();
+
+        //if (canStart)
+         //   autoS.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+        // follower.setStartingPose(new Pose(72, 72, 0));
+        autoS.setAlliance(Alliance.RED);
+
 
         //currentPose = follower.getPose();
         isShootingLong = false;
@@ -176,14 +175,14 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             //---------------------------------------- TURRET
             if (!attentionControl)
-                autoS.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                autoS.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
 
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
 
             if (g1.dpadLeft.isHeldFor(1500) && !attentionControl) {
                 attentionControl = true;
-            } else if (g1.dpadLeft.isHeldFor(1500) && attentionControl) {
+            } else if (g1.dpadRight.isHeldFor(1500) && attentionControl) {
                 attentionControl = false;
             }
 
@@ -205,16 +204,21 @@ public class TeleOpRoadRunner extends LinearOpMode {
                     sh.closeTunnel();
                 }
             }
+            if (g2.dpadUp.isHeldFor(1500)) {
+                tt.turnByTarget(0);
+                follower.setStartingPose(new Pose(72, 72, 0)); // надо указать координаты угла
+            }
 
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-            telemetry.addData("TARGET", sh.velocityTarget/28);
+            telemetry.addData("TARGET", sh.velocityTarget / 28);
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
             telemetry.addData("Velocity", sh.getVelocityRPS());
+            telemetry.addLine(String.valueOf(follower.getPose().getX()) + ' ' + (follower.getPose().getY()));
 
 
-            dashtele.addData("Target ", sh.velocityTarget/28);
+            dashtele.addData("Target ", sh.velocityTarget / 28);
             dashtele.addData("Velocity shooter", sh.getVelocityRPS());
             dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
             dashtele.update();
