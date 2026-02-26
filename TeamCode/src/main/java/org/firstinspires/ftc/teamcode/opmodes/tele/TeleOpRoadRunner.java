@@ -17,8 +17,11 @@ import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.GamepadManager;
+import org.firstinspires.ftc.teamcode.util.Logger;
 
+import java.io.IOException;
 
 @TeleOp(name = "TeleOpRR", group = "0")
 @Config
@@ -30,7 +33,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
     ElapsedTime timer;
     Transfer tr;
     Follower follower;
+    AutoSniper autoS;
+    Logger logger;
 
+
+    boolean canStart = true;
     /// Intake
     boolean isRotateIn = false;
     boolean isShootingShort = false;
@@ -55,6 +62,17 @@ public class TeleOpRoadRunner extends LinearOpMode {
         sh = new Shooter(this, follower, tr);
         in = new Intake(this);
         tt = new Turret(this);
+        autoS = new AutoSniper(tt, sh);
+        logger = new Logger("Coordinate");
+
+        try {
+            logger.getAll("pospos");
+        } catch (IOException | NullPointerException e) {
+            canStart = false;
+            follower.setStartingPose(new Pose(72, 72, 0));
+            attentionControl = true;
+        }
+        if (canStart) follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
 
         follower.setStartingPose(new Pose(72, 72, 0));
         follower.update();
@@ -72,6 +90,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         Telemetry t = new MultipleTelemetry(telemetry, dashtele);
         sh.closeTunnel();
         tt.turretRegulator.start();
+       // autoS.continuousTurnTurretToGate(logger.getAll());
 
         follower.update();
 

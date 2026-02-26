@@ -48,6 +48,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(21, 125, Math.toRadians(-40))); //Math.toRadians(-36)));
+        sh = new Shooter(this, follower, tr);
 
         paths = new Paths(follower); // Build paths
 
@@ -184,7 +185,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 1:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp() || follower.isBusy()) break;
                 in.rotateIn();
                 setPathState(2);
                 break;
@@ -201,6 +202,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             case 4:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathIntakingArtifacts, true);
+                    in.rotateStop();
                     setPathState(5);
                 }
                 break;
@@ -214,7 +216,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 6:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp() || follower.isBusy()) break;
                 in.rotateIn();
                 setPathState(7);
                 break;
@@ -244,7 +246,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 }
 
             case 10:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp() || follower.isBusy()) break;
                 in.rotateIn();
                 setPathState(11);
                 break;

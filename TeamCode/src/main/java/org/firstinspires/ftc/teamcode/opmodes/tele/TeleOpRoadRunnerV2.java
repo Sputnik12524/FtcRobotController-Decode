@@ -67,7 +67,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         try {
             lg.getAll("pospos");
         } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
             canStart = false;
             follower.setStartingPose(new Pose(72, 72, 0));
             attentionControl = true;

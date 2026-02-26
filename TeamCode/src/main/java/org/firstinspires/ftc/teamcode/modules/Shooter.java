@@ -230,7 +230,7 @@ public class Shooter {
     }
 
     public void threeArtefactsShooting() {
-        switchCover();
+        // switchCover();
         if (isTunnelOpen) {
             shootPos = angleAdjuster.getPosition();
             timer.reset();
