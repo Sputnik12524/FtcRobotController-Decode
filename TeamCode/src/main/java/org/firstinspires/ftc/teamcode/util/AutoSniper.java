@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 
@@ -13,11 +11,14 @@ public class AutoSniper {
     //---------------------------------------------- GENERAL COEFFICIENTS
     public double goalY = 138;
     public double goalX = 138; // Изначально для красного
-    public double goalZ = 0;
+    public double goalZ = 51.5;
 
-    public double highOfShooting = 0;
+    public double highOfShooting = 9.84;
     public double R = 0.1; // meters
+    public double m = 1.7;
+    public double I = 4;
     public double differenceVelocity = 3.5;
+    public double targetVeloForArtifact = 0;
     public double targetVelo = 0;
 
     public double z = goalZ - highOfShooting;
@@ -28,6 +29,7 @@ public class AutoSniper {
     public double angleOfTurret = 0;
 
     public double angleOfAdjuster;
+    public double angleOfAdjusterBeforeNormalising;
     double ITM = 0.0254;
     double g = 9.81;
     public static double MAX_ANGLE = 60;
@@ -63,17 +65,19 @@ public class AutoSniper {
         angleOfTurret = Math.toDegrees(Math.atan( (goalY - (y+sY)) / (goalX - (x+sX)) ));
 
         target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) - 180;
-        target = tt.angleNormalising(tt.stabilizeTargetByCamera(target));
+        //target = tt.angleNormalising(tt.stabilizeTargetByCamera(target));
+        target = tt.angleNormalising(target);
         tt.turnByTarget(target);
     }
 
     public void continuousSetAngle(double x, double y, double angleOfDrivetrain, double servoPos, double angularVelocity) {
         double lastAngleOfAdjuster = convertServoPosToAngle(servoPos);
-        double sY = cMTI(sv * Math.toDegrees(Math.sin(angleOfDrivetrain)));
-        double sX = cMTI(sv * Math.toDegrees(Math.cos(angleOfDrivetrain)));
-        double l = Math.sqrt( (goalY - (y+sY)) + (goalX - (x+sX)) );
-        double a = (g * Math.pow(l,2)) / (2 * Math.pow(cAVTV(angularVelocity),2));
-        double c = a - z;
+        angularVelocity = cAVTV(angularVelocity)/2;
+        double sY = cMTI(sv * Math.sin(angleOfDrivetrain));
+        double sX = cMTI(sv * Math.cos(angleOfDrivetrain));
+        double l = cITM(Math.sqrt( (goalY - (y+sY)) + (goalX - (x+sX)) ));
+        double a = cITM( (g * Math.pow(l,2)) / (2 * Math.pow(cAVTV(angularVelocity),2)) );
+        double c = cITM(a - z);
         double D = Math.pow(l,2) - 4*a*c;
         if (D > 0) {
             double var1 = Math.toDegrees(Math.atan( (-l + Math.sqrt(D)) / (2*a) ));
@@ -90,19 +94,22 @@ public class AutoSniper {
         } else {
             angleOfAdjuster = lastAngleOfAdjuster;
         }
+        angleOfAdjusterBeforeNormalising = angleOfAdjuster;
         if (angleOfAdjuster >= MAX_ANGLE) angleOfAdjuster = MAX_ANGLE;
         if (angleOfAdjuster <= MIN_ANGLE) angleOfAdjuster = MIN_ANGLE;
         sh.setAngleAdjuster(convertAngleToServoPos(angleOfAdjuster));
     }
 
     public void continuousSetVelocityTarget(double x, double y, double angleOfDrivetrain, double servoPos, double lastAngularVelocity) {
-        double angleOfAdjuster = convertServoPosToAngle(servoPos);
+        double angleOfAdjuster = Math.toRadians( convertServoPosToAngle(servoPos) );
         if (angleOfAdjuster <= MIN_ANGLE || angleOfAdjuster >= MAX_ANGLE) {
             double sY = cMTI(sv * Math.sin(angleOfDrivetrain));
             double sX = cMTI(sv * Math.cos(angleOfDrivetrain));
-            double l = Math.sqrt( (goalY - (y+sY)) + (goalX - (x+sX)) );
-            targetVelo = cVTAV( Math.sqrt( (g*Math.pow(l,2) * (1+Math.tan(angleOfAdjuster)))) / ( (Math.tan(angleOfAdjuster - z) * 2))) + differenceVelocity;
-            sh.setVelocityTarget(targetVelo);
+            double l = Math.sqrt( (cITM(goalY - (y+sY)) + (goalX - (x+sX))));
+            targetVelo = cVTAV(Math.sqrt( (g*Math.pow(l,2) * (1+Math.tan(angleOfAdjuster)))) / ( (Math.tan(angleOfAdjuster - cITM(z)) * 2))*2);
+            //double Ek = I*Math.pow(lastAngularVelocity, 2)/2;
+            //targetVelo = Math.sqrt(2*Ek/m);
+            sh.setVelocityTarget(targetVelo + differenceVelocity);
         } else {
             sh.setVelocityTarget(lastAngularVelocity);
         }
@@ -111,10 +118,10 @@ public class AutoSniper {
 
 
     public double convertAngleToServoPos(double angle) {
-        return POS_FOR_MIN_ANGLE + ((angle - POS_FOR_MIN_ANGLE) * ( Math.abs(POS_FOR_MIN_ANGLE - POS_FOR_MAX_ANGLE) / Math.abs(MAX_ANGLE - MIN_ANGLE) ));
+        return POS_FOR_MIN_ANGLE + ((angle - MIN_ANGLE) * ( Math.abs(POS_FOR_MIN_ANGLE - POS_FOR_MAX_ANGLE) / Math.abs(MAX_ANGLE - MIN_ANGLE) ));
     }
     public double convertServoPosToAngle(double servoPos) {
-        return MIN_ANGLE + ((servoPos - MIN_ANGLE) * ( Math.abs(MAX_ANGLE - MIN_ANGLE) / Math.abs(POS_FOR_MIN_ANGLE - POS_FOR_MAX_ANGLE) ));
+        return MIN_ANGLE + ((servoPos - POS_FOR_MIN_ANGLE) * ( Math.abs(MAX_ANGLE - MIN_ANGLE) / Math.abs(POS_FOR_MIN_ANGLE - POS_FOR_MAX_ANGLE) ));
     }
     public double cITM(double inch) { //Convert inches to meters
         return inch * ITM;

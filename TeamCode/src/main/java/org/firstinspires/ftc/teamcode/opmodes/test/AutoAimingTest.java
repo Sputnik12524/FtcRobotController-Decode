@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -20,6 +21,7 @@ public class AutoAimingTest extends LinearOpMode {
     AutoSniper as;
     Turret tt;
     Shooter sh;
+    Limelight ll;
 
     double lastVelo = 0;
 
@@ -112,10 +114,10 @@ public class AutoAimingTest extends LinearOpMode {
                         lastVelo
                 );
                 telemetry.addLine("VELOCITY TELEMETRY:");
-                telemetry.addData("targetVelocity", as.targetVelo);
+                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
                 telemetry.addData("realVelocity", sh.getVelocityRPS());
             } else if (constVeloState && !veloState) {
-                sh.setVelocityTarget(69.5);
+                sh.setVelocityTarget(50);
                 telemetry.addLine("VELOCITY IS CONST");
             } else {
                 telemetry.addLine("VELOCITY is stopped");
@@ -145,6 +147,7 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addData("targetAngle", as.angleOfAdjuster);
                 telemetry.addData("realAngle", as.convertServoPosToAngle(sh.getAngleAdjusterPos()));
                 telemetry.addData("ServoPos", sh.getAngleAdjusterPos());
+                telemetry.addData("NON NORMALISING ANGLE", as.angleOfAdjusterBeforeNormalising);
             } else {
                 telemetry.addLine("Set long throw ANGLE");
                 sh.setAngleAdjuster(Shooter.POS_LONG_THROW);
