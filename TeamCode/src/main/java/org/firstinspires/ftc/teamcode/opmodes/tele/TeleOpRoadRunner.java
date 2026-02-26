@@ -185,13 +185,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-            telemetry.addData("TARGET", sh.velocityTarget);
+            telemetry.addData("TARGET", sh.velocityTarget / 28);
             telemetry.addData("Human", sh.ifNotInLaunchZoneHuman());
             telemetry.addData("Goal", sh.ifNotInLaunchZoneGoal());
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
 
-            dashtele.addData("Target ", sh.velocityTarget);
+            dashtele.addData("Target ", sh.velocityTarget / 28);
             dashtele.addData("Velocity shooter", sh.getVelocityRPS());
             dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
             dashtele.update();

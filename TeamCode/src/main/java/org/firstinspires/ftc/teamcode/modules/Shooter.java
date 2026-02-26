@@ -27,7 +27,7 @@ public class Shooter {
     Follower follower;
     Pose currentPose;
 
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(10, 0, 16.5, 15.25);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(10, 0, 19, 16);
     private final ElapsedTime timer = new ElapsedTime();
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}

@@ -185,7 +185,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 1:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp()) break;
                 in.rotateIn();
                 setPathState(2);
                 break;
@@ -216,7 +216,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 6:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp()) break;
                 in.rotateIn();
                 setPathState(7);
                 break;
@@ -246,7 +246,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 }
 
             case 10:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp()) break;
                 in.rotateIn();
                 setPathState(11);
                 break;
