@@ -29,6 +29,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
     Intake in;
     Shooter sh;
+    Logger lg;
 
     @Override
     public void runOpMode() {
@@ -42,7 +43,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         Transfer tr = new Transfer(this);
         in = new Intake(this);
         sh = new Shooter(this, follower, tr);
-        Logger lg = new Logger("pospos");
+         lg= new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
@@ -73,8 +74,6 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-        lg.fileClose();
     }
 
 
@@ -256,6 +255,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 in.rotateStop();
                 sh.closeTunnel();
                 follower.followPath(paths.PathLeaving);
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                lg.fileClose();
                 setPathState(-100);
                 break;
 

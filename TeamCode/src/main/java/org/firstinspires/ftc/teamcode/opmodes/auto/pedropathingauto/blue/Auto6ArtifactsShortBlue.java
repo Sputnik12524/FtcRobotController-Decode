@@ -9,6 +9,8 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.Logger;
 
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.follower.Follower;
@@ -24,6 +26,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
+    Logger lg;
     private Timer actionTimer;
     //private Turret tt;
     public Pose currentPose; // Current pose of the robot
@@ -33,6 +36,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        lg = new Logger("pospos");
         pathTimer = new Timer();
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
@@ -69,6 +73,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
         }
+
     }
 
 
@@ -183,6 +188,8 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathLeaving);
                     sh.closeTunnel();
+                    lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                    lg.fileClose();
                     setPathState(-100);
                 }
                     break;

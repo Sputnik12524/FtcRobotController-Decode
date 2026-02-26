@@ -28,6 +28,7 @@ public class ArtRedTravel6 extends LinearOpMode {
 
     Intake in;
     Shooter sh;
+    Logger lg;
 
     @Override
     public void runOpMode() {
@@ -40,7 +41,7 @@ public class ArtRedTravel6 extends LinearOpMode {
 
         in = new Intake(this);
         sh = new Shooter(this);
-        Logger lg = new Logger("pospos");
+        lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
@@ -181,6 +182,8 @@ public class ArtRedTravel6 extends LinearOpMode {
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
                 in.rotateStop();
                 follower.followPath(paths.PathLeaving);
+                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                lg.fileClose();
                 setPathState(-100);
 
                 break;

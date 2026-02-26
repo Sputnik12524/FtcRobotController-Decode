@@ -37,7 +37,7 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 68.5;  //47 //64
+    public static double VELOCITY_FOR_LONG_THROW = 69.5;  //47 //64
     public static double VELOCITY_FOR_SHORT_THROW = 57;
     public static double POWER = 1;
 
@@ -145,6 +145,7 @@ public class Shooter {
         velocityTarget = targetInRPS * TPR;
     }
 
+
     public double setContinuousVelocityByLocalize(Alliance alliance, double angleOfAdjuster, double x, double y) {
         switch (alliance) {
             case BLUE:
@@ -230,7 +231,7 @@ public class Shooter {
     }
 
     public void threeArtefactsShooting() {
-        // switchCover();
+         switchCover();
         if (isTunnelOpen) {
             shootPos = angleAdjuster.getPosition();
             timer.reset();
@@ -243,7 +244,7 @@ public class Shooter {
             while (timer.milliseconds() < TIME_AFTER_SHOOT) ;
             setMode(shootPos);
             complete = true;
-            if (tr.isEmpty()) canShoot = false;
+            canShoot = false;
         }
     }
 

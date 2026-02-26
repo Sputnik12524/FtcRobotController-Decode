@@ -71,7 +71,6 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
         }
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
     }
 
 
@@ -178,6 +177,8 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
                     sh.shootStop();
                     in.rotateStop();
                     follower.followPath(paths.PathLeaving);
+                    lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                    lg.fileClose();
                     setPathState(-1);
                 }
                 break;
