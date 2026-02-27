@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
@@ -33,10 +34,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
     Shooter sh;
     Intake in;
     Turret tt;
-    ElapsedTime timer;
     Transfer tr;
     Follower follower;
-    AutoSniper autoS;
+    AutoSniper as;
     Logger logger;
     Limelight ll;
 
@@ -54,6 +54,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateY1 = false;
     boolean stateX1 = false;
     boolean attentionControl = true;
+    public static double BLUE_ANGLE = 110;
+    public  static  double RED_ANGLE = -120;
 
 
     @Override
@@ -61,46 +63,42 @@ public class TeleOpRoadRunner extends LinearOpMode {
         GamepadManager g1 = new GamepadManager(gamepad1);
         GamepadManager g2 = new GamepadManager(gamepad2);
         follower = Constants.createFollower(hardwareMap);
-        timer = new ElapsedTime();
         tr = new Transfer(this);
         ll = new Limelight(this);
         sh = new Shooter(this, follower, tr);
         in = new Intake(this);
         tt = new Turret(this, ll);
-        autoS = new AutoSniper(tt, sh);
-        logger = new Logger("Coordinate");
+        as = new AutoSniper(tt, sh);
+        logger = new Logger("pospos");
 
         ll.startOrStopLL(false);
 
         try {
             logger.getAll("pospos");
             follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
+            if(logger.al == Alliance.BLUE){as.setAlliance(Alliance.BLUE);}
         } catch (IOException | NullPointerException e) {
             canStart = false;
             follower.setStartingPose(new Pose(72, 72, 0));
             attentionControl = true;
+            as.setAlliance(Alliance.RED);
         }
 
         follower.update();
 
-        //if (canStart)
-         //   autoS.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
-        // follower.setStartingPose(new Pose(72, 72, 0));
-        autoS.setAlliance(Alliance.RED);
+        if (canStart) as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
 
-        //currentPose = follower.getPose();
+
         isShootingLong = false;
         isShootingShort = false;
-        DriveTrainMecanum dt = new DriveTrainMecanum(hardwareMap);
-        PoseStorage.currentPose = dt.getPoseEstimate();
-        dt.setPoseEstimate(PoseStorage.currentPose);
+        DriveTrain dt = new DriveTrain(this);
 
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
-        Telemetry t = new MultipleTelemetry(telemetry, dashtele);
         sh.closeTunnel();
+        tt.turnByTarget(0);
         tt.turretRegulator.start();
 
 
@@ -175,26 +173,32 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             //---------------------------------------- TURRET
             if (!attentionControl)
-                autoS.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+                as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
 
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
 
             if (g1.dpadLeft.isHeldFor(1500) && !attentionControl) {
                 attentionControl = true;
+                tt.turnByTarget(0);
             } else if (g1.dpadRight.isHeldFor(1500) && attentionControl) {
                 attentionControl = false;
             }
 
 
+
             if (gamepad2.aWasPressed()) {
                 tt.turnByTarget(180);
             }
+            if (gamepad2.yWasPressed()) {
+                tt.turnByTarget(0);
+            }
+
             if (gamepad2.bWasPressed()) {
-                tt.turnByTarget(110);
+                tt.turnByTarget(RED_ANGLE);
             }
             if (gamepad2.xWasPressed()) {
-                tt.turnByTarget(-110);
+                tt.turnByTarget(BLUE_ANGLE);
             }
 
             if (attentionControl) {
@@ -206,17 +210,17 @@ public class TeleOpRoadRunner extends LinearOpMode {
             }
             if (g2.dpadUp.isHeldFor(1500)) {
                 tt.turnByTarget(0);
-                follower.setStartingPose(new Pose(72, 72, 0)); // надо указать координаты угла
+                follower.setPose(new Pose(72, 72, 0)); // надо указать координаты угла
             }
 
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
+            telemetry.addData("Alliance", as.alliance);
             telemetry.addData("TARGET", sh.velocityTarget / 28);
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
             telemetry.addData("Velocity", sh.getVelocityRPS());
-            telemetry.addLine(String.valueOf(follower.getPose().getX()) + ' ' + (follower.getPose().getY()));
-
+            telemetry.addLine(String.valueOf(follower.getPose().getX()) + ' ' + (follower.getPose().getY()) + ' ' + follower.getHeading());
 
             dashtele.addData("Target ", sh.velocityTarget / 28);
             dashtele.addData("Velocity shooter", sh.getVelocityRPS());
@@ -225,6 +229,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             telemetry.update();
         }
         ll.startOrStopLL(true);
+        tt.turretRegulator.interrupt();
 
     }
 
