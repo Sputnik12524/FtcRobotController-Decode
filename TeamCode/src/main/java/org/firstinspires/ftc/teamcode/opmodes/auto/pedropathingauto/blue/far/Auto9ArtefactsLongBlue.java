@@ -48,7 +48,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(60, 8, Math.toRadians(90)));
+        follower.setStartingPose(new Pose(60, 8, Math.toRadians(-90)));
 
         paths = new Paths(follower); // Build paths
 
@@ -97,7 +97,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(116))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(116))
 
                     .build();
             PathToPresetArtifacts = follower.pathBuilder().addPath(

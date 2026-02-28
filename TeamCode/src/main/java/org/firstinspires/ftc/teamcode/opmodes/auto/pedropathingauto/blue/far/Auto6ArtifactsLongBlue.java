@@ -49,7 +49,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(56, 8, Math.toRadians(90)));
+        follower.setStartingPose(new Pose(56, 8, Math.toRadians(-90)));
 
         paths = new Paths(follower); // Build paths
 
@@ -91,7 +91,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
                                     new Pose(60, 18)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(105))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(105))
 
                     .build();
 

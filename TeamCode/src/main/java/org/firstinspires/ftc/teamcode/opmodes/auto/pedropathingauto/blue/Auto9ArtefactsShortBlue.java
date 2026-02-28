@@ -12,10 +12,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Transfer;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Autonomous(name = "9 Short BLUE ", group = "Autonomous")
@@ -30,6 +33,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
     Intake in;
     Shooter sh;
     Logger lg;
+    AutoSniper as;
+    Turret tt;
+    Limelight ll;
 
     @Override
     public void runOpMode() {
@@ -40,21 +46,23 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         actionTimer = new Timer();
         actionTimer.resetTimer();
 
-        Transfer tr = new Transfer(this);
-        in = new Intake(this);
-        lg = new Logger("pospos");
-
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(22, 127, Math.toRadians(-36))); //Math.toRadians(-36)));
-        sh = new Shooter(this, follower, tr);
+
+
+        in = new Intake(this);
+        lg = new Logger("pospos");
+        tt = new Turret(this,ll);
+        sh = new Shooter(this, follower, new Transfer(this));
 
         paths = new Paths(follower); // Build paths
 
         sh.openTunnel();
         sh.setShortThrowMode();
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+        as.setAlliance(Alliance.BLUE);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -62,6 +70,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
 
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(),follower.getHeading());
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
