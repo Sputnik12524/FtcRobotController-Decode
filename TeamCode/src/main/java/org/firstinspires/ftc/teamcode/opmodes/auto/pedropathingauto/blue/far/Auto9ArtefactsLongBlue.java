@@ -63,7 +63,6 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
-            sh.threeArtefactsShooting();
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
@@ -222,7 +221,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 break;
 
             case 1:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp()||follower.isBusy()) break;
                 in.rotateIn();
                 setPathState(2);
                 break;
@@ -253,7 +252,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 break;
 
             case 6:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp()||follower.isBusy()) break;
                 in.rotateIn();
                 setPathState(7);
                 break;
@@ -290,7 +289,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 break;
 
             case 11:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp()||follower.isBusy()) break;
                 in.rotateIn();
                 setPathState(12);
                 break;

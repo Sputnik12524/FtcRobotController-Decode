@@ -60,9 +60,6 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
 
-
-            sh.threeArtefactsShooting();
-
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
@@ -206,7 +203,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp()||follower.isBusy()) break;
                 sh.openTunnel();
                 setPathState(2);
                 break;
@@ -230,7 +227,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 }
                 break;
             case 6:
-                if (sh.isSpinUp()) {
+                if (sh.isSpinUp()&&!follower.isBusy()) {
                     sh.openTunnel();
                     setPathState(7);
                 }
@@ -261,7 +258,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 10:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp()||follower.isBusy()) break;
                 sh.openTunnel();
                 setPathState(11);
                 break;
