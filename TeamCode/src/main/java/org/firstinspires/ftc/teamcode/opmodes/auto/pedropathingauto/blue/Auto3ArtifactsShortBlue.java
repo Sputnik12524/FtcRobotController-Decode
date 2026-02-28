@@ -73,8 +73,6 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
             t.addData("Shooter Velo", sh.getVelocityRPS());
             t.update();
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-        lg.fileClose();
         //   tt.turretRegulator.interrupt();
     }
 

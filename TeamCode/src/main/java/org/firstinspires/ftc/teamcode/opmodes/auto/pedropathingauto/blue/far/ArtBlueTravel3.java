@@ -32,6 +32,7 @@ public class ArtBlueTravel3 extends LinearOpMode {
     Intake in;
     Shooter sh;
     Transfer tr;
+    Logger lg;
 
     @Override
     public void runOpMode() {
@@ -44,7 +45,7 @@ public class ArtBlueTravel3 extends LinearOpMode {
 
         in = new Intake(this);
         sh = new Shooter(this);
-        Logger lg = new Logger("pospos");
+        lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
@@ -131,6 +132,8 @@ public class ArtBlueTravel3 extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy() && !Shooter.isTunnelOpen ) {
+                    lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                    lg.fileClose();
                     setPathState(-100);
                 }
                 break;

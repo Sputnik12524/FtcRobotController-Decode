@@ -10,6 +10,8 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.Logger;
 
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.follower.Follower;
@@ -31,6 +33,7 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
 
     Intake in;
     Shooter sh;
+    Logger lg;
 
     @Override
     public void runOpMode() {
@@ -39,6 +42,7 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
         opmodeTimer.resetTimer();
 
         in = new Intake(this);
+        lg = new Logger("pospos");
         sh = new Shooter(this);
 
         // Panels Telemetry instance
@@ -180,6 +184,8 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
             case 7:
                 if(!follower.isBusy() && !Shooter.isTunnelOpen){
                     follower.followPath(paths.PathLeaving);
+                    lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                    lg.fileClose();
                     setPathState(-100);
                 }
                 break;

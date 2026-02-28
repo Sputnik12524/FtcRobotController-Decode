@@ -12,6 +12,7 @@ public class AutoSniper {
     public double goalY = 138;
     public double goalX = 138; // Изначально для красного
     public double goalZ = 51.5;
+    public Alliance alliance;
 
     public double highOfShooting = 9.84;
     public double R = 0.1; // meters
@@ -49,8 +50,10 @@ public class AutoSniper {
         switch (alliance) {
             case BLUE:
                 goalX = 6;
+                this.alliance = Alliance.BLUE;
                 break;
             case RED:
+                this.alliance = Alliance.RED;
                 goalX = 138;
                 break;
         }

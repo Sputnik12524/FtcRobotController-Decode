@@ -12,6 +12,7 @@ public class DriveTrain {
     public final DcMotor rightBack;
 
     public static final double WHEEL_DIAMETER = 10.1;
+    public static double MODE_SLOW_POWER = 0.5;
     public static final double PULSES = 537.7;
     public static final double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
     public static double multiplier = 1;
@@ -151,5 +152,23 @@ public class DriveTrain {
 
         }
 
+    }
+    public void setMotorsPower(double main, double side, double rotation) {
+        leftFront.setPower(multiplier * (main + side + rotation));
+        leftBack.setPower(multiplier * (main - side + rotation));
+        rightFront.setPower(multiplier * (main - side - rotation));
+        rightBack.setPower(multiplier * (main + side - rotation));
+    }
+    public void turnRightSlowMode() {
+        leftFront.setPower(MODE_SLOW_POWER);
+        leftBack.setPower(MODE_SLOW_POWER);
+        rightFront.setPower(-MODE_SLOW_POWER);
+        rightBack.setPower(-MODE_SLOW_POWER);
+    }
+    public void turnLeftSlowMode() {
+        leftFront.setPower(-MODE_SLOW_POWER);
+        leftBack.setPower(-MODE_SLOW_POWER);
+        rightFront.setPower(MODE_SLOW_POWER);
+        rightBack.setPower(MODE_SLOW_POWER);
     }
 }

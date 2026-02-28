@@ -30,6 +30,7 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
 
     Intake in;
     Shooter sh;
+    Logger lg;
 
     @Override
     public void runOpMode() {
@@ -42,7 +43,7 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
 
         in = new Intake(this);
         sh = new Shooter(this);
-        Logger lg = new Logger("pospos");
+        lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
@@ -128,6 +129,8 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy() && !Shooter.isTunnelOpen) {
+                    lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                    lg.fileClose();
                     setPathState(-100);
                 }
                 break;
