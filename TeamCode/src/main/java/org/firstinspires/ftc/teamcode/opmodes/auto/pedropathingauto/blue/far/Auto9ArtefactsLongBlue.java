@@ -97,7 +97,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(116))
 
                     .build();
             PathToPresetArtifacts = follower.pathBuilder().addPath(
@@ -106,7 +106,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
                                     new Pose(47, 30) //ровно в педре на 35 y
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(116), Math.toRadians(-180))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
@@ -125,7 +125,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(116))
 
                     .build();
 //

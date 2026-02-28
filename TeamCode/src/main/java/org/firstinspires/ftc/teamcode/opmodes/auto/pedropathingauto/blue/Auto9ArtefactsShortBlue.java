@@ -52,7 +52,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
         paths = new Paths(follower); // Build paths
 
-        sh.closeTunnel();
+        sh.openTunnel();
         sh.setShortThrowMode();
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
 
@@ -126,7 +126,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-40)) //-36
+                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-40)) //-36
 
                     .build();
 
@@ -134,7 +134,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     scoringPose,
 
-                                    new Pose(45, 60)
+                                    new Pose(45, 95)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-40), Math.toRadians(-180))
 
@@ -142,7 +142,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathSecondIntakingArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(45, 60),
+                                    new Pose(45, 95),
 
                                     new Pose(35, 60)
                             )
@@ -167,7 +167,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
                                     new Pose(42, 130) //
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-136))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-40))
 
                     .build();
         }
@@ -178,9 +178,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.openTunnel();
                 sh.shootByVelocity();
                 follower.followPath(paths.PathScoring);
+                sh.openTunnel();
                 setPathState(1);
                 break;
 
@@ -192,10 +192,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             case 2:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                in.rotateStop();
                 sh.closeTunnel();
                 follower.followPath(paths.PathToPresetArtifacts);
-                in.rotateIn();
                 setPathState(4);
                 break;
 

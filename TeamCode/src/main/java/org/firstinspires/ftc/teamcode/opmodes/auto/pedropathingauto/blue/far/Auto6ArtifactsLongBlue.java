@@ -87,7 +87,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
                                     new Pose(60, 18)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(105))
 
                     .build();
 
@@ -97,7 +97,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
                                     new Pose(41, 35)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(110), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(105), Math.toRadians(180))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
@@ -116,7 +116,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
                                     new Pose(60, 18)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(105))
 
                     .build();
 
@@ -124,9 +124,9 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(60, 18),
 
-                                    new Pose(20, 15)
+                                    new Pose(45, 35)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(110), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(105), Math.toRadians(-180))
 
                     .build();
         }
@@ -144,7 +144,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
                 break;
 
             case 1:
-                if (!follower.isBusy() && sh.isSpinUp()) {
+                if (sh.isSpinUp()) {
                     follower.followPath(paths.PathFirstScoring, true);
                     in.rotateIn();
                     setPathState(2);
@@ -178,14 +178,14 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
                 break;
 
             case 5:
-                if (!follower.isBusy() && sh.isSpinUp()) {
+                if (sh.isSpinUp()) {
                     in.rotateIn();
                     setPathState(6);
                 }
                 break;
 
             case 6:
-                if (follower.isBusy() && !Shooter.isTunnelOpen) {
+                if (follower.isBusy()) {
                     follower.followPath(paths.PathLeaving);
                     setPathState(-100);
                 }

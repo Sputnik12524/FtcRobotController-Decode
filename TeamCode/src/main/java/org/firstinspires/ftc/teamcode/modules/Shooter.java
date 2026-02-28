@@ -38,7 +38,7 @@ public class Shooter {
 
     /// Shooter
     public static double VELOCITY_FOR_LONG_THROW = 68.5;  //47 //64
-    public static double VELOCITY_FOR_SHORT_THROW = 57;
+    public static double VELOCITY_FOR_SHORT_THROW = 50; //57 50 is work (it is very cool)
     public static double POWER = 1;
 
     ///  Cover
