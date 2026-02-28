@@ -27,18 +27,18 @@ public class Shooter {
     Follower follower;
     Pose currentPose;
 
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(10, 0, 19, 16);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(10, 0, 0, 16);
     private final ElapsedTime timer = new ElapsedTime();
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
 
-    states state = states.INIT;
+    public int state = 0;
 
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 69.5;  //47 //64
-    public static double VELOCITY_FOR_SHORT_THROW = 57;
+    public static double VELOCITY_FOR_LONG_THROW = 71;  //47 //64
+    public static double VELOCITY_FOR_SHORT_THROW = 47;
     public static double POWER = 1;
 
     ///  Cover
@@ -50,7 +50,7 @@ public class Shooter {
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0.005;
     public static double TIME_BETWEEN_SHOOT = 130;
-    public static double TIME_AFTER_SHOOT = 300;
+    public static double TIME_AFTER_SHOOT = 400;
     public static double DELTA_ADJUSTER = 0.01;
     public static double DELTA_SECOND_SHOOT = 0.02;
     public static double DETECT_SHOOT = 5;
@@ -64,7 +64,6 @@ public class Shooter {
 
     //----------------------------------------------
 
-    public short artifacts = 0;
     public double velocityTarget = 0;
     public double shootPos = 0;
 
@@ -215,7 +214,7 @@ public class Shooter {
 
     public boolean ifNotInLaunchZoneHuman() {
         currentPose = follower.getPose();
-        return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 30;
+        return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 32.2;
     }
 
     public boolean inZone() {
@@ -230,21 +229,43 @@ public class Shooter {
         else angleAdjuster.setPosition(pos);
     }
 
-    public void threeArtefactsShooting() {
-         switchCover();
-        if (isTunnelOpen) {
-            shootPos = angleAdjuster.getPosition();
-            timer.reset();
-            while (timer.milliseconds() < TIME_BETWEEN_SHOOT) ;
-            setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-            timer.reset();
-            while (timer.milliseconds() < TIME_BETWEEN_SHOOT) ;
-            setMode(angleAdjuster.getPosition() - DELTA_SECOND_SHOOT);
-            timer.reset();
-            while (timer.milliseconds() < TIME_AFTER_SHOOT) ;
-            setMode(shootPos);
-            complete = true;
-            canShoot = false;
+//    public void threeArtefactsShooting() {
+//         switchCover();
+//        if (isTunnelOpen) {
+//            shootPos = angleAdjuster.getPosition();
+//            timer.reset();
+//            while (timer.milliseconds() < TIME_BETWEEN_SHOOT) ;
+//            setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
+//            timer.reset();
+//            while (timer.milliseconds() < TIME_BETWEEN_SHOOT) ;
+//            setMode(angleAdjuster.getPosition() - DELTA_SECOND_SHOOT);
+//            timer.reset();
+//            while (timer.milliseconds() < TIME_AFTER_SHOOT) ;
+//            setMode(shootPos);
+//            complete = true;
+//            canShoot = false;
+//        }
+//    }
+
+    public void threeArtefactsShooting(){
+        switch (state){
+            case 0:
+                switchCover();
+                shootPos = angleAdjuster.getPosition();
+                if(isTunnelOpen) transit(1);
+            case 1:
+                setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
+                if(timer.milliseconds() > TIME_BETWEEN_SHOOT) transit(2);
+            case 2:
+                setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
+                if(timer.milliseconds() > TIME_BETWEEN_SHOOT) transit(3);
+            case 3:
+                if (timer.milliseconds() > TIME_AFTER_SHOOT){
+                    complete = true;
+                    canShoot = false;
+                    setMode(shootPos);
+                    transit(0);
+                }
         }
     }
 
@@ -256,24 +277,9 @@ public class Shooter {
         else closeTunnel();
     }
 
-    public void updateCalculator() {
-        if (isDetected() && detected) {
-            detected = false;
-            artifacts++;
-            complete = true;
-        }
-        if (isSpinUp() && !detected) {
-            detected = true;
-        }
-    }
-
-    public boolean isDetected() {
-        return getVelocityRPS() < velocityTarget / TPR - DETECT_SHOOT;
-    }
-
-    public boolean isSpinUp() {
-        if (getVelocityRPS() == 0) return false;
-        return getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP;
+    public void transit(int state){
+        timer.reset();
+        this.state = state;
     }
 
     //---------------------------------------------- AUTONOMOUS

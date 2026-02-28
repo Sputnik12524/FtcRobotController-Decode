@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode.opmodes.tele;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.DriveTrain;
@@ -17,7 +15,6 @@ import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
-import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
@@ -41,7 +38,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     Limelight ll;
 
 
-    boolean canStart = true;
+    boolean wroteLogger = true;
     /// Intake
     boolean isRotateIn = false;
     boolean isShootingShort = false;
@@ -55,7 +52,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateX1 = false;
     boolean attentionControl = true;
     public static double BLUE_ANGLE = 110;
-    public  static  double RED_ANGLE = -120;
+    public static double RED_ANGLE = -120;
+    public double shortBonusVelocity = 0;
+    public double longBonusVelocity = 0;
 
 
     @Override
@@ -76,9 +75,11 @@ public class TeleOpRoadRunner extends LinearOpMode {
         try {
             logger.getAll("pospos");
             follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
-            if(logger.al == Alliance.BLUE){as.setAlliance(Alliance.BLUE);}
+            if (logger.al == Alliance.BLUE) {
+                as.setAlliance(Alliance.BLUE);
+            } else as.setAlliance(Alliance.RED);
         } catch (IOException | NullPointerException e) {
-            canStart = false;
+            wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));
             attentionControl = true;
             as.setAlliance(Alliance.RED);
@@ -86,9 +87,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
         follower.update();
 
-        if (canStart) as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
-
-
+        if (wroteLogger)
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
         isShootingLong = false;
         isShootingShort = false;
@@ -100,7 +100,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
         sh.closeTunnel();
         tt.turnByTarget(0);
         tt.turretRegulator.start();
-
 
         follower.update();
 
@@ -148,15 +147,20 @@ public class TeleOpRoadRunner extends LinearOpMode {
             if (!attentionControl) sh.threeArtefactsShooting();
             if (!attentionControl) if (gamepad1.dpad_up) sh.canShoot = true;
 
+            if (gamepad2.yWasPressed()) (shortBonusVelocity) += 0.75;
+            if (gamepad2.xWasPressed()) (shortBonusVelocity) -= 0.75;
+            if (gamepad2.bWasPressed()) (longBonusVelocity) += 0.75;
+            if (gamepad2.aWasPressed()) (longBonusVelocity) -= 0.75;
+
 
             if (gamepad1.y && !isShootingLong && !stateY1) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW + longBonusVelocity);
                 sh.setLongThrowMode();
                 sh.shootByVelocity();
                 isShootingLong = true;
                 isShootingShort = false;
             } else if (gamepad1.x && !isShootingShort && !stateX1) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW + shortBonusVelocity);
                 sh.setShortThrowMode();
                 sh.shootByVelocity();
                 isShootingLong = false;
@@ -186,19 +190,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
             }
 
 
-
-            if (gamepad2.aWasPressed()) {
-                tt.turnByTarget(180);
-            }
             if (gamepad2.yWasPressed()) {
                 tt.turnByTarget(0);
-            }
-
-            if (gamepad2.bWasPressed()) {
-                tt.turnByTarget(RED_ANGLE);
-            }
-            if (gamepad2.xWasPressed()) {
-                tt.turnByTarget(BLUE_ANGLE);
             }
 
             if (attentionControl) {
@@ -210,17 +203,21 @@ public class TeleOpRoadRunner extends LinearOpMode {
             }
             if (g2.dpadUp.isHeldFor(1500)) {
                 tt.turnByTarget(0);
-                follower.setPose(new Pose(72, 72, 0)); // надо указать координаты угла
+                if (!wroteLogger) follower.setPose(new Pose(72, 72, 0));
+                if (as.alliance == Alliance.RED) follower.setPose(new Pose(135, 7, 180));
+                if (as.alliance == Alliance.BLUE) follower.setPose(new Pose(11, 7, 0));
             }
 
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-            telemetry.addData("Alliance", as.alliance);
-            telemetry.addData("TARGET", sh.velocityTarget / 28);
+            telemetry.addData("Alliance", as.alliance); //не нужно
+            telemetry.addData("TARGET", sh.velocityTarget / 28); // не нужно
+            telemetry.addData("Velocity", sh.getVelocityRPS());
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
-            telemetry.addData("Velocity", sh.getVelocityRPS());
-            telemetry.addLine(String.valueOf(follower.getPose().getX()) + ' ' + (follower.getPose().getY()) + ' ' + follower.getHeading());
+            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
+            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
+            telemetry.addLine(String.valueOf((int) follower.getHeading())); //  нужно
 
             dashtele.addData("Target ", sh.velocityTarget / 28);
             dashtele.addData("Velocity shooter", sh.getVelocityRPS());
@@ -236,5 +233,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }
+    // 135 7 180  11 7 0
 
 }
