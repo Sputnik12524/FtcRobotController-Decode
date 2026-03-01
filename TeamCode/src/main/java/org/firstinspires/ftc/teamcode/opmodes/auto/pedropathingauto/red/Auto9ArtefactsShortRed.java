@@ -140,7 +140,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     scoringPath,
 
-                                    new Pose(100, 60) //93,72
+                                    new Pose(100, 58) //93,72
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-136), Math.toRadians(0))
 
@@ -148,9 +148,9 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
 
             ThirdPathIntakingArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(100, 60),
+                                    new Pose(100, 58),
 
-                                    new Pose(120, 60) //106, 72
+                                    new Pose(125, 58) //106, 72
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -196,7 +196,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 setPathState(2);
                 break;
             case 2:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 2000) break;
                 follower.followPath(paths.SecondPathToPresetArtifacts);
                 setPathState(4);
                 break;
@@ -222,7 +222,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 7:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 2000) break;
                 sh.closeTunnel();
                 in.rotateIn();
                 follower.followPath(paths.ThirdPathPresetArtefacts, true);
@@ -252,7 +252,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 11:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 2000) break;
                 tt.turnByTarget(0);
                 in.rotateStop();
                 sh.shootStop();

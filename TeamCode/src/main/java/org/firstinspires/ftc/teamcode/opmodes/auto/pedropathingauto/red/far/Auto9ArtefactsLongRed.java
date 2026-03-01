@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 import com.pedropathing.geometry.BezierLine;
@@ -36,6 +37,7 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
     Shooter sh;
     Logger lg;
     Turret tt;
+    AutoSniper as;
 
     @Override
     public void runOpMode() {
@@ -56,7 +58,7 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
         tt = new Turret(this, ll);
         sh = new Shooter(this);
         lg = new Logger("pospos");
-
+        as = new AutoSniper(tt, sh);
 
         paths = new Paths(follower); // Build paths
 
@@ -65,6 +67,7 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
 
         sh.closeTunnel();
         sh.setLongThrowMode();
+        as.setAlliance(Alliance.RED);
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
         tt.turretRegulator.start();
 
@@ -74,6 +77,7 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
 
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
             // Log values to Panels and Driver Station
             panelsTelemetry.debug("Path State", pathState);
@@ -165,7 +169,7 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
                 }
                 break;
             case 2:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() > 4000) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 2500) {
                     sh.closeTunnel();
                     follower.followPath(paths.PathToPresetArtifacts);
                     setPathState(3);
@@ -184,32 +188,32 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
                 }
                 break;
             case 6:
-                if(!follower.isBusy()) {
+                if (!follower.isBusy()) {
                     sh.openTunnel();
                     setPathState(7);
                 }
                 break;
             case 7:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 2500) break;
                 sh.closeTunnel();
                 follower.followPath(paths.PathThirdPreset);
                 setPathState(8);
                 break;
             case 8:
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     follower.followPath(paths.PathThirdScoring);
                     setPathState(9);
                 }
                 break;
             case 9:
-                if(!follower.isBusy()){
+                if (!follower.isBusy()) {
                     sh.openTunnel();
                     setPathState(10);
                 }
                 break;
             case 10:
-                if(follower.isBusy() || actionTimer.getElapsedTime()<4000) break;
-                tt.turnByTarget(0);
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 2500) break;
+                as.enableAutoTurretAiming(false);
                 follower.followPath(paths.PathLeaving);
                 in.rotateStop();
                 sh.shootStop();

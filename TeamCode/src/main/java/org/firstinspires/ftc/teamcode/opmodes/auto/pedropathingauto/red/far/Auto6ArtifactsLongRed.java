@@ -106,7 +106,7 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
                             new BezierLine(
                                     new Pose(90, 8),
 
-                                    new Pose(83, 36)
+                                    new Pose(90, 33)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0))
 
@@ -123,9 +123,9 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
                     **/
             PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(83, 36),
+                                    new Pose(90, 33),
 
-                                    new Pose(125, 36)
+                                    new Pose(125, 33)
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -169,14 +169,17 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
                 }
                 break;
             case 2:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() > 3000) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 2500) {
+                    as.enableAutoTurretAiming(false);
+                    in.rotateStop();
                     sh.closeTunnel();
                     follower.followPath(paths.PathToPresetArtifacts);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() >= 1000) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() >= 1200) {
+                    as.enableAutoTurretAiming(true);
                     in.rotateIn();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(4);
@@ -185,7 +188,7 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
             case 4:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondScoring, true);
-                    in.rotateStop();
+                   // in.rotateStop();
                     setPathState(5);
                 }
                 break;

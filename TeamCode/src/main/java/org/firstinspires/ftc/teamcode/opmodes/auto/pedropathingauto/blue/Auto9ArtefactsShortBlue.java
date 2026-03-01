@@ -62,7 +62,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         sh.openTunnel();
         sh.setShortThrowMode();
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-        as.setAlliance(Alliance.BLUE);
+      //  as.setAlliance(Alliance.BLUE);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -70,7 +70,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
 
-            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(),follower.getHeading());
+           // as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(),follower.getHeading());
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
