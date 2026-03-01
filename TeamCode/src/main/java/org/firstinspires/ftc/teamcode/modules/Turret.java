@@ -32,7 +32,7 @@ public class Turret {
     public double pastError;
     public double target = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = 180;
+    public static double POS_RIGHTMOST = 140;
     public static double POS_LEFTMOST = -180;
 
     private boolean stateMagneting = false;
@@ -154,9 +154,9 @@ public class Turret {
     }
     public double angleNormalising(double targetNew) {
         double normTarget = targetNew;
-        if (targetNew > 180) {
+        if (targetNew > POS_RIGHTMOST) {
             normTarget = targetNew - 360;
-        } else if (targetNew < -180) {
+        } else if (targetNew < POS_LEFTMOST) {
             normTarget = targetNew + 360;
         }
         return normTarget;

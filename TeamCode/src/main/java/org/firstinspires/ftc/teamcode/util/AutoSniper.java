@@ -18,7 +18,7 @@ public class AutoSniper {
     public double R = 0.1; // meters
     public double m = 1.7;
     public double I = 4;
-    public double differenceVelocity = 3.5;
+    public double differenceVelocity = 0;
     public double targetVeloForArtifact = 0;
     public double targetVelo = 0;
 
@@ -31,12 +31,18 @@ public class AutoSniper {
 
     public double angleOfAdjuster;
     public double angleOfAdjusterBeforeNormalising;
+    public double angleByFormulas;
     double ITM = 0.0254;
     double g = 9.81;
     public static double MAX_ANGLE = 60;
     public static double MIN_ANGLE = 45;
     public static double POS_FOR_MAX_ANGLE = 0.125;
     public static double POS_FOR_MIN_ANGLE = 0.005;
+
+    public double sX, sY, c, a, D, l;
+
+    public boolean isCalculateNewVelocity = false;
+    public boolean isCalculateNewAngle = false;
 
 
 
@@ -65,8 +71,6 @@ public class AutoSniper {
     public void continuousTurnTurretToGate(double x, double y, double angleOfDrivetrain) {
         if (x <= 0) x = 1;
         if (x >= 144) x = 143;
-        double sY = cMTI(sv * Math.sin(angleOfDrivetrain));
-        double sX = cMTI(sv * Math.cos(angleOfDrivetrain));
 
         angleOfTurret = Math.toDegrees(Math.atan( (goalY - (y+sY)) / (goalX - (x+sX)) ));
 
@@ -76,51 +80,58 @@ public class AutoSniper {
         tt.turnByTarget(target);
     }
 
-    public void continuousSetAngle(double x, double y, double angleOfDrivetrain, double servoPos, double angularVelocity) {
+    public void continuousSetAngle(double servoPos) {
         double lastAngleOfAdjuster = convertServoPosToAngle(servoPos);
-        angularVelocity = cAVTV(angularVelocity)/2;
-        double sY = cMTI(sv * Math.sin(angleOfDrivetrain));
-        double sX = cMTI(sv * Math.cos(angleOfDrivetrain));
-        double l = cITM(Math.sqrt( (goalY - (y+sY)) + (goalX - (x+sX)) ));
-        double a = cITM( (g * Math.pow(l,2)) / (2 * Math.pow(cAVTV(angularVelocity),2)) );
-        double c = cITM(a - z);
-        double D = Math.pow(l,2) - 4*a*c;
         if (D > 0) {
+            isCalculateNewAngle = true;
             double var1 = Math.toDegrees(Math.atan( (-l + Math.sqrt(D)) / (2*a) ));
             double var2 = Math.toDegrees(Math.atan( (-l - Math.sqrt(D)) / (2*a) ));
             if (var1 >= 0 && Math.abs(var1-lastAngleOfAdjuster) <= Math.abs(var2-lastAngleOfAdjuster)) {
-                angleOfAdjuster = var1;
+                angleOfAdjusterBeforeNormalising = var1;
+                angleByFormulas = angleOfAdjusterBeforeNormalising;
             } else if (var2 >= 0 && Math.abs(var1-lastAngleOfAdjuster) > Math.abs(var2-lastAngleOfAdjuster)) {
-                angleOfAdjuster = var2;
+                angleOfAdjusterBeforeNormalising = var2;
+                angleByFormulas = angleOfAdjusterBeforeNormalising;
             } else {
-                angleOfAdjuster = lastAngleOfAdjuster;
+                angleOfAdjusterBeforeNormalising = lastAngleOfAdjuster;
+                angleByFormulas = -1;
             }
         } else if (D == 0) {
-            angleOfAdjuster = Math.toDegrees(Math.atan( (-l) / (2*a) ));
+            isCalculateNewAngle = true;
+            angleOfAdjusterBeforeNormalising = Math.toDegrees(Math.atan( (-l) / (2*a) ));
+            angleByFormulas = angleOfAdjusterBeforeNormalising;
         } else {
-            angleOfAdjuster = lastAngleOfAdjuster;
+            isCalculateNewAngle = false;
+            angleOfAdjusterBeforeNormalising = lastAngleOfAdjuster;
+            angleByFormulas = -1;
         }
-        angleOfAdjusterBeforeNormalising = angleOfAdjuster;
-        if (angleOfAdjuster >= MAX_ANGLE) angleOfAdjuster = MAX_ANGLE;
-        if (angleOfAdjuster <= MIN_ANGLE) angleOfAdjuster = MIN_ANGLE;
+        angleOfAdjuster = angleOfAdjusterBeforeNormalising;
+        if (angleOfAdjusterBeforeNormalising >= MAX_ANGLE) angleOfAdjuster = MAX_ANGLE;
+        if (angleOfAdjusterBeforeNormalising <= MIN_ANGLE) angleOfAdjuster = MIN_ANGLE;
         sh.setAngleAdjuster(convertAngleToServoPos(angleOfAdjuster));
     }
 
-    public void continuousSetVelocityTarget(double x, double y, double angleOfDrivetrain, double servoPos, double lastAngularVelocity) {
+    public void continuousSetVelocityTarget(double servoPos, double lastAngularVelocity) {
         double angleOfAdjuster = Math.toRadians( convertServoPosToAngle(servoPos) );
-        if (angleOfAdjuster <= MIN_ANGLE || angleOfAdjuster >= MAX_ANGLE) {
-            double sY = cMTI(sv * Math.sin(angleOfDrivetrain));
-            double sX = cMTI(sv * Math.cos(angleOfDrivetrain));
-            double l = Math.sqrt( (cITM(goalY - (y+sY)) + (goalX - (x+sX))));
-            targetVelo = cVTAV(Math.sqrt( (g*Math.pow(l,2) * (1+Math.tan(angleOfAdjuster)))) / ( (Math.tan(angleOfAdjuster - cITM(z)) * 2))*2);
-            //double Ek = I*Math.pow(lastAngularVelocity, 2)/2;
-            //targetVelo = Math.sqrt(2*Ek/m);
+        if ( (angleOfAdjusterBeforeNormalising <= MIN_ANGLE || angleOfAdjusterBeforeNormalising >= MAX_ANGLE)
+        && (angleOfAdjusterBeforeNormalising != 0) ) {
+            isCalculateNewVelocity = true;
+            targetVelo = cVTAV(Math.sqrt( (g*Math.pow(l,2) * (1+Math.tan(angleOfAdjuster)))) / ( (Math.tan(angleOfAdjuster) * l - cITM(z)) * 2 ));
             sh.setVelocityTarget(targetVelo + differenceVelocity);
         } else {
+            isCalculateNewVelocity = false;
             sh.setVelocityTarget(lastAngularVelocity);
         }
     }
 
+    public void continuousCalculateGenaralValues(double x, double y, double angleOfDrivetrain, double angularVelocity) {
+        sY = cMTI(sv * Math.sin(angleOfDrivetrain)); //inches
+        sX = cMTI(sv * Math.cos(angleOfDrivetrain)); //inches
+        l = cITM( Math.sqrt(  ( goalY - (y+sY) ) + ( goalX - (x+sX) )  ) ); //meters
+        a = g * Math.pow(l,2) / (2 * Math.pow(angularVelocity,2));
+        c = a - cITM(z);
+        D = Math.pow(l,2) - 4*a*c;
+    }
 
 
     public double convertAngleToServoPos(double angle) {
