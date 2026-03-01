@@ -294,6 +294,16 @@ public class Shooter {
 
     }
 
+    public boolean isDetected() {
+        return getVelocityRPS() < velocityTarget / TPR - DETECT_SHOOT;
+    }
+
+    public boolean isSpinUp() {
+        if (getVelocityRPS() == 0) return false;
+        return getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP;
+    }
+
+
     //---------------------------------------------- GETTING
 
     public double getVelocityRPSLower() {
