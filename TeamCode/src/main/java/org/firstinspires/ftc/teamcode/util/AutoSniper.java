@@ -56,6 +56,9 @@ public class AutoSniper {
                 this.alliance = Alliance.RED;
                 goalX = 138;
                 break;
+            case NONE:
+                this.alliance = Alliance.NONE;
+                //((((
         }
     }
 

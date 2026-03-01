@@ -82,7 +82,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));
             attentionControl = true;
-            as.setAlliance(Alliance.RED);
+            as.setAlliance(Alliance.NONE);
         }
 
         follower.update();
@@ -174,7 +174,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
 
-
             //---------------------------------------- TURRET
             if (!attentionControl)
                 as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
@@ -189,7 +188,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 attentionControl = false;
             }
 
-
             if (gamepad2.yWasPressed()) {
                 tt.turnByTarget(0);
             }
@@ -201,11 +199,16 @@ public class TeleOpRoadRunner extends LinearOpMode {
                     sh.closeTunnel();
                 }
             }
-            if (g2.dpadUp.isHeldFor(1500)) {
+            if (g2.dpadUp.isHeldFor(1000)) {
                 tt.turnByTarget(0);
-                if (!wroteLogger) follower.setPose(new Pose(72, 72, 0));
-                if (as.alliance == Alliance.RED) follower.setPose(new Pose(135, 7, 180));
-                if (as.alliance == Alliance.BLUE) follower.setPose(new Pose(11, 7, 0));
+                follower.setPose(new Pose(135, 7, Math.toRadians(180)));
+                as.setAlliance(Alliance.RED);
+            }
+
+            if (g2.dpadDown.isHeldFor(1000)) {
+                tt.turnByTarget(0);
+                follower.setPose(new Pose(11, 7, 0));
+                as.setAlliance(Alliance.BLUE);
             }
 
 
@@ -217,7 +220,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             telemetry.addData("howMany", tr.howMany());
             telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
             telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-            telemetry.addLine(String.valueOf((int) follower.getHeading())); //  нужно
+            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading()))); //  нужно
 
             dashtele.addData("Target ", sh.velocityTarget / 28);
             dashtele.addData("Velocity shooter", sh.getVelocityRPS());
@@ -233,6 +236,4 @@ public class TeleOpRoadRunner extends LinearOpMode {
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
     }
-    // 135 7 180  11 7 0
-
 }
