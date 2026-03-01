@@ -12,13 +12,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Transfer;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "Long 9 BLUE ", group = "Autonomous")
+@Autonomous(name = "BLUE Long 9 ", group = "Autonomous")
 public class Auto9ArtefactsLongBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
@@ -30,6 +32,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
     Intake in;
     Shooter sh;
     Logger lg;
+    Turret tt;
 
     @Override
     public void runOpMode() {
@@ -41,14 +44,16 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
         actionTimer.resetTimer();
         Transfer tr = new Transfer(this);
 
-        in = new Intake(this);
-        sh = new Shooter(this, follower, tr);
-        lg = new Logger("pospos");
-
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(60, 8, Math.toRadians(-90)));
+
+        in = new Intake(this);
+        Limelight ll = new Limelight(this);
+        tt = new Turret(this, ll);
+        sh = new Shooter(this);
+        lg = new Logger("pospos");
 
         paths = new Paths(follower); // Build paths
 
@@ -296,11 +301,11 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
             case 12:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                tt.turnByTarget(0);
+
                 in.rotateStop();
                 sh.closeTunnel();
                 follower.followPath(paths.PathLeaving);
-                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                lg.fileClose();
                 setPathState(-100);
                 break;
 

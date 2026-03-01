@@ -25,6 +25,7 @@ public class Turret {
     public static double kP = 0.02;
     public static double kI = 0;
     public static double kD = 0.01;
+    public static double kF = 0.1;
     private final double TPR = 537.7;
     public double error;
     public double dError;
@@ -32,13 +33,12 @@ public class Turret {
     public double pastError;
     public double target = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = 140;
+    public static double POS_RIGHTMOST = 155;
     public static double POS_LEFTMOST = -180;
 
     private boolean stateMagneting = false;
 
     public boolean isInLimits = false;
-    public TurretCameraAiming cameraAiming = new TurretCameraAiming();
 
     public Turret(LinearOpMode opMode, Limelight ll) {
         this.opMode = opMode;

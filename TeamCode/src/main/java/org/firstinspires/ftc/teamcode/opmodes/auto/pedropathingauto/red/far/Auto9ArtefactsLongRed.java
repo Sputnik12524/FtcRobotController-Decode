@@ -8,7 +8,9 @@ import com.bylazar.telemetry.TelemetryManager;
 import com.bylazar.telemetry.PanelsTelemetry;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -21,7 +23,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 
 @Autonomous(name = "9  Long  RED", group = "Autonomous")
-@Disabled
 @Configurable // Panels
 public class Auto9ArtefactsLongRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -34,22 +35,28 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
     Intake in;
     Shooter sh;
     Logger lg;
+    Turret tt;
 
     @Override
     public void runOpMode() {
+        actionTimer = new Timer();
         pathTimer = new Timer();
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
-        in = new Intake(this);
-        sh = new Shooter(this);
-        lg = new Logger("pospos");
 
         // Panels Telemetry instance
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(90, 8, Math.toRadians(90)));
+        follower.setStartingPose(new Pose(90, 8, Math.toRadians(-90)));
+
+        in = new Intake(this);
+        Limelight ll = new Limelight(this);
+        tt = new Turret(this, ll);
+        sh = new Shooter(this);
+        lg = new Logger("pospos");
+
 
         paths = new Paths(follower); // Build paths
 
@@ -57,7 +64,9 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
         panelsTelemetry.update(telemetry);
 
         sh.closeTunnel();
-        sh.setShortThrowMode();
+        sh.setLongThrowMode();
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        tt.turretRegulator.start();
 
         waitForStart();
         while (opModeIsActive()) {
@@ -73,6 +82,7 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
         }
+        tt.turretRegulator.interrupt();
     }
 
 
@@ -144,7 +154,6 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
                 sh.shootByVelocity();
                 in.rotateIn();
                 setPathState(1);
@@ -200,6 +209,7 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
                 break;
             case 10:
                 if(follower.isBusy() || actionTimer.getElapsedTime()<4000) break;
+                tt.turnByTarget(0);
                 follower.followPath(paths.PathLeaving);
                 in.rotateStop();
                 sh.shootStop();

@@ -12,7 +12,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -29,6 +31,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
     Intake in;
     Shooter sh;
     Logger lg;
+    Turret tt;
 
     @Override
     public void runOpMode() {
@@ -39,14 +42,18 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
         actionTimer = new Timer();
         actionTimer.resetTimer();
 
-        in = new Intake(this);
-        sh = new Shooter(this);
-        lg = new Logger("pospos");
-
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(123, 122, Math.toRadians(-136)));
+
+
+        in = new Intake(this);
+        Limelight ll = new Limelight(this);
+        tt = new Turret(this,ll);
+        sh = new Shooter(this);
+        lg = new Logger("pospos");
+
 
         paths = new Paths(follower); // Build paths
 
@@ -291,6 +298,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 break;
             case 15:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                tt.turnByTarget(0);
                 follower.followPath(paths.PathLeaving);
                 lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
                 lg.fileClose();

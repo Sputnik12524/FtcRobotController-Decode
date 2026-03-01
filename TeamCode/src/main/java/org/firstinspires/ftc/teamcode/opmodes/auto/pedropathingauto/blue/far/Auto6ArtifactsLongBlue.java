@@ -8,9 +8,13 @@ import com.bylazar.telemetry.TelemetryManager;
 import com.bylazar.telemetry.PanelsTelemetry;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Transfer;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 import com.pedropathing.geometry.BezierLine;
@@ -20,7 +24,7 @@ import com.pedropathing.geometry.Pose;
 
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "6 Artifacts Long Autonomous BLUE", group = "Autonomous")
+@Autonomous(name = " BLUE 6 Long", group = "Autonomous")
 @Configurable // Panels
 public class Auto6ArtifactsLongBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -33,6 +37,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
     Intake in;
     Shooter sh;
     Logger lg;
+    Turret tt;
 
     @Override
     public void runOpMode() {
@@ -41,15 +46,21 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
-        in = new Intake(this);
-        sh = new Shooter(this);
-        lg = new Logger("pospos");
 
         // Panels Telemetry instance
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(56, 8, Math.toRadians(-90)));
+
+
+        Limelight ll = new Limelight(this);
+        in = new Intake(this);
+       tt = new Turret(this,ll);
+        sh = new Shooter(this, follower, new Transfer(this));
+        lg = new Logger("pospos");
+        AutoSniper as = new AutoSniper(tt,sh);
+
 
         paths = new Paths(follower); // Build paths
 
@@ -58,14 +69,15 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
         sh.openTunnel();
         sh.setShortThrowMode();
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        as.setAlliance(Alliance.BLUE);
 
         waitForStart();
         while (opModeIsActive()) {
             follower.update(); // Update Pedro Pathing
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
-
-
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(),follower.getHeading());
             // Log values to Panels and Driver Station
             panelsTelemetry.debug("Path State", pathState);
             panelsTelemetry.debug("X", follower.getPose().getX());
@@ -74,6 +86,9 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
             panelsTelemetry.debug("Velocity", sh.getVelocityRPS());
             panelsTelemetry.update(telemetry);
         }
+
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.fileClose();
     }
 
 
@@ -190,9 +205,9 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
             case 6:
                 if (follower.isBusy()) {
+                    tt.turnByTarget(0);
                     follower.followPath(paths.PathLeaving);
                     lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                    lg.fileClose();
                     setPathState(-100);
                 }
                 break;

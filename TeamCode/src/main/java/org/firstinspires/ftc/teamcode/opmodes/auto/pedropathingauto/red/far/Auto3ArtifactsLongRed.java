@@ -9,6 +9,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Autonomous(name = "3 Artifacts Long Auto RED", group = "Autonomous")
+@Disabled
 @Configurable // Panels
 public class Auto3ArtifactsLongRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -54,7 +56,7 @@ public class Auto3ArtifactsLongRed extends LinearOpMode {
 
         sh.closeTunnel();
         sh.setLongThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW+1.5);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
 
         waitForStart();
         while (opModeIsActive()) {

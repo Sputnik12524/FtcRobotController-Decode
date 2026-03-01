@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "Auto 3 Long BLUE", group = "1")
+@Autonomous(name = "BLUE 3 Long", group = "Autonomous")
 public class Auto3ArtefactsLongBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
@@ -110,8 +110,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
                 in.rotateStop();
                 sh.closeTunnel();
                 follower.followPath(paths.PathToPresetArtifacts);
-                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                lg.fileClose();
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
                 setPathState(-100);
                 break;
 

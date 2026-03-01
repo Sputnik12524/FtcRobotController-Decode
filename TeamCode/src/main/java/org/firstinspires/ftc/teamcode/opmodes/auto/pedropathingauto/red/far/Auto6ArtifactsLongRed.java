@@ -24,8 +24,7 @@ import com.pedropathing.geometry.Pose;
 
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "6 Artifacts Long Autonomous RED", group = "Autonomous")
-@Disabled
+@Autonomous(name = "RED 6 Long", group = "Autonomous")
 @Configurable // Panels
 public class Auto6ArtifactsLongRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -38,9 +37,12 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
     Intake in;
     Shooter sh;
     Logger lg;
+    Turret tt;
+    AutoSniper as;
 
     @Override
     public void runOpMode() {
+        actionTimer = new Timer();
         pathTimer = new Timer();
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
@@ -56,9 +58,9 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
         in = new Intake(this);
         lg = new Logger("pospos");
         Limelight ll  = new Limelight(this);
-        Turret tt = new Turret(this, ll);
+        tt = new Turret(this, ll);
         sh = new Shooter(this, follower, new Transfer(this));
-        AutoSniper as = new AutoSniper(tt,sh);
+       as = new AutoSniper(tt,sh);
 
         paths = new Paths(follower); // Build paths
 
@@ -66,9 +68,10 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
         panelsTelemetry.update(telemetry);
 
         sh.closeTunnel();
-        sh.setShortThrowMode();
+        sh.setLongThrowMode();
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
         as.setAlliance(Alliance.RED);
+        tt.turretRegulator.start();
 
         waitForStart();
         while (opModeIsActive()) {
@@ -85,6 +88,9 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
         }
+        tt.turretRegulator.interrupt();
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.fileClose();
     }
 
 
@@ -105,7 +111,7 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
                     ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0))
 
                     .build();
-            /** for Human player's artifacts
+            /*for Human player's artifacts
             PathThirdPreset = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(90, 12),
@@ -152,26 +158,26 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
                 sh.shootByVelocity();
-                in.rotateIn();
                 setPathState(1);
                 break;
             case 1:
                 if (sh.isSpinUp() && !follower.isBusy()) {
                     sh.openTunnel();
+                    in.rotateIn();
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() > 4000) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 3000) {
                     sh.closeTunnel();
                     follower.followPath(paths.PathToPresetArtifacts);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() >= 1000) {
+                    in.rotateIn();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(4);
                 }
@@ -179,22 +185,23 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
             case 4:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondScoring, true);
+                    in.rotateStop();
                     setPathState(5);
                 }
                 break;
-            case 6:
-                if(!follower.isBusy()) {
+            case 5:
+                if(!follower.isBusy() && sh.isSpinUp()) {
                     sh.openTunnel();
+                    in.rotateIn();
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(!follower.isBusy() && actionTimer.getElapsedTime()>4000){
-                    follower.followPath(paths.PathLeaving);
+                if(!follower.isBusy() && actionTimer.getElapsedTime()>3000){
+                    as.enableAutoTurretAiming(false);
                     in.rotateStop();
                     sh.shootStop();
-                    lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                    lg.fileClose();
+                    follower.followPath(paths.PathLeaving);
                     setPathState(-100);
                 }
                 break;

@@ -34,6 +34,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
     Shooter sh;
     Logger lg;
     Transfer tr;
+    Turret tt;
 
     @Override
     public void runOpMode() {
@@ -53,7 +54,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
 
         in = new Intake(this);
         Limelight ll = new Limelight(this);
-        Turret tt = new Turret(this, ll);
+        tt = new Turret(this, ll);
         sh = new Shooter(this, follower, tr);
         lg = new Logger("pospos");
         AutoSniper as = new AutoSniper(tt,sh);
@@ -252,6 +253,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
 
             case 11:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                tt.turnByTarget(0);
                 in.rotateStop();
                 sh.shootStop();
                 follower.followPath(paths.PathLeaving);

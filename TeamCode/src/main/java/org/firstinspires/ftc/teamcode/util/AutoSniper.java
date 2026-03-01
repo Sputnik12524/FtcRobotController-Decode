@@ -19,6 +19,7 @@ public class AutoSniper {
     public double m = 1.7;
     public double I = 4;
     public double differenceVelocity = 0;
+    public boolean AIMING_ACTIVE = true;
     public double targetVeloForArtifact = 0;
     public double targetVelo = 0;
 
@@ -69,15 +70,19 @@ public class AutoSniper {
     }
 
     public void continuousTurnTurretToGate(double x, double y, double angleOfDrivetrain) {
-        if (x <= 0) x = 1;
-        if (x >= 144) x = 143;
+        if (AIMING_ACTIVE) {
+            if (x <= 0) x = 1;
+            if (x >= 144) x = 143;
 
         angleOfTurret = Math.toDegrees(Math.atan( (goalY - (y+sY)) / (goalX - (x+sX)) ));
 
-        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) - 180;
-        //target = tt.angleNormalising(tt.stabilizeTargetByCamera(target));
-        target = tt.angleNormalising(target);
-        tt.turnByTarget(target);
+            target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) - 180;
+            //target = tt.angleNormalising(tt.stabilizeTargetByCamera(target));
+            target = tt.angleNormalising(target);
+            tt.turnByTarget(target);
+        } else {
+            tt.turnByTarget(0);
+        }
     }
 
     public void continuousSetAngle(double servoPos) {
@@ -93,6 +98,7 @@ public class AutoSniper {
                 angleOfAdjusterBeforeNormalising = var2;
                 angleByFormulas = angleOfAdjusterBeforeNormalising;
             } else {
+                isCalculateNewAngle = false;
                 angleOfAdjusterBeforeNormalising = lastAngleOfAdjuster;
                 angleByFormulas = -1;
             }
@@ -152,6 +158,8 @@ public class AutoSniper {
     public double cVTAV(double v) { //Convert velocity to Angular Velocity
         return v / (2 * Math.PI * R);
     }
-
+    public void enableAutoTurretAiming(boolean isDisabled) {
+        AIMING_ACTIVE = isDisabled;
+    }
 
 }
