@@ -48,7 +48,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(60, 8, Math.toRadians(90)));
+        follower.setStartingPose(new Pose(60, 8, Math.toRadians(-90)));
 
         paths = new Paths(follower); // Build paths
 
@@ -63,7 +63,6 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
-            sh.threeArtefactsShooting();
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
@@ -98,7 +97,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(116))
 
                     .build();
             PathToPresetArtifacts = follower.pathBuilder().addPath(
@@ -107,7 +106,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
                                     new Pose(47, 30) //ровно в педре на 35 y
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(116), Math.toRadians(-180))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
@@ -126,7 +125,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(116))
 
                     .build();
 //
@@ -222,7 +221,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 break;
 
             case 1:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp()||follower.isBusy()) break;
                 in.rotateIn();
                 setPathState(2);
                 break;
@@ -253,7 +252,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 break;
 
             case 6:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp()||follower.isBusy()) break;
                 in.rotateIn();
                 setPathState(7);
                 break;
@@ -290,7 +289,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 break;
 
             case 11:
-                if (!sh.isSpinUp()) break;
+                if (!sh.isSpinUp()||follower.isBusy()) break;
                 in.rotateIn();
                 setPathState(12);
                 break;

@@ -49,7 +49,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(22, 124, Math.toRadians(-38)));
+        follower.setStartingPose(new Pose(22, 127, Math.toRadians(-36)));
 
         paths = new Paths(follower); // Build paths
 
@@ -87,20 +87,20 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
         public Paths(Follower follower) {
             PathFirstScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(22, 124),
+                                    new Pose(22, 127),
 
-                                    new Pose(44, 104)))
+                                    new Pose(47, 100)))
 
-                    .setConstantHeadingInterpolation(Math.toRadians(-40))
+                    .setConstantHeadingInterpolation(Math.toRadians(-36))
 
                     .build();
 
             PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(44, 104),
+                                    new Pose(47, 100),
 
                                     new Pose(44, 85)))
-                    .setLinearHeadingInterpolation(Math.toRadians(-38), Math.toRadians(-180))
+                    .setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
 
                     .build();
 
@@ -117,18 +117,18 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(30, 85),
 
-                                    new Pose(44, 104)))
+                                    new Pose(47, 100)))
 
-                    .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-40))
+                    .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-36))
 
                     .build();
 
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(44, 104),
+                                    new Pose(47, 100),
 
                                     new Pose(58, 132)))
-                    .setConstantHeadingInterpolation(Math.toRadians(-40))
+                    .setConstantHeadingInterpolation(Math.toRadians(-36))
 
                     .build();
         }
@@ -192,7 +192,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
                     lg.fileClose();
                     setPathState(-100);
                 }
-                    break;
+                break;
 
         }
     }

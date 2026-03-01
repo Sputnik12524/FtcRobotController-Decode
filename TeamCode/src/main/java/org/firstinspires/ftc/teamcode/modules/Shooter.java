@@ -214,7 +214,7 @@ public class Shooter {
 
     public boolean ifNotInLaunchZoneHuman() {
         currentPose = follower.getPose();
-        return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 32.2;
+        return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 30;
     }
 
     public boolean inZone() {
