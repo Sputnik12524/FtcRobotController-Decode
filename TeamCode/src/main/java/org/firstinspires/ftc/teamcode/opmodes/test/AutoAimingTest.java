@@ -95,6 +95,7 @@ public class AutoAimingTest extends LinearOpMode {
             }
 
 
+
             //---------------------------------------------- VELOCITY
 
             if (gamepad1.b && !bState && !veloState) {

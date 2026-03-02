@@ -39,6 +39,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
     boolean wroteLogger = true;
+    boolean isPoseReset = false;
     /// Intake
     boolean isRotateIn = false;
     boolean isShootingShort = false;
@@ -51,8 +52,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean stateY1 = false;
     boolean stateX1 = false;
     boolean attentionControl = true;
-    public static double BLUE_ANGLE = 110;
-    public static double RED_ANGLE = -120;
     public double shortBonusVelocity = 0;
     public double longBonusVelocity = 0;
 
@@ -69,6 +68,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         tt = new Turret(this, ll);
         as = new AutoSniper(tt, sh);
         logger = new Logger("pospos");
+
 
         ll.startOrStopLL(false);
 
@@ -93,7 +93,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
         isShootingLong = false;
         isShootingShort = false;
         DriveTrain dt = new DriveTrain(this);
-
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
@@ -181,17 +180,16 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
 
-            if (g1.dpadLeft.isHeldFor(1500) && !attentionControl) {
+            if (g1.dpadRight.isPressed() && !attentionControl && g1.dpadRight.getToggleState()) {
                 attentionControl = true;
                 tt.turnByTarget(0);
-            } else if (g1.dpadRight.isHeldFor(1500) && attentionControl) {
+            } else if (g1.dpadRight.isPressed() && attentionControl && !g1.dpadRight.getToggleState()) {
                 attentionControl = false;
             }
 
             if (gamepad2.yWasPressed()) {
                 tt.turnByTarget(0);
             }
-
             if (attentionControl) {
                 if (gamepad1.dpad_up) {
                     sh.openTunnel();
@@ -201,26 +199,29 @@ public class TeleOpRoadRunner extends LinearOpMode {
             }
             if (g2.dpadUp.isHeldFor(1000)) {
                 tt.turnByTarget(0);
+                isPoseReset = true;
                 follower.setPose(new Pose(135, 7, Math.toRadians(180)));
-                as.setAlliance(Alliance.RED);
-            }
-
-            if (g2.dpadDown.isHeldFor(1000)) {
-                tt.turnByTarget(0);
-                follower.setPose(new Pose(11, 7, 0));
                 as.setAlliance(Alliance.BLUE);
             }
 
+            if (g2.dpadDown.isHeldFor(1000)) {
+                isPoseReset = true;
+                tt.turnByTarget(0);
+                follower.setPose(new Pose(11, 7, 0));
+                as.setAlliance(Alliance.RED);
+            }
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-            telemetry.addData("Alliance", as.alliance); //не нужно
-            telemetry.addData("TARGET", sh.velocityTarget / 28); // не нужно
             telemetry.addData("Velocity", sh.getVelocityRPS());
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
-            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
-            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading()))); //  нужно
+          //  telemetry.addData("Позиция сброшена", isPoseReset);
+            // telemetry.addData("Alliance", as.alliance);
+            // telemetry.addData("TARGET", sh.velocityTarget / 28);
+//            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
+//            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
+//            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
+
 
             dashtele.addData("Target ", sh.velocityTarget / 28);
             dashtele.addData("Velocity shooter", sh.getVelocityRPS());
@@ -230,7 +231,6 @@ public class TeleOpRoadRunner extends LinearOpMode {
         }
         ll.startOrStopLL(true);
         tt.turretRegulator.interrupt();
-
     }
 
     public static class PoseStorage {
