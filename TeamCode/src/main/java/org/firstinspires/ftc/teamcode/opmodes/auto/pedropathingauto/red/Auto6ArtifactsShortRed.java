@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "6 short RED", group = "Autonomous")
+@Autonomous(name = "RED 6 short", group = "Autonomous")
 @Configurable // Panels
 public class Auto6ArtifactsShortRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance

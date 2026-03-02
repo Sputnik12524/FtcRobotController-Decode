@@ -19,7 +19,7 @@ import com.pedropathing.geometry.Pose;
 
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "Auto 6 Short BLUE", group = "Autonomous")
+@Autonomous(name = "BLUE 6 Short", group = "Autonomous")
 @Configurable // Panels
 public class Auto6ArtifactsShortBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance

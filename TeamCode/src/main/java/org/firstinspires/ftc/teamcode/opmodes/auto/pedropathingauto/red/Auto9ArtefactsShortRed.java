@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "9 Short RED", group = "Autonomous")
+@Autonomous(name = "RED 9 Short", group = "Autonomous")
 public class Auto9ArtefactsShortRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
@@ -63,7 +63,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         sh.closeTunnel();
         as.setAlliance(Alliance.RED);
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW + 1);
         tt.turretRegulator.start();
 
         waitForStart();
@@ -82,6 +82,8 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             t.update();
         }
         tt.turretRegulator.interrupt();
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.fileClose();
     }
 
 
@@ -150,7 +152,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     new Pose(100, 58),
 
-                                    new Pose(125, 58) //106, 72
+                                    new Pose(127, 58) //106, 72
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -196,7 +198,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 setPathState(2);
                 break;
             case 2:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 2000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
                 follower.followPath(paths.SecondPathToPresetArtifacts);
                 setPathState(4);
                 break;
@@ -222,7 +224,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 7:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 2000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
                 sh.closeTunnel();
                 in.rotateIn();
                 follower.followPath(paths.ThirdPathPresetArtefacts, true);
@@ -252,13 +254,11 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 11:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 2000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
                 tt.turnByTarget(0);
                 in.rotateStop();
                 sh.shootStop();
                 follower.followPath(paths.PathLeaving);
-                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                lg.fileClose();
                 setPathState(-100);
 
                 break;

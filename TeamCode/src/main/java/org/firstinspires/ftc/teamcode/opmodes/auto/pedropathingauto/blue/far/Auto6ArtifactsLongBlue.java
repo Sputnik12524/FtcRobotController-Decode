@@ -23,8 +23,9 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.geometry.Pose;
 
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = " BLUE 6 Long", group = "Autonomous")
+@Autonomous(name = "BLUE 6 Long", group = "Autonomous")
 @Configurable // Panels
 public class Auto6ArtifactsLongBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -33,6 +34,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
+    ElapsedTime timer;
 
     Intake in;
     Shooter sh;
@@ -44,6 +46,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
     public void runOpMode() {
         actionTimer = new Timer();
         pathTimer = new Timer();
+        timer = new ElapsedTime();
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
@@ -68,30 +71,36 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
         panelsTelemetry.update(telemetry);
 
         sh.closeTunnel();
-        sh.setLongThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        sh.setLongThrowMode();sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW+0.1);
         as.setAlliance(Alliance.BLUE);
         tt.turretRegulator.start();
 
+        try {
+            waitForStart();
+            while (opModeIsActive() && !isStopRequested()) {
+                follower.update(); // Update Pedro Pathing
+                autonomousPathUpdate(); // Update autonomous state machine
+                currentPose = follower.getPose(); // Update the current pose
+                as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+                // Log values to Panels and Driver Station
+                panelsTelemetry.debug("Path State", pathState);
+                panelsTelemetry.debug("X", follower.getPose().getX());
+                panelsTelemetry.debug("Y", follower.getPose().getY());
+                panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+                panelsTelemetry.debug("Velocity", sh.getVelocityRPS());
+                panelsTelemetry.update(telemetry);
+            }
 
-        waitForStart();
-        while (opModeIsActive()) {
-            follower.update(); // Update Pedro Pathing
-            autonomousPathUpdate(); // Update autonomous state machine
-            currentPose = follower.getPose(); // Update the current pose
-            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(),follower.getHeading());
-            // Log values to Panels and Driver Station
-            panelsTelemetry.debug("Path State", pathState);
-            panelsTelemetry.debug("X", follower.getPose().getX());
-            panelsTelemetry.debug("Y", follower.getPose().getY());
-            panelsTelemetry.debug("Heading", follower.getPose().getHeading());
-            panelsTelemetry.debug("Velocity", sh.getVelocityRPS());
-            panelsTelemetry.update(telemetry);
+
+        } finally {
+            lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+            lg.fileClose();
+            as.enableAutoTurretAiming(false);
+            tt.turnByTarget(0);
+            timer.reset();
+            sleep(500);
+            tt.turretRegulator.interrupt();
         }
-
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-        lg.fileClose();
-        tt.turretRegulator.interrupt();
     }
 
 
@@ -162,7 +171,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
                 break;
             case 2:
                 if (!follower.isBusy() && actionTimer.getElapsedTime() > 2500) {
-                    as.enableAutoTurretAiming(false);
+                    // as.enableAutoTurretAiming(false);
                     in.rotateStop();
                     sh.closeTunnel();
                     follower.followPath(paths.PathToPresetArtifacts);
@@ -171,7 +180,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy() && actionTimer.getElapsedTime() >= 1200) {
-                    as.enableAutoTurretAiming(true);
+                   // as.enableAutoTurretAiming(true);
                     in.rotateIn();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(4);
@@ -180,11 +189,16 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
             case 4:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondScoring, true);
-                    // in.rotateStop();
-                    setPathState(5);
+                        setPathState(5);
                 }
                 break;
             case 5:
+                if(!follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
+                    in.rotateStop();
+                    setPathState(6);
+                }
+                break;
+            case 6:
                 if(!follower.isBusy() && sh.isSpinUp()) {
                     sh.openTunnel();
                     in.rotateIn();

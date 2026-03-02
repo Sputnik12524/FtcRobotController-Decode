@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.util.Logger;
 public class Auto3ArtefactsLongBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
-    private Auto12ArtefactsLongBlue.Paths paths; // Paths defined in the Paths class
+    private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
@@ -48,7 +48,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(60, 8, Math.toRadians(90)));
 
-        paths = new Auto12ArtefactsLongBlue.Paths(follower); // Build paths
+        paths = new Paths(follower); // Build paths
 
         sh.openTunnel();
         sh.setLongThrowMode();
@@ -59,8 +59,6 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
             follower.update();
             autonomousPathUpdate();
             currentPose = follower.getPose();
-
-            paths = new Auto12ArtefactsLongBlue.Paths(follower);
 
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
@@ -83,7 +81,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
 
                                     new Pose(60, 15)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(110))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
 
                     .build();
         }
@@ -95,7 +93,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
             case 0:
                 sh.openTunnel();
                 sh.shootByVelocity();
-                follower.followPath(paths.PathScoring);
+             //   follower.followPath(paths.PathScoring);
                 setPathState(1);
                 break;
 
@@ -109,7 +107,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
                 in.rotateStop();
                 sh.closeTunnel();
-                follower.followPath(paths.PathToPresetArtifacts);
+              //  follower.followPath(paths.PathToPresetArtifacts);
                 lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
                 setPathState(-100);
                 break;

@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "3 Artifacts Long Auto RED", group = "Autonomous")
+@Autonomous(name = "RED 3 Long", group = "Autonomous")
 @Disabled
 @Configurable // Panels
 public class Auto3ArtifactsLongRed extends LinearOpMode {

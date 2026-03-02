@@ -12,7 +12,7 @@ public class AutoSniper {
     public double goalY = 138;
     public double goalX = 138; // Изначально для красного
     public double goalZ = 51.5;
-    public Alliance alliance;
+    public Alliance alliance = Alliance.NONE;
 
     public double highOfShooting = 9.84;
     public double R = 0.1; // meters
@@ -56,7 +56,7 @@ public class AutoSniper {
     public void setAlliance(Alliance alliance) {
         switch (alliance) {
             case BLUE:
-                goalX = 6;
+                goalX = 1;
                 this.alliance = Alliance.BLUE;
                 break;
             case RED:
@@ -65,7 +65,6 @@ public class AutoSniper {
                 break;
             case NONE:
                 this.alliance = Alliance.NONE;
-                //((((
         }
     }
 
@@ -74,9 +73,19 @@ public class AutoSniper {
             if (x <= 0) x = 1;
             if (x >= 144) x = 143;
 
-        angleOfTurret = Math.toDegrees(Math.atan( (goalY - (y+sY)) / (goalX - (x+sX)) ));
+        switch (alliance) {
+            case RED:
+                angleOfTurret = Math.toDegrees(Math.atan( (goalY - (y+sY)) / (goalX - (x+sX)) ));
+                target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) - 180;
+                break;
+            case BLUE:
+                angleOfTurret = 180 - Math.toDegrees(Math.atan( (goalY - (y+sY)) / ((x+sX) - goalX) ));
+                target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) - 180;
+                break;
+            case NONE:
+                angleOfTurret = 0;
+        }
 
-            target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) - 180;
             //target = tt.angleNormalising(tt.stabilizeTargetByCamera(target));
             target = tt.angleNormalising(target);
             tt.turnByTarget(target);
@@ -158,8 +167,8 @@ public class AutoSniper {
     public double cVTAV(double v) { //Convert velocity to Angular Velocity
         return v / (2 * Math.PI * R);
     }
-    public void enableAutoTurretAiming(boolean isDisabled) {
-        AIMING_ACTIVE = isDisabled;
+    public void enableAutoTurretAiming(boolean isEnabled) {
+        AIMING_ACTIVE = isEnabled;
     }
 
 }

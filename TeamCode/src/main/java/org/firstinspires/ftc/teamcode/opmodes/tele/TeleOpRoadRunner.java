@@ -94,6 +94,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         isShootingShort = false;
         DriveTrain dt = new DriveTrain(this);
 
+
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
         sh.closeTunnel();
@@ -190,6 +191,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             if (gamepad2.yWasPressed()) {
                 tt.turnByTarget(0);
             }
+
             if (attentionControl) {
                 if (gamepad1.dpad_up) {
                     sh.openTunnel();
@@ -231,6 +233,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
         }
         ll.startOrStopLL(true);
         tt.turretRegulator.interrupt();
+
     }
 
     public static class PoseStorage {

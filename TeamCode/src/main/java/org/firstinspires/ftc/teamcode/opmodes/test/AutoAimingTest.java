@@ -50,7 +50,8 @@ public class AutoAimingTest extends LinearOpMode {
 
         tt.turretRegulator.start();
 
-        as.setAlliance(Alliance.RED);
+        as.setAlliance(Alliance.BLUE);
+
 
         sh.setVelocityTarget(0);
         sh.setLongThrowMode();
@@ -74,8 +75,10 @@ public class AutoAimingTest extends LinearOpMode {
             //---------------------------------------------- TURRET
 
             if (gamepad1.x && !xState && !turretState) {
+                as.enableAutoTurretAiming(true);
                 turretState = true;
             } else if (gamepad1.x && !xState && turretState) {
+                as.enableAutoTurretAiming(false);
                 turretState = false;
             }
             xState = gamepad1.x;
