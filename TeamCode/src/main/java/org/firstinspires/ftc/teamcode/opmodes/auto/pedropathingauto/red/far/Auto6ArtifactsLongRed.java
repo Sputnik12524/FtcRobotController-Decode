@@ -73,24 +73,32 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
         as.setAlliance(Alliance.RED);
         tt.turretRegulator.start();
 
-        waitForStart();
-        while (opModeIsActive()) {
-            follower.update(); // Update Pedro Pathing
-            autonomousPathUpdate(); // Update autonomous state machine
-            currentPose = follower.getPose(); // Update the current pose
+        try {
 
-            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+            waitForStart();
+            while (opModeIsActive() && !isStopRequested()) {
+                follower.update(); // Update Pedro Pathing
+                autonomousPathUpdate(); // Update autonomous state machine
+                currentPose = follower.getPose(); // Update the current pose
 
-            // Log values to Panels and Driver Station
-            panelsTelemetry.debug("Path State", pathState);
-            panelsTelemetry.debug("X", follower.getPose().getX());
-            panelsTelemetry.debug("Y", follower.getPose().getY());
-            panelsTelemetry.debug("Heading", follower.getPose().getHeading());
-            panelsTelemetry.update(telemetry);
+                as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+
+                // Log values to Panels and Driver Station
+                panelsTelemetry.debug("Path State", pathState);
+                panelsTelemetry.debug("X", follower.getPose().getX());
+                panelsTelemetry.debug("Y", follower.getPose().getY());
+                panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+                panelsTelemetry.update(telemetry);
+            }
+        }finally {
+            as.enableAutoTurretAiming(false);
+            tt.turnByTarget(0);
+            sleep(500);
+            tt.turretRegulator.interrupt();
+            lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+            lg.fileClose();
         }
-        tt.turretRegulator.interrupt();
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-        lg.fileClose();
+
     }
 
 
