@@ -56,21 +56,21 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         lg = new Logger("pospos");
         tt = new Turret(this, ll);
         sh = new Shooter(this, follower, new Transfer(this));
-        AutoSniper as = new AutoSniper(tt, sh);
+        as = new AutoSniper(tt, sh);
 
         paths = new Paths(follower); // Build paths
 
         sh.closeTunnel();
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 0.75);
         as.setAlliance(Alliance.BLUE);
+        tt.turretRegulator.start();
 
         waitForStart();
         while (opModeIsActive()) {
             follower.update(); // Update Pedro Pathing
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
-            tt.turretRegulator.start();
 
             as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
@@ -82,6 +82,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
         }
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.fileClose();
         tt.turretRegulator.interrupt();
     }
 
@@ -192,16 +194,19 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 follower.followPath(paths.PathScoring);
                 setPathState(1);
                 break;
+
             case 1:
                 if (!sh.isSpinUp() || follower.isBusy()) break;
                 sh.openTunnel();
                 setPathState(2);
                 break;
+
             case 2:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
                 follower.followPath(paths.PathToPresetArtifacts);
                 setPathState(4);
                 break;
+
             case 4:
                 if (!follower.isBusy()) {
                     in.rotateIn();
@@ -210,6 +215,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                     setPathState(5);
                 }
                 break;
+
             case 5:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondScoring, true);
@@ -229,7 +235,6 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 in.rotateIn();
                 follower.followPath(paths.PathSecondPresentArtefacts, true);
                 setPathState(8);
-
                 break;
 
             case 8:
@@ -255,12 +260,10 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             case 11:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
-                tt.turnByTarget(0);
+                as.enableAutoTurretAiming(false);
                 in.rotateStop();
                 sh.shootStop();
                 follower.followPath(paths.PathLeaving);
-                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                lg.fileClose();
                 setPathState(-100);
                 break;
 

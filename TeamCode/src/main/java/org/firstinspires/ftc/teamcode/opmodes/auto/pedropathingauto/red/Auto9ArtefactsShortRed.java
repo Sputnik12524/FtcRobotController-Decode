@@ -31,6 +31,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
+    AutoSniper as;
     Shooter sh;
     Logger lg;
     Transfer tr;
@@ -57,13 +58,13 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         tt = new Turret(this, ll);
         sh = new Shooter(this, follower, tr);
         lg = new Logger("pospos");
-        AutoSniper as = new AutoSniper(tt,sh);
+         as = new AutoSniper(tt,sh);
         paths = new Paths(follower); // Build paths
 
         sh.closeTunnel();
         as.setAlliance(Alliance.RED);
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW + 1);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 0.5); //c 1 перелет
         tt.turretRegulator.start();
 
         waitForStart();
@@ -82,7 +83,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             t.update();
         }
         tt.turretRegulator.interrupt();
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
     }
 
@@ -254,13 +255,12 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 11:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
-                tt.turnByTarget(0);
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1100) break;
+                as.enableAutoTurretAiming(false);
                 in.rotateStop();
                 sh.shootStop();
                 follower.followPath(paths.PathLeaving);
                 setPathState(-100);
-
                 break;
 
         }

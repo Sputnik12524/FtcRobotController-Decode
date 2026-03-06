@@ -87,6 +87,8 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
             panelsTelemetry.update(telemetry);
         }
         tt.turretRegulator.interrupt();
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.fileClose();
     }
 
 

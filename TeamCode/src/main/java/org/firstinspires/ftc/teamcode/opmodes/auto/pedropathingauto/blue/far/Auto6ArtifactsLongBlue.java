@@ -60,10 +60,10 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
         Limelight ll = new Limelight(this);
         in = new Intake(this);
-       tt = new Turret(this,ll);
+        tt = new Turret(this, ll);
         sh = new Shooter(this, follower, new Transfer(this));
         lg = new Logger("pospos");
-        as = new AutoSniper(tt,sh);
+        as = new AutoSniper(tt, sh);
 
         paths = new Paths(follower); // Build paths
 
@@ -71,36 +71,35 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
         panelsTelemetry.update(telemetry);
 
         sh.closeTunnel();
-        sh.setLongThrowMode();sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW+0.1);
+        sh.setLongThrowMode();
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW + 0.1);
         as.setAlliance(Alliance.BLUE);
         tt.turretRegulator.start();
 
-        try {
-            waitForStart();
-            while (opModeIsActive() && !isStopRequested()) {
-                follower.update(); // Update Pedro Pathing
-                autonomousPathUpdate(); // Update autonomous state machine
-                currentPose = follower.getPose(); // Update the current pose
-                as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
-                // Log values to Panels and Driver Station
-                panelsTelemetry.debug("Path State", pathState);
-                panelsTelemetry.debug("X", follower.getPose().getX());
-                panelsTelemetry.debug("Y", follower.getPose().getY());
-                panelsTelemetry.debug("Heading", follower.getPose().getHeading());
-                panelsTelemetry.debug("Velocity", sh.getVelocityRPS());
-                panelsTelemetry.update(telemetry);
-            }
 
-
-        } finally {
-            lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-            lg.fileClose();
-            as.enableAutoTurretAiming(false);
-            tt.turnByTarget(0);
-            timer.reset();
-            sleep(500);
-            tt.turretRegulator.interrupt();
+        waitForStart();
+        while (opModeIsActive() && !isStopRequested()) {
+            follower.update(); // Update Pedro Pathing
+            autonomousPathUpdate(); // Update autonomous state machine
+            currentPose = follower.getPose(); // Update the current pose
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+            // Log values to Panels and Driver Station
+            panelsTelemetry.debug("Path State", pathState);
+            panelsTelemetry.debug("X", follower.getPose().getX());
+            panelsTelemetry.debug("Y", follower.getPose().getY());
+            panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+            panelsTelemetry.debug("Velocity", sh.getVelocityRPS());
+            panelsTelemetry.update(telemetry);
         }
+
+
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.fileClose();
+        as.enableAutoTurretAiming(false);
+        tt.turnByTarget(0);
+        sleep(500);
+        tt.turretRegulator.interrupt();
+
     }
 
 
@@ -180,7 +179,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy() && actionTimer.getElapsedTime() >= 1200) {
-                   // as.enableAutoTurretAiming(true);
+                    // as.enableAutoTurretAiming(true);
                     in.rotateIn();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(4);
@@ -189,24 +188,24 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
             case 4:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondScoring, true);
-                        setPathState(5);
+                    setPathState(5);
                 }
                 break;
             case 5:
-                if(!follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
                     in.rotateStop();
                     setPathState(6);
                 }
                 break;
             case 6:
-                if(!follower.isBusy() && sh.isSpinUp()) {
+                if (!follower.isBusy() && sh.isSpinUp()) {
                     sh.openTunnel();
                     in.rotateIn();
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(!follower.isBusy() && actionTimer.getElapsedTime()>3000){
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 3000) {
                     as.enableAutoTurretAiming(false);
                     in.rotateStop();
                     sh.shootStop();

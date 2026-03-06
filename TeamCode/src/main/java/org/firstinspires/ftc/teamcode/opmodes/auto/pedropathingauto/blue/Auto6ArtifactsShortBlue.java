@@ -7,9 +7,13 @@ import com.bylazar.telemetry.TelemetryManager;
 import com.bylazar.telemetry.PanelsTelemetry;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Transfer;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 import com.pedropathing.geometry.BezierLine;
@@ -28,11 +32,13 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
     private Timer pathTimer;
     Logger lg;
     private Timer actionTimer;
-    //private Turret tt;
+    Turret tt;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
     Shooter sh;
+    Limelight ll;
+    AutoSniper as;
 
     @Override
     public void runOpMode() {
@@ -40,16 +46,21 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
         pathTimer = new Timer();
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
-
-        in = new Intake(this);
-        sh = new Shooter(this);
-        //tt = new Turret(this);
+        actionTimer = new Timer();
+        actionTimer.resetTimer();
 
         // Panels Telemetry instance
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(22, 127, Math.toRadians(-36)));
+
+
+        in = new Intake(this);
+        sh = new Shooter(this, follower, new Transfer(this));
+        ll = new Limelight(this);
+        tt = new Turret(this,ll);
+        as = new AutoSniper(tt, sh);
 
         paths = new Paths(follower); // Build paths
 
@@ -58,6 +69,8 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
 
         sh.openTunnel();
         sh.setShortThrowMode();
+        as.setAlliance(Alliance.BLUE);
+        tt.turretRegulator.start();
 
         waitForStart();
         while (opModeIsActive()) {
@@ -65,6 +78,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
 
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
             // Log values to Panels and Driver Station
             panelsTelemetry.debug("Path State", pathState);
@@ -73,7 +87,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
         }
-
+        tt.turretRegulator.interrupt();
     }
 
 
@@ -139,59 +153,50 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.openTunnel();
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-                sh.shootByVelocity();
-                setPathState(1);
-                break;
-
+            sh.closeTunnel();
+            sh.shootByVelocity();
+            in.rotateIn();
+            follower.followPath(paths.PathFirstScoring);
+            setPathState(1);
+            break;
             case 1:
-                if (sh.isSpinUp() && !follower.isBusy()) {
-                    follower.followPath(paths.PathFirstScoring, true);
-                    in.rotateIn();
-                    setPathState(2);
-                }
-
+                if (!sh.isSpinUp()||follower.isBusy()) break;
+                sh.openTunnel();
+                setPathState(2);
                 break;
-
             case 2:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() < 4000) {
-                    sh.closeTunnel();
-                    in.rotateStop();
-                    follower.followPath(paths.PathToPresetArtifacts, true);
-                    in.rotateIn();
-                    setPathState(3);
-                }
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
+                follower.followPath(paths.PathToPresetArtifacts);
+                setPathState(4);
                 break;
-
-            case 3:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.PathIntakingArtifacts, true);
-                    setPathState(4);
-                }
-                break;
-
             case 4:
+                if (!follower.isBusy()) {
+                    in.rotateIn();
+                    sh.closeTunnel();
+                    follower.followPath(paths.PathIntakingArtifacts, true);
+                    setPathState(5);
+                }
+                break;
+            case 5:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondScoring, true);
                     setPathState(6);
                 }
                 break;
-
             case 6:
-                if (!sh.isSpinUp()) {
-                    in.rotateIn();
-                    setPathState(7);
-                }
+                if (!sh.isSpinUp()||follower.isBusy()) break;
+                sh.openTunnel();
+                setPathState(7);
+
                 break;
             case 7:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.PathLeaving);
-                    sh.closeTunnel();
-                    lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                    lg.fileClose();
-                    setPathState(-100);
-                }
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1100) break;
+                as.enableAutoTurretAiming(false);
+                in.rotateStop();
+                sh.shootStop();
+                follower.followPath(paths.PathLeaving);
+                setPathState(-100);
+
                 break;
 
         }

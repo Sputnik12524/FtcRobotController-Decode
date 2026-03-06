@@ -51,7 +51,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     /// Shooter
     boolean stateY1 = false;
     boolean stateX1 = false;
-    boolean attentionControl = true;
+    boolean attentionControl = false;
     public double shortBonusVelocity = 0;
     public double longBonusVelocity = 0;
 
@@ -199,26 +199,27 @@ public class TeleOpRoadRunner extends LinearOpMode {
                     sh.closeTunnel();
                 }
             }
-            if (g2.dpadUp.isHeldFor(1000)) {
+            if (g2.dpadUp.isPressed()) {
                 tt.turnByTarget(0);
                 isPoseReset = true;
                 follower.setPose(new Pose(135, 7, Math.toRadians(180)));
                 as.setAlliance(Alliance.BLUE);
             }
 
-            if (g2.dpadDown.isHeldFor(1000)) {
+            if (g2.dpadDown.isPressed()) {
                 isPoseReset = true;
                 tt.turnByTarget(0);
                 follower.setPose(new Pose(11, 7, 0));
                 as.setAlliance(Alliance.RED);
             }
 
+
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("Velocity", sh.getVelocityRPS());
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
           //  telemetry.addData("Позиция сброшена", isPoseReset);
-            // telemetry.addData("Alliance", as.alliance);
+             telemetry.addData("Alliance", as.alliance);
             // telemetry.addData("TARGET", sh.velocityTarget / 28);
 //            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
 //            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));

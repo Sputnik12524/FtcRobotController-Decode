@@ -38,7 +38,7 @@ public class Shooter {
 
     /// Shooter
     public static double VELOCITY_FOR_LONG_THROW = 71;  //47 //64
-    public static double VELOCITY_FOR_SHORT_THROW = 52.2;
+    public static double VELOCITY_FOR_SHORT_THROW = 51.5;
     public static double POWER = 1;
 
     ///  Cover
