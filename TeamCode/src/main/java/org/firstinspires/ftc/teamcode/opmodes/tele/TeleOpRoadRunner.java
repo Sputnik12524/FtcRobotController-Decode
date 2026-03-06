@@ -213,6 +213,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 as.setAlliance(Alliance.RED);
             }
 
+            if(gamepad2.leftBumperWasPressed()){
+                as.targetBonus += 5;
+            }
+            if(gamepad2.rightBumperWasPressed()){
+                as.targetBonus -= 5;
+            }
+
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("Velocity", sh.getVelocityRPS());

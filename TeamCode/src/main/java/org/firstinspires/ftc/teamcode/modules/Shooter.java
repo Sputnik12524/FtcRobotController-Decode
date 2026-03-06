@@ -54,7 +54,7 @@ public class Shooter {
     public static double DELTA_ADJUSTER = 0.01;
     public static double DELTA_SECOND_SHOOT = 0.02;
     public static double DETECT_SHOOT = 5;
-    public static double IS_SPIN_UP = 2.9;
+    public static double IS_SPIN_UP = 3.35;
     public final double MAX_POS = 1;
 
 

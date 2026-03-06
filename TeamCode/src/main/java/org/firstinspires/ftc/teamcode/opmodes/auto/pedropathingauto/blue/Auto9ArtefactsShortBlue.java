@@ -9,6 +9,7 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
@@ -28,6 +29,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
     private Timer actionTimer;
+    ElapsedTime timer;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
@@ -57,12 +59,13 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         tt = new Turret(this, ll);
         sh = new Shooter(this, follower, new Transfer(this));
         as = new AutoSniper(tt, sh);
+        timer = new ElapsedTime();
 
         paths = new Paths(follower); // Build paths
 
         sh.closeTunnel();
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 0.75);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 0.5);
         as.setAlliance(Alliance.BLUE);
         tt.turretRegulator.start();
 
@@ -196,6 +199,10 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 1:
+                if(timer.milliseconds() > 7500){
+                    sh.openTunnel();
+                    setPathState(2);
+                }
                 if (!sh.isSpinUp() || follower.isBusy()) break;
                 sh.openTunnel();
                 setPathState(2);
@@ -223,6 +230,10 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 }
                 break;
             case 6:
+                if(timer.milliseconds() > 7500){
+                    sh.openTunnel();
+                    setPathState(7);
+                }
                 if (!sh.isSpinUp() || follower.isBusy()) break;
                 sh.openTunnel();
                 setPathState(7);
@@ -253,6 +264,10 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 10:
+                if(timer.milliseconds() > 7500){
+                    sh.openTunnel();
+                    setPathState(11);
+                }
                 if (!sh.isSpinUp() || follower.isBusy()) break;
                 sh.openTunnel();
                 setPathState(11);
@@ -273,6 +288,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
     public void setPathState(int pState) {
         pathState = pState;
+        timer.reset();
         pathTimer.resetTimer();
         actionTimer.resetTimer();
     }
