@@ -164,15 +164,15 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                if (sh.isSpinUp() && !follower.isBusy()) {
+                if (sh.isSpinUp() && !follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
                     sh.openTunnel();
                     in.rotateIn();
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() > 2000) {
-                     as.enableAutoTurretAiming(false);
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 1500) {
+                    // as.enableAutoTurretAiming(false);
                     in.rotateStop();
                     sh.closeTunnel();
                     follower.followPath(paths.PathToPresetArtifacts);
@@ -180,8 +180,8 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
                 }
                 break;
             case 3:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() >= 2000) {
-                     as.enableAutoTurretAiming(true);
+                if (!follower.isBusy() && actionTimer.getElapsedTime() >= 1500) {
+                    // as.enableAutoTurretAiming(true);
                     in.rotateIn();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(4);
@@ -199,22 +199,22 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
                     setPathState(6);
                 }
             case 6:
-                if (!follower.isBusy() && sh.isSpinUp()) {
+                if (!follower.isBusy() && sh.isSpinUp()  && actionTimer.getElapsedTime() > 1000) {
                     sh.openTunnel();
                     in.rotateIn();
                     setPathState(8);
                 }
                 break;
             case 8:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() > 2000) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 1500) {
                     sh.closeTunnel();
                     follower.followPath(paths.PathThirdPreset, true);
                     setPathState(9);
                 }
                 break;
             case 9:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() >= 2000) {
-                     as.enableAutoTurretAiming(true);
+                if (!follower.isBusy() && actionTimer.getElapsedTime() >= 1000) {
+                    // as.enableAutoTurretAiming(true);
                     in.rotateIn();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(10);
@@ -227,13 +227,13 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
                 }
                 break;
             case 11:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() > 2000) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
                     in.rotateStop();
                     setPathState(12);
                 }
                 break;
             case 12:
-                if (!follower.isBusy() && sh.isSpinUp()) {
+                if (!follower.isBusy() && sh.isSpinUp() && actionTimer.getElapsedTime() > 2000) {
                     sh.openTunnel();
                     in.rotateIn();
                     setPathState(13);

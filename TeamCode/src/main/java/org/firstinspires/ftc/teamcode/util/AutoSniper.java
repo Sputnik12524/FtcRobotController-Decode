@@ -28,7 +28,7 @@ public class AutoSniper {
    public double sv = 0.017; // meters
 
     public double target = 0;
-    public double targetBonus;
+    public double targetBonus = 0;
     public double angleOfTurret = 0;
 
     public double angleOfAdjuster;
@@ -88,8 +88,8 @@ public class AutoSniper {
         }
 
            // target = tt.angleNormalising(tt.stabilizeTargetByCamera(target));
-            target = tt.angleNormalising(target);
-            tt.turnByTarget(target + targetBonus);
+            target = tt.angleNormalising(target + targetBonus);
+            tt.turnByTarget(target);
         } else {
             tt.turnByTarget(0);
         }

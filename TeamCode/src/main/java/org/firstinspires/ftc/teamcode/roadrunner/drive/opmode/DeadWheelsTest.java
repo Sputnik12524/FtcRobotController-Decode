@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 import org.firstinspires.ftc.teamcode.roadrunner.util.Encoder;
 
 @TeleOp(name="TEST Dead Wheels", group="test")
-@Disabled
 public class DeadWheelsTest extends LinearOpMode {
     public Encoder leftEncoder, rightEncoder, frontEncoder;
 

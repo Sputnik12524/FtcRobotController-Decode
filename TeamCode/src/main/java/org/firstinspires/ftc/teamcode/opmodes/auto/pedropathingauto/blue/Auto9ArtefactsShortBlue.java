@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
@@ -65,7 +67,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
         sh.closeTunnel();
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 0.5);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 3);
         as.setAlliance(Alliance.BLUE);
         tt.turretRegulator.start();
 
@@ -118,16 +120,17 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
 
                                     scoringPose,
-                                    new Pose(48, 95) //55,100
+
+                                    new Pose(48, 84) //55,100
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(48, 95), //55,100
+                                    new Pose(48, 84), //55,100
 
-                                    new Pose(25, 95) //35,100
+                                    new Pose(20, 84) //35,100
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -135,7 +138,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(25, 95), //35,100
+                                    new Pose(20, 84), //35,100
 
                                     scoringPose
                             )
@@ -199,7 +202,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 1:
-                if(timer.milliseconds() > 7500){
+                if(timer.milliseconds() > 5000){
                     sh.openTunnel();
                     setPathState(2);
                 }
@@ -230,7 +233,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 }
                 break;
             case 6:
-                if(timer.milliseconds() > 7500){
+                if(timer.milliseconds() > 5000){
                     sh.openTunnel();
                     setPathState(7);
                 }
@@ -264,7 +267,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 10:
-                if(timer.milliseconds() > 7500){
+                if(timer.milliseconds() > 5000){
                     sh.openTunnel();
                     setPathState(11);
                 }

@@ -93,6 +93,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
         public final PathChain PathThirdPresentArtefacts;
         public final PathChain PathThirdIntakingArtefacts;
         public final PathChain PathFourScoring;
+        public final PathChain PathToGate, PathOpenGate;
         public final Pose scoringPose = new Pose(43, 120);
 
 
@@ -125,6 +126,17 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
+            PathToGate = follower.pathBuilder().addPath(new BezierLine(
+                    new Pose(1,1),
+                            new Pose(1,1)
+            )
+            ).setConstantHeadingInterpolation(Math.toRadians(-180)).build();
+
+            PathOpenGate = follower.pathBuilder().addPath(new BezierLine(
+                            new Pose(1,1),
+                            new Pose(1,1)
+                    )
+            ).setConstantHeadingInterpolation(Math.toRadians(-180)).build();
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
@@ -325,7 +337,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
                 in.rotateStop();
                 follower.followPath(paths.PathLeaving);
-                setPathState(-100);
+                setPathState(-101);
                 break;
 
         }

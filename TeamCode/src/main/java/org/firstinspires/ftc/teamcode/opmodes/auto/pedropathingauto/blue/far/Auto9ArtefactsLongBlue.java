@@ -216,7 +216,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                if (sh.isSpinUp() && !follower.isBusy()) {
+                if (sh.isSpinUp() && !follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
                     sh.openTunnel();
                     in.rotateIn();
                     setPathState(2);
@@ -251,7 +251,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                     setPathState(6);
                 }
             case 6:
-                if (!follower.isBusy() && sh.isSpinUp()) {
+                if (!follower.isBusy() && sh.isSpinUp() && actionTimer.getElapsedTime() > 1000) {
                     sh.openTunnel();
                     in.rotateIn();
                     setPathState(8);
@@ -285,7 +285,7 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 }
                 break;
             case 12:
-                if (!follower.isBusy() && sh.isSpinUp()) {
+                if (!follower.isBusy() && sh.isSpinUp() && actionTimer.getElapsedTime() > 2000) {
                     sh.openTunnel();
                     in.rotateIn();
                     setPathState(13);

@@ -225,12 +225,12 @@ public class TeleOpRoadRunner extends LinearOpMode {
             telemetry.addData("Velocity", sh.getVelocityRPS());
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
-          //  telemetry.addData("Позиция сброшена", isPoseReset);
+          // telemetry.addData("Позиция сброшена", isPoseReset);
              telemetry.addData("Alliance", as.alliance);
-            // telemetry.addData("TARGET", sh.velocityTarget / 28);
-//            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
-//            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-//            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
+             telemetry.addData("TARGET", sh.velocityTarget / 28);
+            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
+            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
+            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
 
 
             dashtele.addData("Target ", sh.velocityTarget / 28);

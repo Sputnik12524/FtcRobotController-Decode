@@ -67,7 +67,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         sh.closeTunnel();
         as.setAlliance(Alliance.RED);
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 0.5); //c 1 перелет
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW +2); //c 1 перелет
         tt.turretRegulator.start();
 
         waitForStart();
@@ -83,6 +83,9 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
             t.addData("Shooter Velocity", sh.getVelocityRPS());
+            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
+            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
+            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
             t.update();
         }
         tt.turretRegulator.interrupt();
@@ -197,7 +200,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                if(timer.milliseconds() > 7500){
+                if(timer.milliseconds() > 5000){
                     sh.openTunnel();
                     setPathState(2);
                 }
@@ -225,7 +228,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 }
                 break;
             case 6:
-                if(timer.milliseconds() > 7500){
+                if(timer.milliseconds() > 5000){
                     sh.openTunnel();
                     setPathState(7);
                 }
@@ -260,7 +263,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 10:
-                if(timer.milliseconds() > 7500){
+                if(timer.milliseconds() > 5000){
                     sh.openTunnel();
                     setPathState(11);
                 }
