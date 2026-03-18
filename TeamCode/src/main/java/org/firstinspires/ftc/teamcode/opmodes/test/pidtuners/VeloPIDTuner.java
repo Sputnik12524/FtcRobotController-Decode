@@ -24,7 +24,7 @@ public class VeloPIDTuner extends LinearOpMode {
     private VoltageSensor batteryVoltageSensor;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         Shooter sh = new Shooter(this);
         // Change my id
         DcMotorEx myMotor = sh.shooterUpper;

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.red.far;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;

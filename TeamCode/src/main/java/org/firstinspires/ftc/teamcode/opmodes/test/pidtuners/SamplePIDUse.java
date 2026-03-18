@@ -16,7 +16,7 @@ public class SamplePIDUse extends LinearOpMode {
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0, 0);
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         // SETUP MOTOR //
         // Change my id
         DcMotorEx myMotor = hardwareMap.get(DcMotorEx.class, "flywheelMotor1");

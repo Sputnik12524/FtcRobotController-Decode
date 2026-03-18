@@ -57,7 +57,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         GamepadManager g1 = new GamepadManager(gamepad1);
         GamepadManager g2 = new GamepadManager(gamepad2);
         follower = Constants.createFollower(hardwareMap);

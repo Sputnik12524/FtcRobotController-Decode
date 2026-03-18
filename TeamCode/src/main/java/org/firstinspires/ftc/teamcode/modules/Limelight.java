@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 import java.util.ArrayList;
@@ -16,7 +14,7 @@ import java.util.List;
 
 @Config
 public class Limelight {
-    public Limelight3A limelight3A;
+    public final Limelight3A limelight3A;
     LinearOpMode opMode;
     public double X_RESOLUTION = 1280;
     public double X_MIDDLE = X_RESOLUTION / 2;

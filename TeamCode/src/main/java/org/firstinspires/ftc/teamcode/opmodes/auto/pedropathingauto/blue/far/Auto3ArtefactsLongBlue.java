@@ -21,7 +21,6 @@ import org.firstinspires.ftc.teamcode.util.Logger;
 public class Auto3ArtefactsLongBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
-    private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
@@ -48,7 +47,8 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(60, 8, Math.toRadians(90)));
 
-        paths = new Paths(follower); // Build paths
+        // Paths defined in the Paths class
+        Paths paths = new Paths(follower); // Build paths
 
         sh.openTunnel();
         sh.setLongThrowMode();

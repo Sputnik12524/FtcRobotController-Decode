@@ -96,7 +96,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
         //public final PathChain OpenPath2;
         public final PathChain ThirdPathPresetArtefacts, ThirdPathIntakingArtefacts, ThirdPathScoring;
         public final PathChain FourthPathToPreset, FourthPathIntaking, FourthPathScoring;
-        Pose scoringPath = new Pose(101, 111);
+        final Pose scoringPath = new Pose(101, 111);
 
 
         public Paths(Follower follower) {
@@ -267,13 +267,6 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                     setPathState(6);
                 }
                 break;
-
-//            case 5:
-//                if(!follower.isBusy()){
-//                    follower.followPath(paths.OpenPath2, true);
-//                    setPathState(6);
-//                }
-//                break;
 
             case 6:
                 if (!follower.isBusy()) {

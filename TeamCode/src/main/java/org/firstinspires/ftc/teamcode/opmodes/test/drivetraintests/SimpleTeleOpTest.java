@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 public class SimpleTeleOpTest extends LinearOpMode {
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         DriveTrain dt = new DriveTrain(this);
 
         waitForStart();

@@ -36,7 +36,7 @@ public class Shooter2MotorsSeparateTest extends LinearOpMode {
 
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         follower = Constants.createFollower(hardwareMap);
         sh = new Shooter(this);
 

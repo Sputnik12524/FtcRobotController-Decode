@@ -229,24 +229,6 @@ public class Shooter {
         else angleAdjuster.setPosition(pos);
     }
 
-//    public void threeArtefactsShooting() {
-//         switchCover();
-//        if (isTunnelOpen) {
-//            shootPos = angleAdjuster.getPosition();
-//            timer.reset();
-//            while (timer.milliseconds() < TIME_BETWEEN_SHOOT) ;
-//            setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-//            timer.reset();
-//            while (timer.milliseconds() < TIME_BETWEEN_SHOOT) ;
-//            setMode(angleAdjuster.getPosition() - DELTA_SECOND_SHOOT);
-//            timer.reset();
-//            while (timer.milliseconds() < TIME_AFTER_SHOOT) ;
-//            setMode(shootPos);
-//            complete = true;
-//            canShoot = false;
-//        }
-//    }
-
     public void threeArtefactsShooting(){
         switch (state){
             case 0:

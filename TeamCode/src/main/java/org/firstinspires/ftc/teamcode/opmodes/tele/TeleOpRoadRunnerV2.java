@@ -60,7 +60,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     public  static  double RED_ANGLE = -120;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         GamepadManager g1 = new GamepadManager(gamepad1);
         GamepadManager g2 = new GamepadManager(gamepad2);
         follower = Constants.createFollower(hardwareMap);

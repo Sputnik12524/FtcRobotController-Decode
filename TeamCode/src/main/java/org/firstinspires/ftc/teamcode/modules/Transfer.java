@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import java.util.ArrayList;
 
 public class Transfer {
-    private NormalizedColorSensor colorSensor1;
-    private NormalizedColorSensor colorSensor2;
-    private NormalizedColorSensor colorSensor3;
+    private final NormalizedColorSensor colorSensor1;
+    private final NormalizedColorSensor colorSensor2;
+    private final NormalizedColorSensor colorSensor3;
 
     public enum Color {GREEN, PURPLE, NONE}
     public enum Num{FIRST, SECOND, THIRD}
@@ -94,18 +94,6 @@ public class Transfer {
         return colorSensors;
     }
 
-
-//    public Comb scanArt(){
-//        ArrayList<Color> list = getColor();
-//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
-//        if(list.get(0) == Color.GREEN && list.get(1) == Color.PURPLE && list.get(2) == Color.PURPLE) state = Comb.GGG;
-//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
-//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
-//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
-//        if(list.get(0) == Color.GREEN && list.get(1) == Color.GREEN && list.get(2) == Color.GREEN) state = Comb.GGG;
-//
-//
-//    }
 
     public int howMany(){
         int art = 0;

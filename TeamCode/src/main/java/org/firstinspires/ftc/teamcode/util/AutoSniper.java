@@ -5,8 +5,8 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 
 public class AutoSniper {
 
-    Turret tt;
-    Shooter sh;
+    public Turret tt;
+    public Shooter sh;
 
     //---------------------------------------------- GENERAL COEFFICIENTS
     public double goalY = 138;

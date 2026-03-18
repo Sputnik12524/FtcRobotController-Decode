@@ -98,7 +98,7 @@ public class AutoPedroPark extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                while (follower.isBusy());
+                if (follower.isBusy()) break;
                 follower.followPath(paths.PathLeaving, true);
                 setPathState(2);
                 break;

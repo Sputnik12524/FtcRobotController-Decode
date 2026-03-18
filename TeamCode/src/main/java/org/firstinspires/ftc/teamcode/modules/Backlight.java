@@ -9,21 +9,21 @@ import org.firstinspires.ftc.teamcode.modules.Transfer.Color;
 import java.util.ArrayList;
 
 public class Backlight {
-    Transfer tr;
-    public DigitalChannel P1;
-    public DigitalChannel P2;
-    public DigitalChannel P3;
-    public DigitalChannel P4;
-    public DigitalChannel P5;
-    public DigitalChannel P6;
-    public DigitalChannel G1;
-    public DigitalChannel G2;
-    public DigitalChannel G3;
-    public DigitalChannel G4;
-    public DigitalChannel G5;
-    public DigitalChannel G6;
+    final Transfer tr;
+    public final DigitalChannel P1;
+    public final DigitalChannel P2;
+    public final DigitalChannel P3;
+    public final DigitalChannel P4;
+    public final DigitalChannel P5;
+    public final DigitalChannel P6;
+    public final DigitalChannel G1;
+    public final DigitalChannel G2;
+    public final DigitalChannel G3;
+    public final DigitalChannel G4;
+    public final DigitalChannel G5;
+    public final DigitalChannel G6;
     final int  timers = 300;
-    ElapsedTime timer;
+    final ElapsedTime timer;
 
     public Backlight(LinearOpMode linearOpMode, Transfer transfer) {
         P1 = linearOpMode.hardwareMap.get(DigitalChannel.class, "P1");

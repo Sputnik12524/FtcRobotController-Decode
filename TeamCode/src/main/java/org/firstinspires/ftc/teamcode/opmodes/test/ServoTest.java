@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -17,7 +16,7 @@ public class ServoTest extends LinearOpMode {
     public static double DIFF = 0.005;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         Servo serv = hardwareMap.get(Servo.class, "angleAdjuster");
 
         FtcDashboard dashboard = FtcDashboard.getInstance();

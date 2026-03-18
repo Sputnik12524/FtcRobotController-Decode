@@ -75,8 +75,11 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
 
 
     public static class Paths {
-        public PathChain PathFirstScoring, PathToPresetArtifacts, PathIntakingArtifacts,
-                PathSecondScoring, PathLeaving;
+        public final PathChain PathFirstScoring;
+        public final PathChain PathToPresetArtifacts;
+        public final PathChain PathIntakingArtifacts;
+        public final PathChain PathSecondScoring;
+        public final PathChain PathLeaving;
         public final Pose scoringPose = new Pose(100, 111);
 
         public Paths(Follower follower) {
