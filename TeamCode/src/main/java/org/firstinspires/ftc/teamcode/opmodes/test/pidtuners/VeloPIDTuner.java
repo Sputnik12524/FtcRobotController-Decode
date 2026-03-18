@@ -17,14 +17,14 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 @Config
 @TeleOp (name = "VeloPID Tuner", group = "4")
 public class VeloPIDTuner extends LinearOpMode {
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(20, 0, 30, 14.7);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(10, 0, 19, 16);
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
     private VoltageSensor batteryVoltageSensor;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         Shooter sh = new Shooter(this);
         // Change my id
         DcMotorEx myMotor = sh.shooterUpper;
@@ -70,8 +70,11 @@ public class VeloPIDTuner extends LinearOpMode {
             telemetry.addData("targetVelocity", targetVelo);
 
             double motorVelo = myMotor.getVelocity();
-            telemetry.addData("velocity", motorVelo);
-            telemetry.addData("error", targetVelo - motorVelo);
+            double motorVelo1 = myMotor1.getVelocity();
+            telemetry.addData("velocityUp", motorVelo);
+            telemetry.addData("errorUp", targetVelo - motorVelo);
+            telemetry.addData("velocityDown", motorVelo1);
+            telemetry.addData("errorDown", targetVelo - motorVelo1);
 
             telemetry.addData("upperBound", TuningController.rpmToTicksPerSecond(TuningController.TESTING_MAX_SPEED * 1.15));
             telemetry.addData("lowerBound", 0);

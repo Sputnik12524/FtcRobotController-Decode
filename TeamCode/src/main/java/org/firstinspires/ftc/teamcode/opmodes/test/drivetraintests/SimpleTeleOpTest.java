@@ -1,15 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmodes.test.drivetraintests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 
 @TeleOp(name="Simple TeleOp", group="3")
+@Disabled
 public class SimpleTeleOpTest extends LinearOpMode {
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         DriveTrain dt = new DriveTrain(this);
 
         waitForStart();

@@ -74,7 +74,7 @@ public class AutoTestForLogger extends LinearOpMode {
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
         }
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(),follower.getHeading());
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(),follower.getHeading());
         lg.fileClose();
     }
 

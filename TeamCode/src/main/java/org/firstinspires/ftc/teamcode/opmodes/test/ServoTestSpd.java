@@ -3,37 +3,31 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
 @TeleOp
-public class ServoTest extends LinearOpMode {
-    public static double POSITION = 0.05;
-    public static double DIFF = 0.005;
+@Disabled
+public class ServoTestSpd extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Servo serv = hardwareMap.get(Servo.class, "angleAdjuster");
-
+        CRServo serv = hardwareMap.get(CRServo.class, "transferServo");
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dashtele);
 
         waitForStart();
-        //resetRuntime();
+        resetRuntime();
 
         while (opModeIsActive()) {
-            serv.setPosition(POSITION);
-            if (gamepad1.aWasPressed()) POSITION += DIFF;
-            if (gamepad1.bWasPressed()) POSITION -= DIFF;
-
-
-            t.addData("Potuzhnaya stenka", serv.getPosition());
-            t.addData("DIFF", DIFF);
+            if (gamepad1.aWasPressed()) serv.setPower(-1);
+            if (gamepad1.bWasPressed()) serv.setPower(1);
             t.update();
         }
     }

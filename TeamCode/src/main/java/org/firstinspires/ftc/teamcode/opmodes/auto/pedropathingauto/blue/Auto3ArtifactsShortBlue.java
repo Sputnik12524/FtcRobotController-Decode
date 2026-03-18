@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "3 Artifacts Short Auto BLUE", group = "Autonomous")
+@Autonomous(name = "BLUE 3 Short", group = "Autonomous")
 @Configurable // Panels
 public class Auto3ArtifactsShortBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -27,7 +27,7 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
-  //  Turret tt;
+    //  Turret tt;
 
     Intake in;
     Shooter sh;
@@ -43,7 +43,7 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
 
         in = new Intake(this);
         sh = new Shooter(this);
-      //  tt = new Turret(this);
+        // tt = new Turret(this);
         Logger lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
@@ -55,7 +55,7 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
 
         sh.closeTunnel();
         sh.setLongThrowMode();
-     //   tt.turretRegulator.start();
+        // tt.turretRegulator.start();
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
 
         waitForStart();
@@ -73,9 +73,9 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
             t.addData("Shooter Velo", sh.getVelocityRPS());
             t.update();
         }
+        //   tt.turretRegulator.interrupt();
         lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
-     //   tt.turretRegulator.interrupt();
     }
 
 
@@ -109,31 +109,25 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                follower.followPath(paths.PathScoring);
-                sh.closeTunnel();
+                sh.openTunnel();
                 sh.shootByVelocity();
-                in.rotateIn();
+                follower.followPath(paths.PathScoring);
                 setPathState(1);
                 break;
+
             case 1:
                 if (!sh.isSpinUp() || follower.isBusy()) break;
-                //while (!sh.isSpinUp() || follower.isBusy());
-                sh.openTunnel();
+                in.rotateIn();
                 setPathState(2);
                 break;
+
             case 2:
-                if(follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                // while (follower.isBusy() || actionTimer.getElapsedTime() < 4000) ;
-                sh.closeTunnel();
-                follower.followPath(paths.PathLeaving);
-                sh.shootStop();
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
                 in.rotateStop();
-                setPathState(3);
-                break;
-            case 3:
-                if (!follower.isBusy() && !Shooter.isTunnelOpen) {
-                    setPathState(-100);
-                }
+                sh.closeTunnel();
+                sh.shootStop();
+                follower.followPath(paths.PathLeaving);
+                setPathState(-100);
                 break;
         }
 

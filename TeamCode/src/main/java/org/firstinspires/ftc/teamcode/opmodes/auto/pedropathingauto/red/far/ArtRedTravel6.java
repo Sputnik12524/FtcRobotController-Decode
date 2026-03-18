@@ -8,6 +8,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Autonomous(name = "Long Red 6", group = "Autonomous")
+@Disabled
 public class ArtRedTravel6 extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
@@ -28,6 +30,7 @@ public class ArtRedTravel6 extends LinearOpMode {
 
     Intake in;
     Shooter sh;
+    Logger lg;
 
     @Override
     public void runOpMode() {
@@ -40,7 +43,7 @@ public class ArtRedTravel6 extends LinearOpMode {
 
         in = new Intake(this);
         sh = new Shooter(this);
-        Logger lg = new Logger("pospos");
+        lg = new Logger("pospos");
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
@@ -181,6 +184,8 @@ public class ArtRedTravel6 extends LinearOpMode {
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
                 in.rotateStop();
                 follower.followPath(paths.PathLeaving);
+                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                lg.fileClose();
                 setPathState(-100);
 
                 break;

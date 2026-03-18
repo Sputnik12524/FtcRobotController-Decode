@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.blue.far;
+package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.blue;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -8,29 +8,38 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Transfer;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "c проездом Blue 6", group = "Autonomous")
-@Disabled
-public class ArtBlueTravel6 extends LinearOpMode {
+@Autonomous(name = "BLUE 9 Short  ", group = "Autonomous")
+public class Auto9ArtefactsShortBlue extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
     private Timer actionTimer;
+    ElapsedTime timer;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
     Shooter sh;
     Logger lg;
+    AutoSniper as;
+    Turret tt;
+    Limelight ll;
 
     @Override
     public void runOpMode() {
@@ -41,20 +50,26 @@ public class ArtBlueTravel6 extends LinearOpMode {
         actionTimer = new Timer();
         actionTimer.resetTimer();
 
-        in = new Intake(this);
-        sh = new Shooter(this);
-        lg = new Logger("pospos");
-
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(60, 8, Math.toRadians(90)));//22,124
+        follower.setStartingPose(new Pose(22, 127, Math.toRadians(-36))); //Math.toRadians(-36)));
+
+
+        in = new Intake(this);
+        lg = new Logger("pospos");
+        tt = new Turret(this, ll);
+        sh = new Shooter(this, follower, new Transfer(this));
+        as = new AutoSniper(tt, sh);
+        timer = new ElapsedTime();
 
         paths = new Paths(follower); // Build paths
 
         sh.closeTunnel();
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 3);
+        as.setAlliance(Alliance.BLUE);
+        tt.turretRegulator.start();
 
         waitForStart();
         while (opModeIsActive()) {
@@ -62,8 +77,7 @@ public class ArtBlueTravel6 extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
 
-
-            sh.threeArtefactsShooting();
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
@@ -75,6 +89,7 @@ public class ArtBlueTravel6 extends LinearOpMode {
         }
         lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
+        tt.turretRegulator.interrupt();
     }
 
 
@@ -84,51 +99,89 @@ public class ArtBlueTravel6 extends LinearOpMode {
         public final PathChain PathToPresetArtifacts;
         public final PathChain PathIntakingArtifacts;
         public final PathChain PathSecondScoring;
+        public final PathChain PathSecondPresentArtefacts; //48.60
+        public final PathChain PathSecondIntakingArtefacts;  //17.60
+        public final PathChain PathThirdScoring; // 47.115
+        public final Pose scoringPose = new Pose(43, 120);
+
 
         public Paths(Follower follower) {
             PathScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(60, 8),
+                                    new Pose(22, 127),
 
-                                    new Pose(47, 115)
+                                    scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-36))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-36))
 
                     .build();
+
             PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(47, 115),
 
-                                    new Pose(55, 100)
+                                    scoringPose,
+
+                                    new Pose(48, 84) //55,100
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(55, 100),
+                                    new Pose(48, 84), //55,100
 
-                                    new Pose(35, 100)
+                                    new Pose(20, 84) //35,100
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(35, 100),
+                                    new Pose(20, 84), //35,100
 
-                                    new Pose(45, 115)
+                                    scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-36))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-36)) //-36
 
                     .build();
 
+            PathSecondPresentArtefacts = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    scoringPose,
+
+                                    new Pose(50, 60)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
+
+                    .build();
+
+            PathSecondIntakingArtefacts = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(50, 60),
+
+                                    new Pose(35, 60)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
+
+                    .build();
+
+            PathThirdScoring = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(35, 60),
+
+                                    scoringPose
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-36))
+
+                    .build();
+
+
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(45, 115),
+                                    scoringPose,
 
-                                    new Pose(35, 95)
+                                    new Pose(42, 130) //
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-36))
 
@@ -147,18 +200,23 @@ public class ArtBlueTravel6 extends LinearOpMode {
                 follower.followPath(paths.PathScoring);
                 setPathState(1);
                 break;
-            case 1:
-                if (!sh.isSpinUp()) break;
 
+            case 1:
+                if(timer.milliseconds() > 5000){
+                    sh.openTunnel();
+                    setPathState(2);
+                }
+                if (!sh.isSpinUp() || follower.isBusy()) break;
                 sh.openTunnel();
-                //  sh.waitForShoot();
                 setPathState(2);
                 break;
+
             case 2:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
                 follower.followPath(paths.PathToPresetArtifacts);
                 setPathState(4);
                 break;
+
             case 4:
                 if (!follower.isBusy()) {
                     in.rotateIn();
@@ -167,6 +225,7 @@ public class ArtBlueTravel6 extends LinearOpMode {
                     setPathState(5);
                 }
                 break;
+
             case 5:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.PathSecondScoring, true);
@@ -174,20 +233,56 @@ public class ArtBlueTravel6 extends LinearOpMode {
                 }
                 break;
             case 6:
-                if (!follower.isBusy()) {
+                if(timer.milliseconds() > 5000){
                     sh.openTunnel();
-                    // sh.waitForShoot();
                     setPathState(7);
                 }
-                break;
-            case 7:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                in.rotateStop();
-                follower.followPath(paths.PathLeaving);
-                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                lg.fileClose();
-                setPathState(-100);
+                if (!sh.isSpinUp() || follower.isBusy()) break;
+                sh.openTunnel();
+                setPathState(7);
 
+                break;
+
+            case 7:
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
+                sh.closeTunnel();
+                in.rotateIn();
+                follower.followPath(paths.PathSecondPresentArtefacts, true);
+                setPathState(8);
+                break;
+
+            case 8:
+
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.PathSecondIntakingArtefacts, true);
+                    setPathState(9);
+                }
+                break;
+
+            case 9:
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.PathThirdScoring, true);
+                    setPathState(10);
+                }
+                break;
+
+            case 10:
+                if(timer.milliseconds() > 5000){
+                    sh.openTunnel();
+                    setPathState(11);
+                }
+                if (!sh.isSpinUp() || follower.isBusy()) break;
+                sh.openTunnel();
+                setPathState(11);
+                break;
+
+            case 11:
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
+                as.enableAutoTurretAiming(false);
+                in.rotateStop();
+                sh.shootStop();
+                follower.followPath(paths.PathLeaving);
+                setPathState(-100);
                 break;
 
         }
@@ -196,6 +291,7 @@ public class ArtBlueTravel6 extends LinearOpMode {
 
     public void setPathState(int pState) {
         pathState = pState;
+        timer.reset();
         pathTimer.resetTimer();
         actionTimer.resetTimer();
     }

@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "Pedro Pathing Autonomous RED", group = "Autonomous")
+@Autonomous(name = "RED 6 short", group = "Autonomous")
 @Configurable // Panels
 public class Auto6ArtifactsShortRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -47,7 +47,7 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(121, 127, Math.toRadians(-136)));
+        follower.setStartingPose(new Pose(123, 122, Math.toRadians(-136)));
 
         paths = new Paths(follower); // Build paths
 
@@ -71,39 +71,41 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
         }
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
     }
 
 
     public static class Paths {
-        public PathChain PathFirstScoring, PathToPresetArtifacts, PathIntakingArtifacts,
-                PathSecondScoring, PathLeaving;
+        public final PathChain PathFirstScoring;
+        public final PathChain PathToPresetArtifacts;
+        public final PathChain PathIntakingArtifacts;
+        public final PathChain PathSecondScoring;
+        public final PathChain PathLeaving;
+        public final Pose scoringPose = new Pose(100, 111);
 
         public Paths(Follower follower) {
             PathFirstScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(121, 127),
+                                    new Pose(123, 122),
 
-                                    new Pose(103, 111)
+                                    scoringPose
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-136))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-136)) //was tangent
 
                     .build();
-
             PathToPresetArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(103, 111),
+                                    scoringPose,
 
-                                    new Pose(102, 83)
+                                    new Pose(100, 84) // 93,95
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-136), Math.toRadians(0))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(102, 83),
+                                    new Pose(100, 84),
 
-                                    new Pose(126, 83)
+                                    new Pose(125, 84) // 106, 95
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -111,17 +113,17 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(126, 83),
+                                    new Pose(125, 84),
 
-                                    new Pose(103, 111)
+                                    scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(36))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-136))
 
                     .build();
 
             PathLeaving = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(103, 111),
+                                    scoringPose,
 
                                     new Pose(85, 127)
                             )
@@ -178,6 +180,8 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
                     sh.shootStop();
                     in.rotateStop();
                     follower.followPath(paths.PathLeaving);
+                    lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+                    lg.fileClose();
                     setPathState(-1);
                 }
                 break;
