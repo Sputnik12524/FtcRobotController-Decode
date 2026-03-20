@@ -16,8 +16,6 @@ public class AutoSniper {
 
     public double highOfShooting = 9.84;
     public double R = 0.1; // meters
-    public double m = 1.7;
-    public double I = 4;
     public double differenceVelocity = 0;
     public boolean AIMING_ACTIVE = true;
     public double targetVeloForArtifact = 0;
@@ -34,17 +32,26 @@ public class AutoSniper {
     public double angleOfAdjuster;
     public double angleOfAdjusterBeforeNormalising;
     public double angleByFormulas;
+
     double ITM = 0.0254;
     double g = 9.81;
+
     public static double MAX_ANGLE = 60;
     public static double MIN_ANGLE = 45;
     public static double POS_FOR_MAX_ANGLE = 0.125;
     public static double POS_FOR_MIN_ANGLE = 0.005;
 
-    public double sX, sY, c, a, D, l;
+    public double sX, sY, c, a, D, l = 0;
+    public double v1, v2, l1, l2 = 0;
+    public double yA = 48;
 
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
+
+    double[] ValuesOfVelocity = {1, 2, 3, 4, 5};
+    double[] ValuesOfDistance = {1, 2, 3, 4, 5};
+
+    public boolean isShort, isLong = false;
 
 
 
@@ -95,7 +102,7 @@ public class AutoSniper {
         }
     }
 
-    public void continuousSetAngle(double servoPos) {
+    public void continuousSetAngleByFormula(double servoPos) {
         double lastAngleOfAdjuster = convertServoPosToAngle(servoPos);
         if (D > 0) {
             isCalculateNewAngle = true;
@@ -127,7 +134,19 @@ public class AutoSniper {
         sh.setAngleAdjuster(convertAngleToServoPos(angleOfAdjuster));
     }
 
-    public void continuousSetVelocityTarget(double servoPos, double lastAngularVelocity) {
+    public void setAngleByLocalisation(double y, double servoPos) {
+        if (y <= yA && servoPos != Shooter.VELOCITY_FOR_LONG_THROW) {
+            sh.setLongThrowMode();
+            isLong = true;
+            isShort = false;
+        } else if (y > yA && servoPos != Shooter.VELOCITY_FOR_SHORT_THROW) {
+            sh.setShortThrowMode();
+            isLong = false;
+            isShort = true;
+        }
+    }
+
+    public void continuousSetVelocityTargetByFormula(double servoPos, double lastAngularVelocity) {
         double angleOfAdjuster = Math.toRadians( convertServoPosToAngle(servoPos) );
         if ( (angleOfAdjusterBeforeNormalising <= MIN_ANGLE || angleOfAdjusterBeforeNormalising >= MAX_ANGLE)
         && (angleOfAdjusterBeforeNormalising != 0) ) {
@@ -139,14 +158,29 @@ public class AutoSniper {
             sh.setVelocityTarget(lastAngularVelocity);
         }
     }
+    public void continuousSetVelocityTargetByInterpol() {
+        for (int i=0;  i<ValuesOfDistance.length-1;  i++) {
+            if (ValuesOfDistance[i] <= l && l <= ValuesOfDistance[i+1]) {
+                v1 = ValuesOfVelocity[i];
+                v2 = ValuesOfVelocity[i];
+                l1 = ValuesOfDistance[i];
+                l2 = ValuesOfDistance[i+1];
 
-    public void continuousCalculateGenaralValues(double x, double y, double angleOfDrivetrain, double angularVelocity) {
+                targetVelo = v1 + ( ((l-l1)/(l2-l1))*(v2-v1) );
+                sh.setVelocityTarget(targetVelo);
+            }
+        }
+    }
+
+
+
+    public void continuousCalculateGeneralValues(double x, double y, double angleOfDrivetrain, double angularVelocity) {
         sY = cMTI(sv * Math.sin(angleOfDrivetrain)); //inches
         sX = cMTI(sv * Math.cos(angleOfDrivetrain)); //inches
-        l = cITM( Math.sqrt(  ( goalY - (y+sY) ) + ( goalX - (x+sX) )  ) ); //meters
-        a = g * Math.pow(l,2) / (2 * Math.pow(angularVelocity,2));
+        l = cITM(Math.sqrt((goalY - (y + sY)) + (goalX - (x + sX)))); //meters
+        a = g * Math.pow(l, 2) / (2 * Math.pow(angularVelocity, 2));
         c = a - cITM(z);
-        D = Math.pow(l,2) - 4*a*c;
+        D = Math.pow(l, 2) - 4 * a * c;
     }
 
 
