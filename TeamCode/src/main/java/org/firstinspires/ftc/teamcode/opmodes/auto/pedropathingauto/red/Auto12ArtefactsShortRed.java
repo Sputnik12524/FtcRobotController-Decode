@@ -93,7 +93,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
         public final PathChain PathLeaving;
         public final PathChain SecondPathToPresetArtifacts, SecondPathIntakingArtifacts, SecondPathScoring;
         public final PathChain OpenPath;
-        //public final PathChain OpenPath2;
+       // public final PathChain OpenPath2;
         public final PathChain ThirdPathPresetArtefacts, ThirdPathIntakingArtefacts, ThirdPathScoring;
         public final PathChain FourthPathToPreset, FourthPathIntaking, FourthPathScoring;
         final Pose scoringPath = new Pose(101, 111);
@@ -113,7 +113,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     scoringPath,
 
-                                    new Pose(100, 84) // 93,95
+                                    new Pose(100, 84)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-136), Math.toRadians(0))
 
@@ -122,7 +122,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     new Pose(100, 84),
 
-                                    new Pose(125, 84) // 106, 95
+                                    new Pose(123, 84) // 106, 95
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -131,19 +131,11 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     new Pose(125, 84),
 
-//                                    new Pose(128, 73)
-//                            )
-//                    ).setConstantHeadingInterpolation(Math.toRadians(20))
-//                    .build();
-//
-//            OpenPath2 = follower.pathBuilder().addPath(
-//                            new BezierLine(
-//                                    new Pose(110, 84),
-
                                     new Pose(128, 73)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(20), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(50))
                     .build();
+
 
             SecondPathScoring = follower.pathBuilder().addPath(
                             new BezierLine(
@@ -151,7 +143,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                                     scoringPath
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(20))
+                    ).setLinearHeadingInterpolation(Math.toRadians(50), Math.toRadians(0))
 
                     .build();
 
@@ -159,9 +151,9 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     scoringPath,
 
-                                    new Pose(100, 58) //93,72
+                                    new Pose(100, 58)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(20), Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
 
@@ -181,7 +173,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                                     scoringPath
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-136))
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
 
@@ -191,7 +183,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                                     new Pose(100, 36)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-136), Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
 
@@ -211,7 +203,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                                     scoringPath
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-136))
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
 
@@ -221,7 +213,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                                     new Pose(125, 103)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-136))
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
         }
