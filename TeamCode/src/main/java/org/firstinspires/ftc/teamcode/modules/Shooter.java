@@ -17,6 +17,8 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
 public class Shooter {
+    enum ShStates {ZONE_CHECK, SPINNING, SPEED_CHECK, SHOOT}
+    ShStates state = ShStates.ZONE_CHECK;
     Transfer tr;
     public final DcMotorEx shooterUpper;
     public final DcMotorEx shooterLower;
@@ -32,7 +34,7 @@ public class Shooter {
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
 
-    public int state = 0;
+    public int st = 0;
 
     //---------------------------------------------- DASHBOARD
 
@@ -230,26 +232,27 @@ public class Shooter {
     }
 
     public void threeArtefactsShooting(){
-        switch (state){
+        switch (st){
             case 0:
                 switchCover();
                 shootPos = angleAdjuster.getPosition();
-                if(isTunnelOpen) transit(1);
+                if(isTunnelOpen) tr(1);
             case 1:
                 setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-                if(timer.milliseconds() > TIME_BETWEEN_SHOOT) transit(2);
+                if(timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(2);
             case 2:
                 setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-                if(timer.milliseconds() > TIME_BETWEEN_SHOOT) transit(3);
+                if(timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(3);
             case 3:
                 if (timer.milliseconds() > TIME_AFTER_SHOOT){
                     complete = true;
                     canShoot = false;
                     setMode(shootPos);
-                    transit(0);
+                    tr(0);
                 }
         }
     }
+
 
     public void switchCover() {
         if (!inZone()) {
@@ -259,27 +262,16 @@ public class Shooter {
         else closeTunnel();
     }
 
-    public void transit(int state){
+    public void tr(int state){
+        timer.reset();
+        this.st = state;
+    }
+    public void transfer(ShStates state){
         timer.reset();
         this.state = state;
     }
 
     //---------------------------------------------- AUTONOMOUS
-
-    public void waitForShoot() {
-        for (int i = 0; i < 5; i++) {
-            opMode.sleep(2000);
-            openTunnel();
-            opMode.sleep(200);
-            closeTunnel();
-        }
-
-    }
-
-    public boolean isDetected() {
-        return getVelocityRPS() < velocityTarget / TPR - DETECT_SHOOT;
-    }
-
     public boolean isSpinUp() {
         if (getVelocityRPS() == 0) return false;
         return getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP;

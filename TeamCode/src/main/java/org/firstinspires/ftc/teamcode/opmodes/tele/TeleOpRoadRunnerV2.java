@@ -30,6 +30,18 @@ import java.io.IOException;
 @TeleOp(name = "TeleOpRR_V2", group = "0")
 @Config
 public class TeleOpRoadRunnerV2 extends LinearOpMode {
+    enum MODULES {INTAKE, SHOOTER, TURRET, DRIVE_TRAIN}
+
+    MODULES modules;
+
+    enum AUTO {DEF, B_PARK, R_PARK, B_HUMAN, R_HUMAN, B_GOAL, R_GOAL, INIT_PARK, INIT_HUMAN, INIT_GOAL}
+
+    AUTO auto = AUTO.DEF;
+
+    enum AutoStates {DEF, MOVE, CHECK, SHOOT, INIT}
+
+    AutoStates autoState = AutoStates.DEF;
+
     Paths paths;
     Shooter sh;
     Intake in;
@@ -40,6 +52,8 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     Logger logger;
     Limelight ll;
     ElapsedTime timer;
+    ElapsedTime autoStTimer;
+    ElapsedTime autoTimer;
 
     int pathState;
 
@@ -47,7 +61,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
     MODE mode = MODE.DRIVER;
 
-
+    double target; //переместить
     boolean wroteLogger = true;
     boolean isPoseReset = false;
     Alliance alliance;
@@ -81,8 +95,10 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         tt = new Turret(this, ll);
         as = new AutoSniper(tt, sh);
         logger = new Logger("pospos");
-        paths = new Paths(follower);
+        paths = new Paths();
         timer = new ElapsedTime();
+        autoTimer = new ElapsedTime();
+        autoStTimer = new ElapsedTime();
 
 
         ll.startOrStopLL(false);
@@ -133,14 +149,16 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                 as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
             if (mode == MODE.DRIVER) {
+                if (gamepad2.bWasPressed()) {
+                    setAuto(AUTO.INIT_PARK);
 
-                if (g1.dpadUp.isHeldFor(1000)) {
-                    mode = MODE.AUTO;
-                    setPathState(0);
                 }
 
-                if (gamepad2.aWasPressed()) {
-                    setPathState(0);
+                if (gamepad2.aWasPressed()) { //кнопки переписать
+                    setAuto(AUTO.INIT_GOAL);
+                }
+                if(gamepad2.xWasPressed()){
+                    setAuto(AUTO.INIT_HUMAN);
                 }
 
                 //------------------------------------- DRIVETRAIN
@@ -251,9 +269,13 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                     as.targetBonus -= 5;
                 }
             } else {
-                pathsUpdate();
-                if (complete) mode = MODE.DRIVER;
-                if (g1.dpadUp.isHeldFor(1000)) mode = MODE.DRIVER;
+                autoStatesUpdate();
+                autoUpdate();
+                if (complete){
+                    mode = MODE.DRIVER;
+                    complete = false;
+                }
+                if (g1.dpadUp.isPressed()) mode = MODE.DRIVER;
             }
 
 
@@ -280,114 +302,168 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     }
 
     public static class Paths {
-        public final PathChain blueParking;
-        public final PathChain redParking;
-        public final PathChain blueHuman;
-        public final PathChain redHuman;
-        public final PathChain blueGoal;
-        public final PathChain redGoal;
-
-        public Paths(Follower follower) {
-            blueParking = follower.pathBuilder().addPath(
+        public PathChain blueParking(Follower follower) {
+            return follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(follower.getPose().getX(), follower.getPose().getY()),
-                                    new Pose(105, 33))
+                                    follower.getPose(),
+                                    new Pose(105, 33)
+                            )
                     ).setConstantHeadingInterpolation(Math.toRadians(90))
                     .build();
 
-            redParking = follower.pathBuilder().addPath(
+        }
+
+        public PathChain redParking(Follower follower) {
+            return follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(follower.getPose().getX(), follower.getPose().getY()),
-                                    new Pose(38.5, 33))
+                                    follower.getPose(),
+                                    new Pose(38.5, 33)
+                            )
                     ).setConstantHeadingInterpolation(Math.toRadians(90))
                     .build();
+        }
 
-            blueHuman = follower.pathBuilder().addPath(
+        public PathChain blueHuman(Follower follower) {
+            return follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(follower.getPose().getX(), follower.getPose().getY()),
+                                    follower.getPose(),
                                     new Pose(92, 8)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(90))
                     .build();
+        }
 
-            redHuman = follower.pathBuilder().addPath(
+        public PathChain redHuman(Follower follower) {
+            return follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(follower.getPose().getX(), follower.getPose().getY()),
+                                    follower.getPose(),
                                     new Pose(54, 6)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(90))
                     .build();
+        }
 
-            blueGoal = follower.pathBuilder().addPath(
+        public PathChain blueGoal(Follower follower) {
+            return follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(follower.getPose().getX(), follower.getPose().getY()),
+                                    follower.getPose(),
                                     new Pose(42, 105)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(90))
                     .build();
+        }
 
-            redGoal = follower.pathBuilder().addPath(
-                    new BezierLine(
-                            new Pose(follower.getPose().getX(), follower.getPose().getY()),
-                            new Pose(102, 105)
-                    )
-            ).setConstantHeadingInterpolation(Math.toRadians(90))
+        public PathChain redGoal(Follower follower) {
+            return follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    follower.getPose(),
+                                    new Pose(102, 105)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(90))
                     .build();
-
         }
-
     }
 
-    public void pathsUpdate() {
-        switch (pathState) {
-            case 0:
-                if (alliance == Alliance.BLUE) follower.followPath(paths.blueParking);
-                else if (alliance == Alliance.RED) follower.followPath(paths.redParking);
-                if (!follower.isBusy()) complete = true;
-                break;
-            case 1:
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
-                sh.closeTunnel();
-                in.rotateStop();
-                if (alliance == Alliance.BLUE) follower.followPath(paths.blueHuman);
-                else if (alliance == Alliance.RED) follower.followPath(paths.redHuman);
-                if (sh.isSpinUp()) {
-                    timer.reset();
-                    in.rotateIn();
-                    sh.openTunnel();
-                    isSpinUp = true;
-                }
-                if (!follower.isBusy() && timer.milliseconds() > 500 && isSpinUp){
-                    complete = true;
-                    isSpinUp = false;
-                }
+    public void autoStatesUpdate() {
+        switch (autoState) {
+            case DEF:
                 break;
 
-            case 3:
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+            case INIT:
+                sh.setVelocityTarget(target);
                 sh.closeTunnel();
                 in.rotateStop();
-                if (alliance == Alliance.BLUE) follower.followPath(paths.blueGoal);
-                else if (alliance == Alliance.RED) follower.followPath(paths.redGoal);
-                if (sh.isSpinUp()) {
-                    timer.reset();
-                    in.rotateIn();
-                    sh.openTunnel();
-                    isSpinUp = true;
-                }
-                if (!follower.isBusy() && timer.milliseconds() > 500 && isSpinUp){
-                    complete = true;
-                    isSpinUp = false;
-                }
+                setAutoState(AutoStates.MOVE);
                 break;
 
+            case MOVE:
+                if (!follower.isBusy()) setAutoState(AutoStates.CHECK);
+                break;
+
+            case CHECK:
+                if (sh.isSpinUp()) setAutoState(AutoStates.SHOOT);
+                break;
+
+            case SHOOT:
+                in.rotateIn();
+                sh.openTunnel();
+                if (autoStTimer.milliseconds() > 400){
+                    setAutoState(AutoStates.DEF);
+                    setAuto(AUTO.DEF);
+                    complete = true;
+                }
+                break;
         }
-
     }
 
-    public void setPathState(int state) {
-        pathState = state; //добавить таймер
+    public void autoUpdate() {
+        switch (auto) {
+            case DEF:
+                break;
+
+            case INIT_PARK:
+                if (alliance == Alliance.BLUE) setAuto(AUTO.B_PARK);
+                else if (alliance == Alliance.RED) setAuto(AUTO.R_PARK);
+                else ;//выкидываем исключение
+                break;
+
+            case B_PARK:
+                follower.followPath(paths.blueParking(follower));
+                break;
+
+            case R_PARK:
+                follower.followPath(paths.redParking(follower));
+                break; //аналогично
+
+            case INIT_GOAL:
+                if (alliance == Alliance.BLUE) setAuto(AUTO.B_GOAL);
+                else if (alliance == Alliance.RED) setAuto(AUTO.R_GOAL);
+                else ;//выкидываем исключение
+                break;
+
+            case R_GOAL:
+                follower.followPath(paths.blueGoal(follower));
+                target = Shooter.VELOCITY_FOR_SHORT_THROW;
+                setAutoState(AutoStates.INIT);
+                break;
+
+            case B_GOAL:
+                follower.followPath(paths.redGoal(follower));
+                setAutoState(AutoStates.INIT);
+                target = Shooter.VELOCITY_FOR_SHORT_THROW;
+                break;
+
+            case INIT_HUMAN:
+                if (alliance == Alliance.BLUE) setAuto(AUTO.B_HUMAN);
+                else if (alliance == Alliance.RED) setAuto(AUTO.R_HUMAN);
+                else ;//выкидываем исключение
+                break;
+
+            case B_HUMAN:
+                follower.followPath(paths.blueHuman(follower));
+                setAutoState(AutoStates.INIT);
+                target = Shooter.VELOCITY_FOR_LONG_THROW;
+                break;
+
+            case R_HUMAN:
+                follower.followPath(paths.redHuman(follower));
+                setAutoState(AutoStates.INIT);
+                target = Shooter.VELOCITY_FOR_LONG_THROW;
+                break;
+        }
+    }
+
+
+    public void setAutoState(AutoStates state) {
         mode = MODE.AUTO;
+        autoState = state;
+        autoStTimer.reset();
+    }
+
+    public void setAuto(AUTO auto) {
+        mode = MODE.AUTO;
+        this.auto = auto;
+        autoTimer.reset();
     }
 
     public static class PoseStorage {
