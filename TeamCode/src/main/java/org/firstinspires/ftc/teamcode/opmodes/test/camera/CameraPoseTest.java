@@ -29,22 +29,28 @@ public class CameraPoseTest extends LinearOpMode {
         while (opModeIsActive()) {
             follower.startTeleopDrive();
             follower.setTeleOpDrive(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
-                            gamepad1.left_trigger - gamepad1.right_trigger,
-                            true // Robot Centric
-                    );
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    gamepad1.left_trigger - gamepad1.right_trigger,
+                    true // Robot Centric
+            );
             try {
-                telemetry.addData("Tag ID", limelight3A.getTagInfo());
-                telemetry.addData("X by Tag", limelight3A.getPoseByAprilTag().x);
-                telemetry.addData("Y by Tag", limelight3A.getPoseByAprilTag().y);
-                telemetry.addData("Z by Tag", limelight3A.getPoseByAprilTag().z);
-                telemetry.addData("botpose", new Pose(limelight3A.getPoseByAprilTag().x,
-                        limelight3A.getPoseByAprilTag().y,
-                        limelight3A.getPoseByAprilTag().z,
-                        FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE));
+                if(gamepad1.aWasPressed()) {
+                    telemetry.addData("Tag ID", limelight3A.getTagInfo());
+                    telemetry.addData("X by Tag", limelight3A.getPoseByAprilTag().x);
+                    telemetry.addData("Y by Tag", limelight3A.getPoseByAprilTag().y);
+                    telemetry.addData("Z by Tag", limelight3A.getPoseByAprilTag().z);
+                    telemetry.addData("botpose", new Pose(limelight3A.getPoseByAprilTag().x,
+                            limelight3A.getPoseByAprilTag().y,
+                            limelight3A.getPoseByAprilTag().z,
+                            FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE));
 
-                telemetry.update();
+                    telemetry.update();
+                } else if (gamepad1.bWasPressed()) {
+                    telemetry.addData("Tag ID", limelight3A.getTagInfo());
+                    telemetry.addData("X by Tag", limelight3A.getGoalTag().get(2));
+                    telemetry.addData("Y by Tag", limelight3A.getGoalTag().get(3));
+                }
             } catch(Exception e){
                 telemetry.addLine("Ахахахахаха лохи наллпойнтер");
             }
