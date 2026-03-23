@@ -160,7 +160,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(50, 60),
 
-                                    new Pose(35, 60)
+                                    new Pose(23, 60)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
