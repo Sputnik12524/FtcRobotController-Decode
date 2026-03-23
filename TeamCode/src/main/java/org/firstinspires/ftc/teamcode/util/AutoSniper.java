@@ -94,8 +94,8 @@ public class AutoSniper {
                 angleOfTurret = 0;
         }
 
-           // target = tt.angleNormalising(tt.stabilizeTargetByCamera(target));
-            target = tt.angleNormalising(target + targetBonus);
+            target = tt.angleNormalising(tt.stabilizeTargetByCamera(target) + targetBonus);
+           // target = tt.angleNormalising(target + targetBonus);
             tt.turnByTarget(target);
         } else {
             tt.turnByTarget(0);

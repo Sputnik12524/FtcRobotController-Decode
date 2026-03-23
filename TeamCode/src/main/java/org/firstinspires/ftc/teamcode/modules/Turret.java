@@ -166,4 +166,10 @@ public class Turret {
         turret.setPower(0);
     }
 
+    public void tuneTurretPID(double kP, double kI, double kD) {
+        Turret.kP = kP;
+        Turret.kI = kI;
+        Turret.kD = kD;
+    }
+
 }
