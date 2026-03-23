@@ -17,8 +17,11 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
 public class Shooter {
-    enum ShStates {ZONE_CHECK, SPINNING, SPEED_CHECK, SHOOT}
-    ShStates state = ShStates.ZONE_CHECK;
+    public enum ShStates {STOP,SPINNING, SPEED_CHECK, SHOOT}
+    enum MODE{MANUAL, AUTO}
+    MODE mode = MODE.AUTO;
+
+    ShStates state = ShStates.STOP;
     Transfer tr;
     public final DcMotorEx shooterUpper;
     public final DcMotorEx shooterLower;
@@ -67,10 +70,12 @@ public class Shooter {
     //----------------------------------------------
 
     public double velocityTarget = 0;
+    public double bonusLongVelocity = 0;
+    public double bonusShortVelocity = 0;
     public double shootPos = 0;
+    public boolean isCanShoot = false;
 
     //---------------------------------------------- BOOLEANS
-    public boolean detected = false;
     public boolean complete = false;
     public static boolean isTunnelOpen;
 
@@ -93,9 +98,9 @@ public class Shooter {
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
 
-    public Shooter(LinearOpMode opMode, Transfer transfer) {
+    public Shooter(LinearOpMode opMode, Transfer transit) {
         this.opMode = opMode;
-        tr = transfer;
+        tr = transit;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
@@ -113,9 +118,9 @@ public class Shooter {
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
 
-    public Shooter(LinearOpMode opMode, Follower follower, Transfer transfer) {
+    public Shooter(LinearOpMode opMode, Follower follower, Transfer transit) {
         this.opMode = opMode;
-        tr = transfer;
+        tr = transit;
         this.follower = follower;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
@@ -132,6 +137,27 @@ public class Shooter {
 
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+    }
+
+    public void update() {
+        if(mode == MODE.MANUAL) return;
+        switch (state) {
+            case STOP:
+                shootStop();
+                break;
+
+            case SPINNING:
+                //!!!! Метод скорости
+                if (isCanShoot && inZone()) transit(ShStates.SHOOT); //isSpinUp
+                break;
+
+            case SHOOT:
+                openTunnel();
+                if(timer.milliseconds() > 400){
+                    closeTunnel();
+                    transit(ShStates.SPINNING);
+                }
+        }
     }
 
 
@@ -182,16 +208,21 @@ public class Shooter {
     public void shootStop() {
         shooterUpper.setVelocity(0);
         shooterLower.setVelocity(0);
+        closeTunnel();
     }
 
     //---------------------------------------------- ADJUSTER
 
     public void setShortThrowMode() {
+        setVelocityTarget(VELOCITY_FOR_SHORT_THROW + bonusShortVelocity);
         angleAdjuster.setPosition(POS_SHORT_THROW);
+        shootByVelocity();
     }
 
     public void setLongThrowMode() {
+        setVelocityTarget(VELOCITY_FOR_LONG_THROW + bonusLongVelocity);
         angleAdjuster.setPosition(POS_LONG_THROW);
+        shootByVelocity();
     }
 
     public void setAngleAdjuster(double angle) {
@@ -231,20 +262,20 @@ public class Shooter {
         else angleAdjuster.setPosition(pos);
     }
 
-    public void threeArtefactsShooting(){
-        switch (st){
+    public void threeArtefactsShooting() {
+        switch (st) {
             case 0:
                 switchCover();
                 shootPos = angleAdjuster.getPosition();
-                if(isTunnelOpen) tr(1);
+                if (isTunnelOpen) tr(1);
             case 1:
                 setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-                if(timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(2);
+                if (timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(2);
             case 2:
                 setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-                if(timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(3);
+                if (timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(3);
             case 3:
-                if (timer.milliseconds() > TIME_AFTER_SHOOT){
+                if (timer.milliseconds() > TIME_AFTER_SHOOT) {
                     complete = true;
                     canShoot = false;
                     setMode(shootPos);
@@ -262,11 +293,16 @@ public class Shooter {
         else closeTunnel();
     }
 
-    public void tr(int state){
+    public void tr(int state) {
         timer.reset();
         this.st = state;
     }
-    public void transfer(ShStates state){
+
+    public void setManual(boolean manual){
+        mode = manual ? MODE.MANUAL: MODE.AUTO;
+    }
+
+    public void transit(ShStates state) {
         timer.reset();
         this.state = state;
     }

@@ -35,5 +35,4 @@ public class Intake {
         transferServo.setPower(0);
     }
 
-
 }

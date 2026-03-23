@@ -4,9 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -23,6 +21,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.GamepadManager;
 import org.firstinspires.ftc.teamcode.util.Logger;
+import org.firstinspires.ftc.teamcode.util.Paths;
 
 import java.io.IOException;
 
@@ -33,6 +32,10 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     enum MODULES {INTAKE, SHOOTER, TURRET, DRIVE_TRAIN}
 
     MODULES modules;
+
+    enum MMODE {MANUAL, AUTO}
+
+    MMODE mod = MMODE.AUTO;
 
     enum AUTO {DEF, B_PARK, R_PARK, B_HUMAN, R_HUMAN, B_GOAL, R_GOAL, INIT_PARK, INIT_HUMAN, INIT_GOAL}
 
@@ -54,8 +57,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     ElapsedTime timer;
     ElapsedTime autoStTimer;
     ElapsedTime autoTimer;
-
-    int pathState;
+    DriveTrain dt;
 
     enum MODE {AUTO, DRIVER}
 
@@ -67,21 +69,9 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     Alliance alliance;
     boolean complete = false;
     /// Intake
-    boolean isRotateIn = false;
-    boolean isShootingShort = false;
-    boolean isShootingLong = false;
-    boolean isRotateOut = false;
-    boolean stateA1 = false;
-    boolean stateB1 = false;
 
     /// Shooter
-    boolean stateY1 = false;
-    boolean stateX1 = false;
     boolean attentionControl = false;
-    public double shortBonusVelocity = 0;
-    public double longBonusVelocity = 0;
-    boolean isSpinUp = false;
-
 
     @Override
     public void runOpMode() {
@@ -94,8 +84,9 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         in = new Intake(this);
         tt = new Turret(this, ll);
         as = new AutoSniper(tt, sh);
+        dt = new DriveTrain(this);
         logger = new Logger("pospos");
-        paths = new Paths();
+        paths = new Paths(follower);
         timer = new ElapsedTime();
         autoTimer = new ElapsedTime();
         autoStTimer = new ElapsedTime();
@@ -120,14 +111,9 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             as.setAlliance(Alliance.NONE);
         }
 
-        follower.update();
 
         if (wroteLogger)
             as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
-
-        isShootingLong = false;
-        isShootingShort = false;
-        DriveTrain dt = new DriveTrain(this);
 
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -135,148 +121,22 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         sh.closeTunnel();
         tt.turnByTarget(0);
         tt.turretRegulator.start();
-
         follower.update();
 
         waitForStart();
 
         while (opModeIsActive()) {
-            g1.update();
-            g2.update();
-            follower.update();
-            if (!attentionControl) sh.threeArtefactsShooting();
-            if (!attentionControl)
-                as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
-
-            if (mode == MODE.DRIVER) {
-                if (gamepad2.bWasPressed()) {
-                    setAuto(AUTO.INIT_PARK);
-
-                }
-
-                if (gamepad2.aWasPressed()) { //кнопки переписать
-                    setAuto(AUTO.INIT_GOAL);
-                }
-                if(gamepad2.xWasPressed()){
-                    setAuto(AUTO.INIT_HUMAN);
-                }
-
-                //------------------------------------- DRIVETRAIN
-
-
-                if (gamepad1.right_bumper) {
-                    dt.turnRightSlowMode();
-                } else if (gamepad1.left_bumper) {
-                    dt.turnLeftSlowMode();
-                } else {
-                    dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
-                }
-
-
-                //-------------------------------------- INTAKE
-
-                if (gamepad1.a && !isRotateIn && !stateA1) {
-                    in.rotateIn();
-                    isRotateIn = true;
-                    isRotateOut = false;
-                } else if (gamepad1.a && isRotateIn && !stateA1) {
-                    in.rotateStop();
-                    isRotateIn = false;
-                }
-                if (gamepad1.b && !isRotateOut && !stateB1) {
-                    in.rotateOut();
-                    isRotateOut = true;
-                    isRotateIn = false;
-                } else if (gamepad1.b && isRotateOut && !stateB1) {
-                    in.rotateStop();
-                    isRotateOut = false;
-                }
-                stateA1 = gamepad1.a;
-                stateB1 = gamepad1.b;
-
-
-                //------------------------------------ SHOOTER
-                if (!attentionControl) if (gamepad1.dpad_up) sh.canShoot = true;
-
-                if (gamepad2.yWasPressed()) (shortBonusVelocity) += 0.75;
-                if (gamepad2.xWasPressed()) (shortBonusVelocity) -= 0.75;
-                if (gamepad2.bWasPressed()) (longBonusVelocity) += 0.75;
-                if (gamepad2.aWasPressed()) (longBonusVelocity) -= 0.75;
-
-
-                if (gamepad1.y && !isShootingLong && !stateY1) {
-                    sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW + longBonusVelocity);
-                    sh.setLongThrowMode();
-                    sh.shootByVelocity();
-                    isShootingLong = true;
-                    isShootingShort = false;
-                } else if (gamepad1.x && !isShootingShort && !stateX1) {
-                    sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW + shortBonusVelocity);
-                    sh.setShortThrowMode();
-                    sh.shootByVelocity();
-                    isShootingLong = false;
-                    isShootingShort = true;
-                } else if ((gamepad1.y && !stateY1 && isShootingLong) || (gamepad1.x && !stateX1 && isShootingShort)) {
-                    sh.closeTunnel();
-                    sh.shootStop();
-                    isShootingLong = false;
-                    isShootingShort = false;
-                }
-                stateY1 = gamepad1.y;
-                stateX1 = gamepad1.x;
-
-                //---------------------------------------- TURRET
-
-
-                /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
-
-                if (g1.dpadRight.isPressed() && !attentionControl && g1.dpadRight.getToggleState()) {
-                    attentionControl = true;
-                    tt.turnByTarget(0);
-                } else if (g1.dpadRight.isPressed() && attentionControl && !g1.dpadRight.getToggleState()) {
-                    attentionControl = false;
-                }
-
-                if (gamepad2.yWasPressed()) {
-                    tt.turnByTarget(0);
-                }
-
-                if (attentionControl) {
-                    if (gamepad1.dpad_up) {
-                        sh.openTunnel();
-                    } else if (gamepad1.dpad_down) {
-                        sh.closeTunnel();
-                    }
-                }
-                if (g2.dpadUp.isPressed()) {
-                    tt.turnByTarget(0);
-                    isPoseReset = true;
-                    follower.setPose(new Pose(135, 7, Math.toRadians(180)));
-                    as.setAlliance(Alliance.BLUE);
-                }
-
-                if (g2.dpadDown.isPressed()) {
-                    isPoseReset = true;
-                    tt.turnByTarget(0);
-                    follower.setPose(new Pose(11, 7, 0));
-                    as.setAlliance(Alliance.RED);
-                }
-
-                if (gamepad2.leftBumperWasPressed()) {
-                    as.targetBonus += 5;
-                }
-                if (gamepad2.rightBumperWasPressed()) {
-                    as.targetBonus -= 5;
-                }
-            } else {
+            if (mode == MODE.DRIVER) driverUpdate(g1, g2);
+            else {
+                follower.update();
                 autoStatesUpdate();
                 autoUpdate();
-                if (complete){
+                if (complete) {
                     mode = MODE.DRIVER;
                     complete = false;
                 }
-                if (g1.dpadUp.isPressed()) mode = MODE.DRIVER;
             }
+            sh.update();
 
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
@@ -289,8 +149,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
             telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
             telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
-
-
             dashtele.addData("Target ", sh.velocityTarget / 28);
             dashtele.addData("Velocity shooter", sh.getVelocityRPS());
             dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
@@ -301,68 +159,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         tt.turretRegulator.interrupt();
     }
 
-    public static class Paths {
-        public PathChain blueParking(Follower follower) {
-            return follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    follower.getPose(),
-                                    new Pose(105, 33)
-                            )
-                    ).setConstantHeadingInterpolation(Math.toRadians(90))
-                    .build();
-
-        }
-
-        public PathChain redParking(Follower follower) {
-            return follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    follower.getPose(),
-                                    new Pose(38.5, 33)
-                            )
-                    ).setConstantHeadingInterpolation(Math.toRadians(90))
-                    .build();
-        }
-
-        public PathChain blueHuman(Follower follower) {
-            return follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    follower.getPose(),
-                                    new Pose(92, 8)
-                            )
-                    ).setConstantHeadingInterpolation(Math.toRadians(90))
-                    .build();
-        }
-
-        public PathChain redHuman(Follower follower) {
-            return follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    follower.getPose(),
-                                    new Pose(54, 6)
-                            )
-                    ).setConstantHeadingInterpolation(Math.toRadians(90))
-                    .build();
-        }
-
-        public PathChain blueGoal(Follower follower) {
-            return follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    follower.getPose(),
-                                    new Pose(42, 105)
-                            )
-                    ).setConstantHeadingInterpolation(Math.toRadians(90))
-                    .build();
-        }
-
-        public PathChain redGoal(Follower follower) {
-            return follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    follower.getPose(),
-                                    new Pose(102, 105)
-                            )
-                    ).setConstantHeadingInterpolation(Math.toRadians(90))
-                    .build();
-        }
-    }
 
     public void autoStatesUpdate() {
         switch (autoState) {
@@ -387,7 +183,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             case SHOOT:
                 in.rotateIn();
                 sh.openTunnel();
-                if (autoStTimer.milliseconds() > 400){
+                if (autoStTimer.milliseconds() > 400) {
                     setAutoState(AutoStates.DEF);
                     setAuto(AUTO.DEF);
                     complete = true;
@@ -408,11 +204,11 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                 break;
 
             case B_PARK:
-                follower.followPath(paths.blueParking(follower));
+                follower.followPath(paths.blueParking(follower.getPose()));
                 break;
 
             case R_PARK:
-                follower.followPath(paths.redParking(follower));
+                follower.followPath(paths.redParking(follower.getPose()));
                 break; //аналогично
 
             case INIT_GOAL:
@@ -422,13 +218,13 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                 break;
 
             case R_GOAL:
-                follower.followPath(paths.blueGoal(follower));
+                follower.followPath(paths.blueGoal(follower.getPose()));
                 target = Shooter.VELOCITY_FOR_SHORT_THROW;
                 setAutoState(AutoStates.INIT);
                 break;
 
             case B_GOAL:
-                follower.followPath(paths.redGoal(follower));
+                follower.followPath(paths.redGoal(follower.getPose()));
                 setAutoState(AutoStates.INIT);
                 target = Shooter.VELOCITY_FOR_SHORT_THROW;
                 break;
@@ -440,19 +236,18 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                 break;
 
             case B_HUMAN:
-                follower.followPath(paths.blueHuman(follower));
+                follower.followPath(paths.blueHuman(follower.getPose()));
                 setAutoState(AutoStates.INIT);
                 target = Shooter.VELOCITY_FOR_LONG_THROW;
                 break;
 
             case R_HUMAN:
-                follower.followPath(paths.redHuman(follower));
+                follower.followPath(paths.redHuman(follower.getPose()));
                 setAutoState(AutoStates.INIT);
                 target = Shooter.VELOCITY_FOR_LONG_THROW;
                 break;
         }
     }
-
 
     public void setAutoState(AutoStates state) {
         mode = MODE.AUTO;
@@ -464,6 +259,120 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         mode = MODE.AUTO;
         this.auto = auto;
         autoTimer.reset();
+    }
+
+    public void resetPose(Alliance alliance) {
+        isPoseReset = true;          //tt.turnByTarget(0); //пересмотреть
+        follower.setPose(new Pose(11, 7, 0));
+        as.setAlliance(alliance);
+    }
+
+    public void driverUpdate(GamepadManager g1, GamepadManager g2) {
+        g1.update();
+        g2.update();
+
+        /// =====================AUTO===============================///
+
+        if (gamepad2.bWasPressed()) {
+            setAuto(AUTO.INIT_PARK);
+        }
+        if (gamepad2.aWasPressed()) { //кнопки переписать
+            setAuto(AUTO.INIT_GOAL);
+        }
+        if (gamepad2.xWasPressed()) {
+            setAuto(AUTO.INIT_HUMAN);
+        }
+
+        /// =====================DRIVE TRAIN===============================///
+
+        if (gamepad1.right_bumper) {
+            dt.turnRightSlowMode();
+        } else if (gamepad1.left_bumper) {
+            dt.turnLeftSlowMode();
+        } else {
+            dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
+        }
+
+        /// =====================INTAKE===============================///
+
+        if (g1.A.isPressed() && g1.A.getToggleState()) {
+            in.rotateIn();
+        } else if (g1.A.isPressed() && !g1.A.getToggleState()) {
+            in.rotateStop();
+        }
+
+        if (g1.B.isPressed() && g1.B.getToggleState()) {
+            in.rotateOut();
+        } else if (g1.B.isPressed() && !g1.B.getToggleState()) {
+            in.rotateStop();
+        }
+
+        /// =====================SHOOTER===============================///
+
+        if (!attentionControl) if (gamepad1.dpad_up) sh.isCanShoot = true;
+
+        if (gamepad2.yWasPressed()) (sh.bonusShortVelocity) += 0.75;
+        if (gamepad2.xWasPressed()) (sh.bonusShortVelocity) -= 0.75;
+        if (gamepad2.bWasPressed()) (sh.bonusLongVelocity) += 0.75;
+        if (gamepad2.aWasPressed()) (sh.bonusLongVelocity) -= 0.75;
+
+
+//                if (g1.Y.isPressed() && g1.Y.getToggleState()) {
+//                    sh.setLongThrowMode();
+//                } else if (g1.X.isPressed() && g1.X.getToggleState()) {
+//                    sh.setShortThrowMode();
+//                } else if ((g1.Y.isPressed() && !g1.Y.getToggleState()) || (g1.X.isPressed() && !g1.X.getToggleState())) {
+//                    sh.shootStop();
+//                }
+        if (g1.Y.isPressed() && g1.Y.getToggleState()) {
+            sh.transit(Shooter.ShStates.SPINNING);
+        } else if (g1.X.isPressed() && g1.X.getToggleState()) {
+            sh.transit(Shooter.ShStates.STOP);
+        }
+
+        /// =====================TURRET===============================///
+        if (!attentionControl)
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+
+        if (gamepad2.leftBumperWasPressed()) {
+            as.targetBonus += 5;
+        }
+        if (gamepad2.rightBumperWasPressed()) {
+            as.targetBonus -= 5;
+        }
+
+        /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
+
+        if (g1.dpadRight.isPressed() && g1.dpadRight.getToggleState()) {
+            attentionControl = true;
+            sh.setManual(true);
+            tt.turnByTarget(0);
+        } else if (g1.dpadRight.isPressed() && !g1.dpadRight.getToggleState()) {
+            attentionControl = false;
+            sh.setManual(false);
+        }
+
+        if (attentionControl) {
+            if (gamepad1.dpad_up) {
+                sh.openTunnel();
+            } else if (gamepad1.dpad_down) {
+                sh.closeTunnel();
+            }
+        }
+
+        /// =====================POSE RESET===============================///
+
+        if (g2.dpadUp.isPressed()) {
+            resetPose(Alliance.BLUE);
+        }
+
+        if (g2.dpadDown.isPressed()) {
+            resetPose(Alliance.RED);
+        }
+
+        /// =====================ЗАЩИТА😎===============================///
+
+        if (g1.dpadUp.isPressed() && mode == MODE.AUTO) mode = MODE.DRIVER;
     }
 
     public static class PoseStorage {
