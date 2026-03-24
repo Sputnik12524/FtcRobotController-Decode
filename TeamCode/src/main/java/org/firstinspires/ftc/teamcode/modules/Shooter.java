@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 @Config
 public class Shooter {
     public enum ShStates {STOP,SPINNING, SPEED_CHECK, SHOOT}
-    enum MODE{MANUAL, AUTO}
-    MODE mode = MODE.AUTO;
+    public enum MODE{MANUAL, AUTO}
+    public MODE mode = MODE.AUTO;
 
     ShStates state = ShStates.STOP;
     Transfer tr;
