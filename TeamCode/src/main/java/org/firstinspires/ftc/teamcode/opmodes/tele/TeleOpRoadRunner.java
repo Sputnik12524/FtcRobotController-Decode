@@ -47,6 +47,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean attentionControl = false;
     public double shortBonusVelocity = 0;
     public double longBonusVelocity = 0;
+    double lastVelo = 0;
 
 
     @Override
@@ -95,6 +96,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+
+            as.continuousCalculateGeneralValues(
+                    follower.getPose().getX(),
+                    follower.getPose().getY(),
+                    follower.getHeading(),
+                    lastVelo
+            );
             g1.update();
             g2.update();
 
@@ -158,7 +166,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
 
-            if (g1.dpadRight.isPressed() && g1.dpadRight.getToggleState()) {
+            if (g1.dpadRight.isPressed() && !attentionControl && g1.dpadRight.getToggleState()) {
                 attentionControl = true;
                 tt.turnByTarget(0);
             } else if (g1.dpadRight.isPressed() && !g1.dpadRight.getToggleState()) {
@@ -172,6 +180,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 } else if (gamepad1.dpad_down) {
                     sh.closeTunnel();
                 }
+
             }
 
             //------------------------------ POSE RESET
@@ -189,17 +198,25 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 as.setAlliance(Alliance.RED);
             }
 
+            if(gamepad2.leftBumperWasPressed()){
+                as.targetBonus += 5;
+            }
+            if(gamepad2.rightBumperWasPressed()){
+                as.targetBonus -= 5;
+            }
+
+            telemetry.addData("l", as.l);
+            telemetry.addData("Velocity", sh.getVelocityRPS());
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-            telemetry.addData("Velocity", sh.getVelocityRPS());
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
-            // telemetry.addData("Позиция сброшена", isPoseReset);
-            telemetry.addData("Alliance", as.alliance);
-            telemetry.addData("TARGET", sh.velocityTarget / 28);
+          // telemetry.addData("Позиция сброшена", isPoseReset);
+             telemetry.addData("Alliance", as.alliance);
+             telemetry.addData("TARGET", sh.velocityTarget / 28);
             telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
             telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
+            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));;
 
 
             dashtele.addData("Target ", sh.velocityTarget / 28);

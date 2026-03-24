@@ -62,20 +62,21 @@ public class AutoAimingTest extends LinearOpMode {
         sh.setVelocityTarget(0);
         sh.setShortThrowMode();
 
-        while (opModeInInit()) {
-            telemetry.addLine("Start pose: X=72, Y=72");
-            telemetry.addLine("SET ALLIANCE: X for blue, B for red");
-            if (gamepad1.x) {
-                as.setAlliance(Alliance.BLUE);
-                telemetry.addLine("BLUE");
-            } else if (gamepad1.b) {
-                as.setAlliance(Alliance.RED);
-                telemetry.addLine("RED");
-            } else {
-                as.setAlliance(Alliance.NONE);
-                telemetry.addLine("NONE :(");
-            }
-        }
+//        while (opModeInInit()) {
+//            telemetry.addLine("Start pose: X=72, Y=72");
+//            telemetry.addLine("SET ALLIANCE: X for blue, B for red");
+//            if (gamepad1.x) {
+//                as.setAlliance(Alliance.BLUE);
+//                telemetry.addLine("BLUE");
+//            } else if (gamepad1.b) {
+//                as.setAlliance(Alliance.RED);
+//                telemetry.addLine("RED");
+//            } else {
+//                as.setAlliance(Alliance.NONE);
+//                telemetry.addLine("NONE :(");
+//            }
+//            telemetry.update();
+//        }
 
         waitForStart();
 
@@ -225,7 +226,8 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addLine("GENERAL VALUES:");
                 telemetry.addData("x:", follower.getPose().getX());
                 telemetry.addData("y:", follower.getPose().getY());
-                telemetry.addData("head", follower.getPose().getHeading());
+                telemetry.addData("head (deg)", Math.toDegrees(follower.getPose().getHeading()));
+                telemetry.addData("head (rad)", follower.getPose().getHeading());
                 telemetry.addData("sX", as.sX);
                 telemetry.addData("D", as.D);
                 telemetry.addData("a", as.a);
