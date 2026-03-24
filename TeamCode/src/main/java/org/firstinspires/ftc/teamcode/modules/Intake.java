@@ -23,11 +23,11 @@ public class Intake {
     //---------------------------------------------- ROTATE
 
     public void rotateIn() {
-        catcher.setPower(POWER_CATCHER);
+        catcher.setPower(-POWER_CATCHER);
         transferServo.setPower(POWER_SERVO);
     }
     public void rotateOut() {
-        catcher.setPower(-POWER_CATCHER);
+        catcher.setPower(POWER_CATCHER);
         transferServo.setPower(-POWER_SERVO);
     }
     public void rotateStop() {

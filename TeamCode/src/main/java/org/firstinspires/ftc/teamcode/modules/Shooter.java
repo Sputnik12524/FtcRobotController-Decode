@@ -144,18 +144,6 @@ public class Shooter {
         velocityTarget = targetInRPS * TPR;
     }
 
-
-    public double setContinuousVelocityByLocalize(Alliance alliance, double angleOfAdjuster, double x, double y) {
-        switch (alliance) {
-            case BLUE:
-                return Math.sqrt(g * Math.sqrt(x)) / (2 * Math.sin(angleOfAdjuster) * Math.sin(angleOfAdjuster) * (x - (Math.cos(angleOfAdjuster) * (144 - y))));
-            case RED:
-                return Math.sqrt(g * Math.sqrt(144 - x)) / (2 * Math.cos(angleOfAdjuster) * Math.sin(angleOfAdjuster) * ((144 - x) - (Math.cos(angleOfAdjuster) * (144 - y))));
-            default:
-                return velocityTarget;
-        }
-    }
-
     public void shootByVelocityUpper() {
         shooterUpper.setVelocity(velocityTarget);
     }

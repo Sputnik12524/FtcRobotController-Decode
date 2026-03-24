@@ -33,8 +33,8 @@ public class Turret {
     public double pastError;
     public double target = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = 155;
-    public static double POS_LEFTMOST = -180;
+    public static double POS_RIGHTMOST = 225;
+    public static double POS_LEFTMOST = -130;
 
     private boolean stateMagneting = false;
 
@@ -137,21 +137,6 @@ public class Turret {
         return (tar - limelight3A.getGoalTag().get(1));
     }
 
-    public void continuousTurnToGate(Alliance alliance, double x, double y, double angleOfDrivetrain) {
-        if (x <= 0) x = 1;
-        if (x >= 144) x = 143;
-        switch(alliance) {
-            case RED:
-                angleOfTurret = Math.toDegrees(Math.atan((144-y)/(144-x)));
-                break;
-            case BLUE:
-                angleOfTurret = 180 - Math.toDegrees(Math.atan((144-y)/x));
-                break;
-        }
-        target = -(angleOfDrivetrain - angleOfTurret);
-        target -= 180;
-        target = angleNormalising(target);
-    }
     public double angleNormalising(double targetNew) {
         double normTarget = targetNew;
         if (targetNew > POS_RIGHTMOST) {

@@ -48,8 +48,8 @@ public class AutoSniper {
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
 
-    double[] ValuesOfVelocity = {1, 2, 3, 4, 5};
-    double[] ValuesOfDistance = {1, 2, 3, 4, 5};
+    double[] ValuesOfVelocity = {40, 51, 56, 58, 61, 63, 69.45}; // {43, 51, 60, 62-63, 63, 67, 75}
+    double[] ValuesOfDistance = {1.0755, 1.825, 2.4381, 2.8065, 3.2954, 3.5351, 3.9292};
 
     public boolean isShort, isLong = false;
 
@@ -84,18 +84,18 @@ public class AutoSniper {
         switch (alliance) {
             case RED:
                 angleOfTurret = Math.toDegrees(Math.atan( (goalY - (y+sY)) / (goalX - (x+sX)) ));
-                target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) - 180;
+                target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret); // - 180;
                 break;
             case BLUE:
                 angleOfTurret = 180 - Math.toDegrees(Math.atan( (goalY - (y+sY)) / ((x+sX) - goalX) ));
-                target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) - 180;
+                target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret); // - 180;
                 break;
             case NONE:
                 angleOfTurret = 0;
         }
 
-            target = tt.angleNormalising(tt.stabilizeTargetByCamera(target) + targetBonus);
-           // target = tt.angleNormalising(target + targetBonus);
+           // target = tt.angleNormalising(tt.stabilizeTargetByCamera(target) + targetBonus);
+            target = tt.angleNormalising(target);
             tt.turnByTarget(target);
         } else {
             tt.turnByTarget(0);
@@ -160,6 +160,11 @@ public class AutoSniper {
     }
     public void continuousSetVelocityTargetByInterpol() {
         for (int i=0;  i<ValuesOfDistance.length-1;  i++) {
+            if (l > ValuesOfDistance[i+1]) {
+                l = ValuesOfDistance[i+1];
+            } else if (l < ValuesOfDistance[i]){
+                l = ValuesOfDistance[i];
+            }
             if (ValuesOfDistance[i] <= l && l <= ValuesOfDistance[i+1]) {
                 v1 = ValuesOfVelocity[i];
                 v2 = ValuesOfVelocity[i];
@@ -177,7 +182,7 @@ public class AutoSniper {
     public void continuousCalculateGeneralValues(double x, double y, double angleOfDrivetrain, double angularVelocity) {
         sY = cMTI(sv * Math.sin(angleOfDrivetrain)); //inches
         sX = cMTI(sv * Math.cos(angleOfDrivetrain)); //inches
-        l = cITM(Math.sqrt((goalY - (y + sY)) + (goalX - (x + sX)))); //meters
+        l = cITM(Math.sqrt(Math.pow((goalY - (y + sY)), 2) + Math.pow((goalX - (x + sX)), 2))); //meters
         a = g * Math.pow(l, 2) / (2 * Math.pow(angularVelocity, 2));
         c = a - cITM(z);
         D = Math.pow(l, 2) - 4 * a * c;

@@ -54,6 +54,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
     boolean attentionControl = false;
     public double shortBonusVelocity = 0;
     public double longBonusVelocity = 0;
+    double lastVelo = 0;
 
 
     @Override
@@ -72,18 +73,20 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
         ll.startOrStopLL(false);
 
-        try {
-            logger.getAll("pospos");
-            follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
-            if (logger.al == Alliance.BLUE) {
-                as.setAlliance(Alliance.BLUE);
-            } else as.setAlliance(Alliance.RED);
-        } catch (IOException | NullPointerException e) {
-            wroteLogger = false;
-            follower.setStartingPose(new Pose(72, 72, 0));
-            attentionControl = true;
-            as.setAlliance(Alliance.NONE);
-        }
+//        try {
+//            logger.getAll("pospos");
+//            follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
+//            if (logger.al == Alliance.BLUE) {
+//                as.setAlliance(Alliance.BLUE);
+//            } else as.setAlliance(Alliance.RED);
+//        } catch (IOException | NullPointerException e) {
+//            wroteLogger = false;
+//            follower.setStartingPose(new Pose(72, 72, 0));
+//                    attentionControl = true;
+//            as.setAlliance(Alliance.RED);
+//        }
+        as.setAlliance(Alliance.BLUE);
+        follower.setStartingPose(new Pose(72, 72, 0));
 
         follower.update();
 
@@ -106,6 +109,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+
+            as.continuousCalculateGeneralValues(
+                    follower.getPose().getX(),
+                    follower.getPose().getY(),
+                    follower.getHeading(),
+                    lastVelo
+            );
             g1.update();
             g2.update();
 
@@ -144,8 +154,8 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
 
             //------------------------------------ SHOOTER
-            if (!attentionControl) sh.threeArtefactsShooting();
-            if (!attentionControl) if (gamepad1.dpad_up) sh.canShoot = true;
+            // if (!attentionControl) sh.threeArtefactsShooting();
+            // if (!attentionControl) if (gamepad1.dpad_up) sh.canShoot = true;
 
             if (gamepad2.yWasPressed()) (shortBonusVelocity) += 0.75;
             if (gamepad2.xWasPressed()) (shortBonusVelocity) -= 0.75;
@@ -192,13 +202,12 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 tt.turnByTarget(0);
             }
 
-            if (attentionControl) {
                 if (gamepad1.dpad_up) {
                     sh.openTunnel();
                 } else if (gamepad1.dpad_down) {
                     sh.closeTunnel();
                 }
-            }
+
             if (g2.dpadUp.isPressed()) {
                 tt.turnByTarget(0);
                 isPoseReset = true;
@@ -220,9 +229,9 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 as.targetBonus -= 5;
             }
 
-
-            telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
+            telemetry.addData("l", as.l);
             telemetry.addData("Velocity", sh.getVelocityRPS());
+            telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
           // telemetry.addData("Позиция сброшена", isPoseReset);
@@ -230,7 +239,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
              telemetry.addData("TARGET", sh.velocityTarget / 28);
             telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
             telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
+            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));;
 
 
             dashtele.addData("Target ", sh.velocityTarget / 28);

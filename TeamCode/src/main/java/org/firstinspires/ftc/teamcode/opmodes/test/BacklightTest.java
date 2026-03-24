@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.Backlight;
+import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.util.GamepadManager;
 
 @TeleOp(name="Backlight test", group="test")
@@ -17,7 +18,7 @@ public class BacklightTest extends LinearOpMode {
     GamepadManager g2;
     @Override
     public void runOpMode() throws InterruptedException {
-        bl = new Backlight(this);
+        bl = new Backlight(this, new Transfer(this));
         g1 = new GamepadManager(gamepad1);
         g2 = new GamepadManager(gamepad2);
 
