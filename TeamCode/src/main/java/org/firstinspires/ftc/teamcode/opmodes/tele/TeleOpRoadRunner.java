@@ -137,22 +137,30 @@ public class TeleOpRoadRunner extends LinearOpMode {
             //------------------------------------ SHOOTER
             if (!attentionControl) if (gamepad1.dpad_up) sh.canShoot = true;
 
-            if (g1.Y.isPressed() && !g1.Y.getToggleState()) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW + longBonusVelocity);
-                sh.setLongThrowMode();
-                sh.shootByVelocity();
-            } else if (g1.X.isPressed() && !g1.X.getToggleState()) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW + shortBonusVelocity);
-                sh.setShortThrowMode();
-                sh.shootByVelocity();
-            } else if ((g1.Y.isPressed()) || (g1.X.isPressed())) {
-                sh.closeTunnel();
-                sh.shootStop();
+            if (attentionControl) {
+                if (g1.Y.isPressed() && !g1.Y.getToggleState()) {
+                    sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW + longBonusVelocity);
+                    sh.setLongThrowMode();
+                    sh.shootByVelocity();
+                } else if (g1.X.isPressed() && !g1.X.getToggleState()) {
+                    sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW + shortBonusVelocity);
+                    sh.setShortThrowMode();
+                    sh.shootByVelocity();
+                } else if ((g1.Y.isPressed()) || (g1.X.isPressed())) {
+                    sh.closeTunnel();
+                    sh.shootStop();
+                }
             }
+            if (!attentionControl)
+                as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
 
-//            if (g1.X.isPressed() && !g1.Y.getToggleState()) {
-//                //интерпол
-//            } else if (g1.X.isPressed()) sh.shootStop();
+            as.continuousSetVelocityTargetByInterpol();
+            sh.shootByVelocity();
+            as.continuousSetAngleByFormula(
+                    sh.getAngleAdjusterPos()
+            );
+
+             if (g1.X.isPressed() && !g1.X.getToggleState()) sh.shootStop();
 
             //---------------------------------------- TURRET
             if (!attentionControl)
@@ -200,10 +208,10 @@ public class TeleOpRoadRunner extends LinearOpMode {
                 as.setAlliance(Alliance.RED);
             }
 
-            if(gamepad2.leftBumperWasPressed()){
+            if (gamepad2.leftBumperWasPressed()) {
                 as.targetBonus += 5;
             }
-            if(gamepad2.rightBumperWasPressed()){
+            if (gamepad2.rightBumperWasPressed()) {
                 as.targetBonus -= 5;
             }
 
@@ -213,12 +221,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
-          // telemetry.addData("Позиция сброшена", isPoseReset);
-             telemetry.addData("Alliance", as.alliance);
-             telemetry.addData("TARGET", sh.velocityTarget / 28);
+            // telemetry.addData("Позиция сброшена", isPoseReset);
+            telemetry.addData("Alliance", as.alliance);
+            telemetry.addData("TARGET", sh.velocityTarget / 28);
             telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
             telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));;
+            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
+            ;
 
 
             dashtele.addData("Target ", sh.velocityTarget / 28);

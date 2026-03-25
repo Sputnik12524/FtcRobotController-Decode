@@ -199,7 +199,7 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addData("isCalculateNewAngle?", as.isCalculateNewAngle);
             } else if (angleLocState && !angleContState) {
                 as.setAngleByLocalisation(
-                        follower.getPose().getY(),
+                        as.l,
                         sh.getAngleAdjusterPos()
                 );
                 telemetry.addLine("ANGLE TELEMETRY (INTERPOL):");

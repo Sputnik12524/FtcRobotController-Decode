@@ -43,7 +43,7 @@ public class AutoSniper {
 
     public double sX, sY, c, a, D, l = 0;
     public double v1, v2, l1, l2 = 0;
-    public double yA = 48;
+    public double minDistanceForLongThrowMode = 3;
 
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
@@ -133,15 +133,15 @@ public class AutoSniper {
         sh.setAngleAdjuster(convertAngleToServoPos(angleOfAdjuster));
     }
 
-    public void setAngleByLocalisation(double y, double servoPos) {
-        if (y <= yA && servoPos != Shooter.VELOCITY_FOR_LONG_THROW) {
-            sh.setLongThrowMode();
-            isLong = true;
-            isShort = false;
-        } else if (y > yA && servoPos != Shooter.VELOCITY_FOR_SHORT_THROW) {
+    public void setAngleByLocalisation(double l, double servoPos) {
+        if (l <= minDistanceForLongThrowMode && servoPos != Shooter.VELOCITY_FOR_SHORT_THROW) {
             sh.setShortThrowMode();
             isLong = false;
             isShort = true;
+        } else if (l > minDistanceForLongThrowMode && servoPos != Shooter.VELOCITY_FOR_LONG_THROW) {
+            sh.setLongThrowMode();
+            isLong = true;
+            isShort = false;
         }
     }
 
@@ -159,10 +159,10 @@ public class AutoSniper {
     }
     public void continuousSetVelocityTargetByInterpol() {
         for (int i=0;  i<ValuesOfDistance.length-1;  i++) {
-            if (l > ValuesOfDistance[i+1]) {
-                l = ValuesOfDistance[i+1];
-            } else if (l < ValuesOfDistance[i]){
-                l = ValuesOfDistance[i];
+            if (l > ValuesOfDistance[5]) {
+                l = ValuesOfDistance[5];
+            } else if (l < ValuesOfDistance[0]){
+                l = ValuesOfDistance[0];
             }
             if (ValuesOfDistance[i] <= l && l <= ValuesOfDistance[i+1]) {
                 v1 = ValuesOfVelocity[i];
