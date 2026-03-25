@@ -45,13 +45,22 @@ public class TurretPIDTest extends LinearOpMode {
             fl.update();
 
             tt.tuneTurretPID(kP, kI, kD, kPC, kDC);
-            if(ll.getGoalTag().get(0) == 20 || ll.getGoalTag().get(0) == 24) {
-                tt.setAimMethod(AimingMethod.CAMERA);
+//            if(ll.getGoalTag().get(0) == 20 || ll.getGoalTag().get(0) == 24) {
+//                tt.setAimMethod(AimingMethod.CAMERA);
 
-            } else {
+ //           } else {
                 tt.setAimMethod(AimingMethod.LOCALIZATION);
                 as.continuousTurnTurretToGate(fl.getPose().getX(), fl.getPose().getY(), fl.getHeading());
+   //         }
+            if(gamepad1.a){
+                tt.turret.setPower(0.3);
+            } else if (gamepad1.b){
+                tt.turret.setPower(-0.3);
+            } else {
+                tt.turret.setPower(0);
             }
+
+
 
             dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
 
@@ -62,6 +71,7 @@ public class TurretPIDTest extends LinearOpMode {
             telemetry.addData("target", tt.target);
             telemetry.addData("error", tt.error);
             telemetry.addData("Tx", ll.getTagInfo().get(1) );
+            telemetry.addData("Aim method", tt.getAimMethod());
             telemetry.update();
 
         }

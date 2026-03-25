@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 
@@ -58,6 +59,7 @@ public class AutoAimingTest extends LinearOpMode {
         tt.turretRegulator.start();
 
         as.setAlliance(Alliance.BLUE);
+        tt.setAimMethod(AimingMethod.LOCALIZATION);
 
         sh.setVelocityTarget(0);
         sh.setShortThrowMode();

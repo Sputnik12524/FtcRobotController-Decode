@@ -167,5 +167,9 @@ public class Turret {
     public void setAimMethod(AimingMethod aimingMethod){
         aimMethod = aimingMethod;
     }
+    public AimingMethod getAimMethod(){
+        return aimMethod;
+    }
+
 
 }
