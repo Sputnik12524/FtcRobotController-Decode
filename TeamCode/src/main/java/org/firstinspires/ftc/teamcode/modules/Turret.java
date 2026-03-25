@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
@@ -45,6 +46,7 @@ public class Turret {
     private boolean stateMagneting = false;
 
     public boolean isInLimits = false;
+    public double voltage;
 
     public Turret(LinearOpMode opMode, Limelight ll) {
         this.opMode = opMode;
@@ -162,6 +164,10 @@ public class Turret {
 
         Turret.kPC = kPC;
         Turret.kDC = kDC;
+    }
+
+    public double getVoltage(){
+        return turret.getCurrent(CurrentUnit.AMPS);
     }
 
     public void setAimMethod(AimingMethod aimingMethod){

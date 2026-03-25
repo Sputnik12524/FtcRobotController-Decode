@@ -77,6 +77,7 @@ public class Shooter {
     public double voltageUP;
     public double voltageLOW;
     public boolean isCanShoot = false;
+    public  boolean isShootStop = false;
 
     //---------------------------------------------- BOOLEANS
     public boolean complete = false;
@@ -146,12 +147,12 @@ public class Shooter {
         if(mode == MODE.MANUAL) return;
         switch (state) {
             case STOP:
+                if(!isShootStop) transit(ShStates.SPINNING);
                 shootStop();
                 break;
 
             case SPINNING:
-                setShortThrowMode();
-                if (isCanShoot && inZone()) transit(ShStates.SHOOT); //isSpinUp
+                if (isCanShoot && inZone()) transit(ShStates.SHOOT);
                 break;
 
             case SHOOT:

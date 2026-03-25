@@ -71,7 +71,7 @@ public class AutoFSM {
         } catch (IOException | NullPointerException e) {
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));
-            as.setAlliance(Alliance.NONE);
+            as.setAlliance(Alliance.NONE); //аккуратно
         }
     }
 
@@ -96,7 +96,6 @@ public class AutoFSM {
             case INIT:
                 sh.shootStop();
                 in.rotateStop();
-                sh.setShortThrowMode(); //без интерпола
                 if (alliance == Alliance.BLUE)
                     follower.followPath(paths.blueGoal(follower.getPose()));
                 else if (alliance == Alliance.RED)
@@ -104,10 +103,7 @@ public class AutoFSM {
                 setAutoState(AutoStates.MOVE);
                 break;
             case MOVE:
-                if (!follower.isBusy()) setAutoState(AutoStates.CHECK);
-                break;
-            case CHECK:
-                if (sh.isSpinUp()) setAutoState(AutoStates.SHOOT);
+                if (!follower.isBusy()) setAutoState(AutoStates.SHOOT);
                 break;
             case SHOOT:
                 in.rotateIn();
@@ -128,7 +124,6 @@ public class AutoFSM {
             case INIT:
                 sh.shootStop();
                 in.rotateStop();
-                sh.setLongThrowMode(); //без интерпола
                 if (alliance == Alliance.BLUE)
                     follower.followPath(paths.blueHuman(follower.getPose()));
                 else if (alliance == Alliance.RED)
@@ -136,10 +131,7 @@ public class AutoFSM {
                 setAutoState(AutoStates.MOVE);
                 break;
             case MOVE:
-                if (!follower.isBusy()) setAutoState(AutoStates.CHECK);
-                break;
-            case CHECK:
-                if (sh.isSpinUp()) setAutoState(AutoStates.SHOOT);
+                if (!follower.isBusy()) setAutoState(AutoStates.SHOOT);
                 break;
             case SHOOT:
                 in.rotateIn();

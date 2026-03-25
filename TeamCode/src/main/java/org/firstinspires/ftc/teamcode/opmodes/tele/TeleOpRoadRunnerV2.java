@@ -24,9 +24,6 @@ import org.firstinspires.ftc.teamcode.util.GamepadManager;
 import org.firstinspires.ftc.teamcode.util.Logger;
 import org.firstinspires.ftc.teamcode.util.Paths;
 
-import java.io.IOException;
-import java.util.List;
-
 
 @TeleOp(name = "TeleOpRR_V2", group = "0")
 @Config
@@ -51,6 +48,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     boolean wroteLogger = true;
     boolean isPoseReset = false;
     boolean attentionControl = false;
+    boolean shootStop = false;
 
     @Override
     public void runOpMode() {
@@ -93,15 +91,16 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         while (opModeIsActive()) {
             if (af.mode == AutoFSM.MODE.DRIVER) driverUpdate(g1, g2);
             else {
-                if(attentionControl) return;
+                if (attentionControl) return;
                 follower.update();
                 af.update();
                 if (af.complete) {
                     af.mode = AutoFSM.MODE.DRIVER;
-                   // af.updateArtefacts(); - не тестировано
+                    // af.updateArtefacts(); - не тестировано
                     af.complete = false;
                 }
             }
+            updateAutomatic(as.l, sh.getAngleAdjusterPos());
             sh.update();
             updateTelemetry();
             voltageUpdate();
@@ -155,10 +154,12 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
         if (!attentionControl) if (gamepad1.dpad_up) sh.isCanShoot = true;
 
-        if (g1.Y.isPressed() && g1.Y.getToggleState()) {
+        if (g1.X.isPressed() && !g1.X.getToggleState()) {
             sh.transit(Shooter.ShStates.SPINNING);
+            sh.isShootStop = false;
         } else if (g1.X.isPressed() && g1.X.getToggleState()) {
             sh.transit(Shooter.ShStates.STOP);
+            sh.isShootStop = true;
         }
 
         /// =====================TURRET===============================///
@@ -214,14 +215,24 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         as.setAlliance(alliance);
     }
 
-    public void voltageUpdate(){
-        if(timer.milliseconds() > 100){
+    public void voltageUpdate() {
+        if (timer.milliseconds() > 100) {
             sh.voltageUP += sh.getUpVoltage();
             sh.voltageLOW += sh.getLowVoltage();
             in.voltage += in.getVoltage();
             tt.voltage += tt.getVoltage();
             timer.reset();
         }
+    }
+
+    void updateAutomatic(double l, double pose) {
+        if (attentionControl && shootStop) return;
+        as.setAngleByLocalisation(l, pose);
+        as.continuousSetVelocityTargetByInterpol();
+        sh.shootByVelocity();
+        as.continuousSetAngleByFormula(
+                sh.getAngleAdjusterPos()
+        );
     }
 
     public void updateTelemetry() {
@@ -245,7 +256,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         dashtele.update();
         telemetry.update();
     }
-
 
 
     public static class PoseStorage {
