@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
@@ -17,14 +18,19 @@ public class Turret {
     Limelight limelight3A;
     DigitalChannel magneticSensor;
     Alliance alliance = Alliance.NONE;
+    AimingMethod aimMethod = AimingMethod.NONE;
     public TurretRegulator turretRegulator = new TurretRegulator();
 
     public final double rSmallGear = 60;
     public final double rBigGear = 178;
 
-    public static double kP = 0.02;
-    public static double kI = 0;
-    public static double kD = 0.01;
+    public static double kPC = 0.015;
+    public static double kDC = 0;
+
+    public static double kPL = 0.02;
+
+    public static double kIL = 0;
+    public static double kDL = 0.02;
     public static double kF = 0.1;
     private final double TPR = 537.7;
     public double error;
@@ -69,41 +75,42 @@ public class Turret {
             turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             timer.reset();
             while (!isInterrupted()) {
-                error = target - getCurrentPosOfTurret();
-                dError = error - pastError;
-                sumError = sumError + error * getCurrentPosOfTurret();
+                switch(aimMethod) {
+                    case CAMERA:
+                        error = -limelight3A.getTagInfo().get(1);
+                        dError = error - pastError;
 
-                double power = error * kP + sumError * kI + dError * kD / timer.milliseconds();
+                        double powerP = error * kPC + kDC * dError/timer.milliseconds();
 
-                turnInLimits(power);
+                        turnInLimits(powerP);
 
-                pastError = error;
-                timer.reset();
+                        timer.reset();
+
+                        break;
+
+                    case LOCALIZATION:
+                        error = target - getCurrentPosOfTurret();
+                        dError = error - pastError;
+                        sumError = sumError + error * getCurrentPosOfTurret();
+
+                        double power = error * kPL + sumError * kIL + dError * kDL / timer.milliseconds();
+
+                        turnInLimits(power);
+
+                        pastError = error;
+                        timer.reset();
+
+                        break;
+
+                    case NONE:
+                        turnInLimits(0);
+                        timer.reset();
+
+                }
+
             }
         }
     }
-
-    public class TurretCameraAiming extends Thread {
-
-        private final ElapsedTime timer = new ElapsedTime();
-
-        @Override
-        public void run() {
-            timer.reset();
-            while (!isInterrupted()) {
-
-                error = -limelight3A.getTagInfo().get(1);
-                // error = центр - координаты_эйприл_тега
-
-                double powerP = error * kP;
-
-                turnInLimits(powerP);
-
-                timer.reset();
-            }
-        }
-    }
-
 
 
     public double getCurrentPosOfTurret() {
@@ -133,9 +140,6 @@ public class Turret {
     }
 
     public void turnByTarget(double target) { this.target = target; }
-    public double stabilizeTargetByCamera(double tar){
-        return (tar - limelight3A.getGoalTag().get(1));
-    }
 
     public double angleNormalising(double targetNew) {
         double normTarget = targetNew;
@@ -151,10 +155,17 @@ public class Turret {
         turret.setPower(0);
     }
 
-    public void tuneTurretPID(double kP, double kI, double kD) {
-        Turret.kP = kP;
-        Turret.kI = kI;
-        Turret.kD = kD;
+    public void tuneTurretPID(double kPL, double kIL, double kDL, double kPC, double kDC) {
+        Turret.kPL = kPL;
+        Turret.kIL = kIL;
+        Turret.kDL = kDL;
+
+        Turret.kPC = kPC;
+        Turret.kDC = kDC;
+    }
+
+    public void setAimMethod(AimingMethod aimingMethod){
+        aimMethod = aimingMethod;
     }
 
 }

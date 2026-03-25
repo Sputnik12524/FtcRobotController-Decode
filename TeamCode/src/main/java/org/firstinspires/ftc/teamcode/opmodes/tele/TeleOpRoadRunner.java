@@ -77,7 +77,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));
             attentionControl = true;
-            as.setAlliance(Alliance.NONE);
+            as.setAlliance(Alliance.BLUE);
         }
 
         follower.update();
