@@ -110,7 +110,6 @@ public class Auto3ArtifactsLongRed extends LinearOpMode {
                 if (!sh.isSpinUp()) break;
 
               //  sh.openTunnel();
-                sh.waitForShoot();
                setPathState(2);
                 break;
             case 2:
