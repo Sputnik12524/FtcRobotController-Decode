@@ -106,7 +106,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                                     scoringPath
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-136)) //was tangent
+                    ).setLinearHeadingInterpolation(Math.toRadians(-136), Math.toRadians(0)) //was tangent
 
                     .build();
             SecondPathToPresetArtifacts = follower.pathBuilder().addPath(
@@ -115,7 +115,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                                     new Pose(100, 84)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-136), Math.toRadians(0))
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                     .build();
             SecondPathIntakingArtifacts = follower.pathBuilder().addPath(
@@ -133,7 +133,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                                     new Pose(128, 73)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(50))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
                     .build();
 
 
@@ -143,7 +143,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                                     scoringPath
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(50), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
 
                     .build();
 
