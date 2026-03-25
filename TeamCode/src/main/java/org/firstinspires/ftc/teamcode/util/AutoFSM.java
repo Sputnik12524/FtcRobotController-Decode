@@ -4,13 +4,11 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
-import org.firstinspires.ftc.teamcode.opmodes.tele.TeleOpRoadRunnerV2;
 
 import java.io.IOException;
 
@@ -58,7 +56,8 @@ public class AutoFSM {
         autoStTimer = new ElapsedTime();
         readLogger();
     }
-    public void readLogger(){
+
+    public void readLogger() {
         try {
             logger.getAll("pospos");
             follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
@@ -185,8 +184,15 @@ public class AutoFSM {
     public void setAuto(AUTO auto) {
         mode = MODE.AUTO;
         this.auto = auto;
-        autoState  = AutoStates.INIT;
+        autoState = AutoStates.INIT;
         autoTimer.reset();
+    }
+
+    public void updateArtefacts() {
+        if (tr.howMany() > 3) {
+            if (follower.getPose().getY() >= 48) setAuto(AUTO.GOAL);
+            else setAuto(AUTO.HUMAN);
+        }
     }
 
 }

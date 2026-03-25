@@ -16,7 +16,7 @@ public class Paths {
         return follower.pathBuilder().addPath(
                         new BezierLine(
                                 start,
-                                new Pose(105, 33)
+                                new Pose(105.5, 33)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
@@ -37,7 +37,7 @@ public class Paths {
         return follower.pathBuilder().addPath(
                         new BezierLine(
                                 start,
-                                new Pose(92, 8)
+                                new Pose(93, 8)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
@@ -47,7 +47,7 @@ public class Paths {
         return follower.pathBuilder().addPath(
                         new BezierLine(
                                start,
-                                new Pose(54, 6)
+                                new Pose(50, 8)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
@@ -67,7 +67,7 @@ public class Paths {
         return follower.pathBuilder().addPath(
                         new BezierLine(
                                 start,
-                                new Pose(102, 105)
+                                new Pose(95, 105)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();

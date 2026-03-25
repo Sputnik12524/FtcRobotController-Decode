@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
@@ -73,6 +74,8 @@ public class Shooter {
     public double bonusLongVelocity = 0;
     public double bonusShortVelocity = 0;
     public double shootPos = 0;
+    public double voltageUP;
+    public double voltageLOW;
     public boolean isCanShoot = false;
 
     //---------------------------------------------- BOOLEANS
@@ -147,7 +150,7 @@ public class Shooter {
                 break;
 
             case SPINNING:
-                //!!!! Метод скорости
+                setShortThrowMode();
                 if (isCanShoot && inZone()) transit(ShStates.SHOOT); //isSpinUp
                 break;
 
@@ -306,6 +309,14 @@ public class Shooter {
         timer.reset();
         this.state = state;
     }
+
+    public double getUpVoltage(){
+        return shooterUpper.getCurrent(CurrentUnit.AMPS);
+    }
+    public double getLowVoltage(){
+        return shooterLower.getCurrent(CurrentUnit.AMPS);
+    }
+
 
     //---------------------------------------------- AUTONOMOUS
     public boolean isSpinUp() {

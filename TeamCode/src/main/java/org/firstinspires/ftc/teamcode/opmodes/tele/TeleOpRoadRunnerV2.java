@@ -25,16 +25,12 @@ import org.firstinspires.ftc.teamcode.util.Logger;
 import org.firstinspires.ftc.teamcode.util.Paths;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @TeleOp(name = "TeleOpRR_V2", group = "0")
 @Config
 public class TeleOpRoadRunnerV2 extends LinearOpMode {
-    enum MMODE {MANUAL, AUTO}
-
-    MMODE mod = MMODE.AUTO;
-
-
     Paths paths;
     Shooter sh;
     Intake in;
@@ -97,46 +93,23 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         while (opModeIsActive()) {
             if (af.mode == AutoFSM.MODE.DRIVER) driverUpdate(g1, g2);
             else {
+                if(attentionControl) return;
                 follower.update();
                 af.update();
                 if (af.complete) {
                     af.mode = AutoFSM.MODE.DRIVER;
+                   // af.updateArtefacts(); - не тестировано
                     af.complete = false;
                 }
             }
             sh.update();
             updateTelemetry();
+            voltageUpdate();
         }
         ll.startOrStopLL(true);
         tt.turretRegulator.interrupt();
     }
 
-
-
-
-    public void resetPose(Alliance alliance) {
-        isPoseReset = true;          //tt.turnByTarget(0); //пересмотреть
-        follower.setPose(new Pose(11, 7, 0));
-        as.setAlliance(alliance);
-    }
-
-    public void updateTelemetry() {
-        telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-        telemetry.addData("Velocity", sh.getVelocityRPS());
-        telemetry.addData("InZone", sh.inZone());
-        telemetry.addData("howMany", tr.howMany());
-        // telemetry.addData("Позиция сброшена", isPoseReset);
-        telemetry.addData("Alliance", as.alliance);
-        telemetry.addData("TARGET", sh.velocityTarget / 28);
-        telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
-        telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-        telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
-        dashtele.addData("Target ", sh.velocityTarget / 28);
-        dashtele.addData("Velocity shooter", sh.getVelocityRPS());
-        dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
-        dashtele.update();
-        telemetry.update();
-    }
 
     public void driverUpdate(GamepadManager g1, GamepadManager g2) {
         g1.update();
@@ -234,6 +207,46 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
         if (g1.dpadUp.isPressed() && af.mode == AutoFSM.MODE.AUTO) af.mode = AutoFSM.MODE.DRIVER;
     }
+
+    public void resetPose(Alliance alliance) {
+        isPoseReset = true;          //tt.turnByTarget(0); //пересмотреть
+        follower.setPose(new Pose(11, 7, 0));
+        as.setAlliance(alliance);
+    }
+
+    public void voltageUpdate(){
+        if(timer.milliseconds() > 100){
+            sh.voltageUP += sh.getUpVoltage();
+            sh.voltageLOW += sh.getLowVoltage();
+            in.voltage += in.getVoltage();
+            tt.voltage += tt.getVoltage();
+            timer.reset();
+        }
+    }
+
+    public void updateTelemetry() {
+        telemetry.addData("Shooter LOW AMPS", sh.getLowVoltage());
+        telemetry.addData("Shooter UP AMPS", sh.getUpVoltage());
+        telemetry.addData("Intake AMPS", in.getVoltage());
+        telemetry.addData("Turret AMPS", tt.getVoltage());
+        telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
+        telemetry.addData("Velocity", sh.getVelocityRPS());
+        telemetry.addData("InZone", sh.inZone());
+        telemetry.addData("howMany", tr.howMany());
+        // telemetry.addData("Позиция сброшена", isPoseReset);
+        telemetry.addData("Alliance", as.alliance);
+        telemetry.addData("TARGET", sh.velocityTarget / 28);
+        telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
+        telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
+        telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
+        dashtele.addData("Target ", sh.velocityTarget / 28);
+        dashtele.addData("Velocity shooter", sh.getVelocityRPS());
+        dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
+        dashtele.update();
+        telemetry.update();
+    }
+
+
 
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
