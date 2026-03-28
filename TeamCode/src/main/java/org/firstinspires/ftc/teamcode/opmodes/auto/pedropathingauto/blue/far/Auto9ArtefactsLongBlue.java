@@ -216,14 +216,14 @@ public class Auto9ArtefactsLongBlue extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                if (sh.isSpinUp() && !follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
+                if (sh.isSpinUp() && !follower.isBusy() && actionTimer.getElapsedTime() > 1500) {
                     sh.openTunnel();
                     in.rotateIn();
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (!follower.isBusy() && actionTimer.getElapsedTime() > 1500) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
                     // as.enableAutoTurretAiming(false);
                     in.rotateStop();
                     sh.closeTunnel();

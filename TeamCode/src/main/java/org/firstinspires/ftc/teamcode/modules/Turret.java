@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,7 +20,7 @@ public class Turret {
     Limelight limelight3A;
     DigitalChannel magneticSensor;
     Alliance alliance = Alliance.NONE;
-    AimingMethod aimMethod = AimingMethod.NONE;
+    AimingMethod aimMethod = AimingMethod.LOCALIZATION;
     public TurretRegulator turretRegulator = new TurretRegulator();
 
     public final double rSmallGear = 60;
@@ -35,13 +36,14 @@ public class Turret {
     public static double kF = 0.1;
     private final double TPR = 537.7;
     public double error;
-    public double dError;
+    public double dError, dErrorCamera;
     public double sumError = 0;
-    public double pastError;
+    public double pastError, pastErrorCamera;
     public double target = 0;
     public double angleOfTurret;
     public static double POS_RIGHTMOST = 225;
     public static double POS_LEFTMOST = -130;
+    public static double errorPlus = 0;
 
     private boolean stateMagneting = false;
 
@@ -79,12 +81,14 @@ public class Turret {
             while (!isInterrupted()) {
                 switch(aimMethod) {
                     case CAMERA:
-                        error = -limelight3A.getTagInfo().get(1);
-                        dError = error - pastError;
+                        error = -limelight3A.getTagInfo().get(1) ;
+                        dErrorCamera = error - pastErrorCamera;
 
-                        double powerP = error * kPC + kDC * dError/timer.milliseconds();
+                        double powerP = error * kPC + kDC * dErrorCamera/timer.milliseconds() + errorPlus;
 
                         turnInLimits(powerP);
+
+                        pastErrorCamera = error;
 
                         timer.reset();
 
@@ -172,6 +176,13 @@ public class Turret {
 
     public void setAimMethod(AimingMethod aimingMethod){
         aimMethod = aimingMethod;
+    }
+
+    public void update(double y){
+        if(y < 50){
+            errorPlus = 3.5;
+        }
+        else errorPlus =0;
     }
     public AimingMethod getAimMethod(){
         return aimMethod;

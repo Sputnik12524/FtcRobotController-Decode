@@ -18,12 +18,13 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
 public class Shooter {
-    public enum ShStates {STOP,SPINNING, SPEED_CHECK, SHOOT}
-    public enum MODE{MANUAL, AUTO}
+    public enum ShStates {STOP, SPINNING, SPEED_CHECK, SHOOT}
+
+    public enum MODE {MANUAL, AUTO}
+
     public MODE mode = MODE.AUTO;
 
     ShStates state = ShStates.STOP;
-    Transfer tr;
     public final DcMotorEx shooterUpper;
     public final DcMotorEx shooterLower;
     public final Servo angleAdjuster;
@@ -44,7 +45,7 @@ public class Shooter {
 
     /// Shooter
     public static double VELOCITY_FOR_LONG_THROW = 71;  //47 //64
-    public static double VELOCITY_FOR_SHORT_THROW = 51.5;
+    public static double VELOCITY_FOR_SHORT_THROW = 50;
     public static double POWER = 1;
 
     ///  Cover
@@ -77,7 +78,7 @@ public class Shooter {
     public double voltageUP;
     public double voltageLOW;
     public boolean isCanShoot = false;
-    public  boolean isShootStop = false;
+    public boolean isShootStop = false;
 
     //---------------------------------------------- BOOLEANS
     public boolean complete = false;
@@ -102,29 +103,8 @@ public class Shooter {
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
     }
 
-    public Shooter(LinearOpMode opMode, Transfer transit) {
+    public Shooter(LinearOpMode opMode, Follower follower) {
         this.opMode = opMode;
-        tr = transit;
-        shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
-        shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
-        angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
-        cover = opMode.hardwareMap.get(Servo.class, "cover");
-        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
-
-        shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        shooterLower.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
-        setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
-    }
-
-    public Shooter(LinearOpMode opMode, Follower follower, Transfer transit) {
-        this.opMode = opMode;
-        tr = transit;
         this.follower = follower;
         shooterUpper = opMode.hardwareMap.get(DcMotorEx.class, "shooterUpper");
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
@@ -144,10 +124,10 @@ public class Shooter {
     }
 
     public void update() {
-        if(mode == MODE.MANUAL) return;
+        if (mode == MODE.MANUAL) return;
         switch (state) {
             case STOP:
-                if(!isShootStop) transit(ShStates.SPINNING);
+                if (!isShootStop) transit(ShStates.SPINNING);
                 shootStop();
                 break;
 
@@ -157,7 +137,7 @@ public class Shooter {
 
             case SHOOT:
                 openTunnel();
-                if(timer.milliseconds() > 400){
+                if (timer.milliseconds() > 400) {
                     closeTunnel();
                     transit(ShStates.SPINNING);
                 }
@@ -206,15 +186,15 @@ public class Shooter {
     //---------------------------------------------- ADJUSTER
 
     public void setShortThrowMode() {
-        setVelocityTarget(VELOCITY_FOR_SHORT_THROW + bonusShortVelocity);
+        // setVelocityTarget(VELOCITY_FOR_SHORT_THROW + bonusShortVelocity);
         angleAdjuster.setPosition(POS_SHORT_THROW);
-        shootByVelocity();
+        // shootByVelocity();
     }
 
     public void setLongThrowMode() {
-        setVelocityTarget(VELOCITY_FOR_LONG_THROW + bonusLongVelocity);
+        //setVelocityTarget(VELOCITY_FOR_LONG_THROW + bonusLongVelocity);
         angleAdjuster.setPosition(POS_LONG_THROW);
-        shootByVelocity();
+        // shootByVelocity();
     }
 
     public void setAngleAdjuster(double angle) {
@@ -239,7 +219,7 @@ public class Shooter {
 
     public boolean ifNotInLaunchZoneHuman() {
         currentPose = follower.getPose();
-        return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 30;
+        return follower.getPose().getY() >= -Math.abs(follower.getPose().getX() - 72) + 34;
     }
 
     public boolean inZone() {
@@ -281,8 +261,15 @@ public class Shooter {
         if (!inZone()) {
             canShoot = false;
         }
-        if (canShoot) openTunnel();
-        else closeTunnel();
+        if (canShoot) {
+            openTunnel();
+            if (timer.milliseconds() > TIME_AFTER_SHOOT) {
+                canShoot = false;
+            }
+        } else {
+            closeTunnel();
+            timer.reset();
+        }
     }
 
     public void tr(int state) {
@@ -290,8 +277,8 @@ public class Shooter {
         this.st = state;
     }
 
-    public void setManual(boolean manual){
-        mode = manual ? MODE.MANUAL: MODE.AUTO;
+    public void setManual(boolean manual) {
+        mode = manual ? MODE.MANUAL : MODE.AUTO;
     }
 
     public void transit(ShStates state) {
@@ -299,10 +286,11 @@ public class Shooter {
         this.state = state;
     }
 
-    public double getUpVoltage(){
+    public double getUpVoltage() {
         return shooterUpper.getCurrent(CurrentUnit.AMPS);
     }
-    public double getLowVoltage(){
+
+    public double getLowVoltage() {
         return shooterLower.getCurrent(CurrentUnit.AMPS);
     }
 

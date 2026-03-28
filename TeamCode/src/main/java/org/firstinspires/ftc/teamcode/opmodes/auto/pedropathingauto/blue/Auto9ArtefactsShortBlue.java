@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -41,6 +42,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
     Turret tt;
     Limelight ll;
 
+    public static double TURRET_WAIT = 3500;
+
     @Override
     public void runOpMode() {
         pathTimer = new Timer();
@@ -57,19 +60,21 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
 
         in = new Intake(this);
+        ll = new Limelight(this);
         lg = new Logger("pospos");
         tt = new Turret(this, ll);
-        sh = new Shooter(this, follower, new Transfer(this));
-        as = new AutoSniper(tt, sh);
+        sh = new Shooter(this, follower);
+        as = new AutoSniper(tt, sh, ll);
         timer = new ElapsedTime();
 
         paths = new Paths(follower); // Build paths
 
         sh.closeTunnel();
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 3);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 6.5);
         as.setAlliance(Alliance.BLUE);
         tt.turretRegulator.start();
+        ll.startOrStopLL(false);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -85,11 +90,13 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
             t.addData("Shooter Velocity", sh.getVelocityRPS());
+            t.addData("Aim method", tt.getAimMethod());
             t.update();
         }
         lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
         tt.turretRegulator.interrupt();
+        ll.startOrStopLL(true);
     }
 
 
@@ -112,7 +119,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-36))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(180))
 
                     .build();
 
@@ -123,7 +130,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
                                     new Pose(48, 84) //55,100
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
@@ -142,7 +149,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-36)) //-36
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))//-36
 
                     .build();
 
@@ -152,7 +159,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
                                     new Pose(50, 60)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
@@ -172,7 +179,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-36))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
@@ -183,7 +190,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
                                     new Pose(42, 130) //
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-36))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
         }
@@ -202,11 +209,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 1:
-                if(timer.milliseconds() > 5000){
-                    sh.openTunnel();
-                    setPathState(2);
-                }
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
                 sh.openTunnel();
                 setPathState(2);
                 break;
@@ -233,11 +237,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 }
                 break;
             case 6:
-                if(timer.milliseconds() > 5000){
-                    sh.openTunnel();
-                    setPathState(7);
-                }
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
                 sh.openTunnel();
                 setPathState(7);
 
@@ -267,11 +268,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 10:
-                if(timer.milliseconds() > 5000){
-                    sh.openTunnel();
-                    setPathState(11);
-                }
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
                 sh.openTunnel();
                 setPathState(11);
                 break;

@@ -49,9 +49,10 @@ public class AutoAimingTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        ll = new Limelight(this);
         tt = new Turret(this);
         sh = new Shooter(this);
-        as = new AutoSniper(tt, sh);
+        as = new AutoSniper(tt, sh, ll);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(72,72, 0));
         follower.update();
@@ -62,7 +63,8 @@ public class AutoAimingTest extends LinearOpMode {
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
         sh.setVelocityTarget(0);
-        sh.setShortThrowMode();
+       // sh.setShortThrowMode();
+
 
 //        while (opModeInInit()) {
 //            telemetry.addLine("Start pose: X=72, Y=72");
@@ -102,7 +104,7 @@ public class AutoAimingTest extends LinearOpMode {
                 as.enableAutoTurretAiming(true);
                 turretState = true;
             } else if (gamepad1.x && !xState && turretState) {
-                as.enableAutoTurretAiming(false);
+                    as.enableAutoTurretAiming(false);
                 turretState = false;
             }
             xState = gamepad1.x;
@@ -119,6 +121,7 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addData("error", tt.error);
                 telemetry.addData("target FROM AutoSniper", as.target);
                 telemetry.addData("angleOfTurret (отн. поля)", as.angleOfTurret);
+                telemetry.addData("Aiming method", tt.getAimMethod());
             } else {
                 telemetry.addLine("TURRET is stopped (put X)");
                 tt.turnByTarget(0);
@@ -128,54 +131,54 @@ public class AutoAimingTest extends LinearOpMode {
 
             //---------------------------------------------- VELOCITY
 
-            if (gamepad1.b && !bState && !veloState) {
-                veloState = true;
-            } else if (gamepad1.b && !bState && veloState) {
-                veloState = false;
-            }
-            bState = gamepad1.b;
-
-            if (gamepad1.y && !yState && !interpolState) {
-                interpolState = true;
-                angleLocState = true;
-            } else if (gamepad1.y && !yState && interpolState) {
-                interpolState = false;
-                angleLocState = false;
-            }
-            yState = gamepad1.y;
-
-            if (gamepad1.right_stick_button && !RSBState && !constVeloState) {
-                constVeloState = true;
-            } else if (gamepad1.right_stick_button && !RSBState && constVeloState) {
-                constVeloState = false;
-            }
-            RSBState = gamepad1.right_stick_button;
-
-            sh.shootByVelocity();
-
-            telemetry.addLine("");
-            if (veloState && !constVeloState && !interpolState) {
-                as.continuousSetVelocityTargetByFormula(
-                        sh.getAngleAdjusterPos(),
-                        lastVelo
-                );
-                telemetry.addLine("VELOCITY TELEMETRY (FORMULA):");
-                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
-                telemetry.addData("realVelocity", sh.getVelocityRPS());
-                telemetry.addData("isCalculateNewVelocity?", as.isCalculateNewVelocity);
-            } else if (constVeloState && !veloState && !interpolState) {
-                sh.setVelocityTarget(50);
-                telemetry.addLine("VELOCITY IS CONST");
-            } else if (interpolState && !constVeloState && !veloState) {
-                as.continuousSetVelocityTargetByInterpol();
-                telemetry.addLine("VELOCITY TELEMETRY (INTERPOL):");
-                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
-                telemetry.addData("realVelocity", sh.getVelocityRPS());
-            } else {
-                telemetry.addLine("VELOCITY is stopped (put Y, B or RS)");
-                sh.setVelocityTarget(0);
-            }
-            lastVelo = sh.getVelocityRPS();
+//            if (gamepad1.b && !bState && !veloState) {
+//                veloState = true;
+//            } else if (gamepad1.b && !bState && veloState) {
+//                veloState = false;
+//            }
+//            bState = gamepad1.b;
+//
+//            if (gamepad1.y && !yState && !interpolState) {
+//                interpolState = true;
+//                angleLocState = true;
+//            } else if (gamepad1.y && !yState && interpolState) {
+//                interpolState = false;
+//                angleLocState = false;
+//            }
+//            yState = gamepad1.y;
+//
+//            if (gamepad1.right_stick_button && !RSBState && !constVeloState) {
+//                constVeloState = true;
+//            } else if (gamepad1.right_stick_button && !RSBState && constVeloState) {
+//                constVeloState = false;
+//            }
+//            RSBState = gamepad1.right_stick_button;
+//
+////            sh.shootByVelocity();
+//
+//            telemetry.addLine("");
+//            if (veloState && !constVeloState && !interpolState) {
+//                as.continuousSetVelocityTargetByFormula(
+//                        sh.getAngleAdjusterPos(),
+//                        lastVelo
+//                );
+//                telemetry.addLine("VELOCITY TELEMETRY (FORMULA):");
+//                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
+//                telemetry.addData("realVelocity", sh.getVelocityRPS());
+//                telemetry.addData("isCalculateNewVelocity?", as.isCalculateNewVelocity);
+//            } else if (constVeloState && !veloState && !interpolState) {
+//                sh.setVelocityTarget(50);
+//                telemetry.addLine("VELOCITY IS CONST");
+//            } else if (interpolState && !constVeloState && !veloState) {
+//                as.continuousSetVelocityTargetByInterpol();
+//                telemetry.addLine("VELOCITY TELEMETRY (INTERPOL):");
+//                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
+//                telemetry.addData("realVelocity", sh.getVelocityRPS());
+//            } else {
+//                telemetry.addLine("VELOCITY is stopped (put Y, B or RS)");
+//                sh.setVelocityTarget(0);
+//            }
+//            lastVelo = sh.getVelocityRPS();
 
 
             //---------------------------------------------- ANGLE

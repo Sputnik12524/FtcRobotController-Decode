@@ -19,7 +19,7 @@ public class AutoFSM {
 
     enum AutoStates {DEFAULT, MOVE, CHECK, SHOOT, INIT}
 
-    AutoStates autoState = AutoStates.DEFAULT;
+    public AutoStates autoState = AutoStates.DEFAULT;
 
     public enum MODE {AUTO, DRIVER}
 
@@ -40,6 +40,7 @@ public class AutoFSM {
     Alliance alliance;
     public boolean complete = false;
     public boolean wroteLogger = true;
+    public boolean ready = false;
 
 
     public AutoFSM(Follower follower, Transfer tr, Shooter sh, Limelight ll, Intake in, Turret tt, Logger logger, AutoSniper as, Paths paths) {
@@ -71,7 +72,7 @@ public class AutoFSM {
         } catch (IOException | NullPointerException e) {
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));
-            as.setAlliance(Alliance.NONE); //аккуратно
+            as.setAlliance(Alliance.BLUE); //аккуратно
         }
     }
 
@@ -100,6 +101,7 @@ public class AutoFSM {
                     follower.followPath(paths.blueGoal(follower.getPose()));
                 else if (alliance == Alliance.RED)
                     follower.followPath(paths.redGoal(follower.getPose()));
+                ready = false;
                 setAutoState(AutoStates.MOVE);
                 break;
             case MOVE:
@@ -152,16 +154,27 @@ public class AutoFSM {
             case INIT:
                 sh.shootStop();
                 in.rotateStop();
-                if (alliance == Alliance.BLUE)
-                    follower.followPath(paths.blueParking(follower.getPose()));
-                else if (alliance == Alliance.RED)
-                    follower.followPath(paths.redParking(follower.getPose()));
+                ready = false;
                 setAutoState(AutoStates.MOVE);
                 break;
+
             case MOVE:
-                if (!follower.isBusy()) {
+                if (!ready) {
+                    if (alliance == Alliance.BLUE)
+                        follower.followPath(paths.blueParking(follower.getPose()));
+                    else
+                        follower.followPath(paths.redParking(follower.getPose()));
+
+                    ready = true;
+                }
+
+                if (ready && follower.isBusy()) return;
+
+                if (ready && !follower.isBusy()) {
+                    follower.breakFollowing();
                     setAuto(AUTO.DEFAULT);
                     setAutoState(AutoStates.DEFAULT);
+                    complete = true;
                 }
                 break;
         }

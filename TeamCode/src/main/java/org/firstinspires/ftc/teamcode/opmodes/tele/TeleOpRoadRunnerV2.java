@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -59,10 +60,10 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         logger = new Logger("pospos");
         tr = new Transfer(this);
         ll = new Limelight(this);
-        sh = new Shooter(this, follower, tr);
+        sh = new Shooter(this, follower);
         in = new Intake(this);
         tt = new Turret(this, ll);
-        as = new AutoSniper(tt, sh);
+        as = new AutoSniper(tt, sh, ll);
         dt = new DriveTrain(this);
         paths = new Paths(follower);
         af = new AutoFSM(follower, tr, sh, ll, in, tt, logger, as, paths);
@@ -89,18 +90,19 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            if (af.mode == AutoFSM.MODE.DRIVER) driverUpdate(g1, g2);
+            follower.update();
+            if (af.mode == AutoFSM.MODE.DRIVER){
+                driverUpdate(g1, g2);
+            }
+
             else {
-                if (attentionControl) return;
-                follower.update();
-                af.update();
+                    af.update();
                 if (af.complete) {
                     af.mode = AutoFSM.MODE.DRIVER;
-                    // af.updateArtefacts(); - не тестировано
                     af.complete = false;
                 }
             }
-            updateAutomatic(as.l, sh.getAngleAdjusterPos());
+            //updateAutomatic(as.l, sh.getAngleAdjusterPos());
             sh.update();
             updateTelemetry();
             voltageUpdate();
@@ -228,7 +230,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     void updateAutomatic(double l, double pose) {
         if (attentionControl && shootStop) return;
         as.setAngleByLocalisation(l, pose);
-        as.continuousSetVelocityTargetByInterpol();
+        as.continuousSetVelocityTargetByInterpol(follower.getPose().getY());
         sh.shootByVelocity();
         as.continuousSetAngleByFormula(
                 sh.getAngleAdjusterPos()
@@ -236,6 +238,10 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     }
 
     public void updateTelemetry() {
+        telemetry.addData("TeleState", af.mode);
+        telemetry.addData("autoState", af.autoState);
+
+
         telemetry.addData("Shooter LOW AMPS", sh.getLowVoltage());
         telemetry.addData("Shooter UP AMPS", sh.getUpVoltage());
         telemetry.addData("Intake AMPS", in.getVoltage());

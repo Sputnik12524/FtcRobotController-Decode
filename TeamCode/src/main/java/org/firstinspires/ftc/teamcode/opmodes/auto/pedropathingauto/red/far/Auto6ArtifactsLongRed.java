@@ -57,7 +57,7 @@ public class Auto6ArtifactsLongRed extends LinearOpMode {
         lg = new Logger("pospos");
         Limelight ll = new Limelight(this);
         tt = new Turret(this, ll);
-        sh = new Shooter(this, follower, new Transfer(this));
+        sh = new Shooter(this, follower);
         as = new AutoSniper(tt, sh);
 
         paths = new Paths(follower); // Build paths

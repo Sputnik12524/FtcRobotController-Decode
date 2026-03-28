@@ -40,7 +40,6 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
     Logger lg;
     Turret tt;
     AutoSniper as;
-
     @Override
     public void runOpMode() {
         actionTimer = new Timer();
@@ -60,7 +59,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
         Limelight ll = new Limelight(this);
         in = new Intake(this);
         tt = new Turret(this, ll);
-        sh = new Shooter(this, follower, new Transfer(this));
+        sh = new Shooter(this, follower);
         lg = new Logger("pospos");
         as = new AutoSniper(tt, sh);
 
@@ -74,6 +73,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW + 0.1);
         as.setAlliance(Alliance.BLUE);
         tt.turretRegulator.start();
+        ll.startOrStopLL(false);
 
 
         waitForStart();
@@ -98,6 +98,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
         tt.turnByTarget(0);
         sleep(500);
         tt.turretRegulator.interrupt();
+        ll.startOrStopLL(true);
 
     }
 

@@ -57,7 +57,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
 
 
         in = new Intake(this);
-        sh = new Shooter(this, follower, new Transfer(this));
+        sh = new Shooter(this, follower);
         ll = new Limelight(this);
         tt = new Turret(this,ll);
         as = new AutoSniper(tt, sh);

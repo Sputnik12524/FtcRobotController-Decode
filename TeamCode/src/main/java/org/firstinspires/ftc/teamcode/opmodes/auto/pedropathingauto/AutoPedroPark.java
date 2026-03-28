@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "0 Long Park BLUE", group = "Autonomous")
-@Disabled
+@Autonomous(name = "RED PARKING", group = "Autonomous")
+
 @Configurable // Panels
 public class AutoPedroPark extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -81,9 +81,9 @@ public class AutoPedroPark extends LinearOpMode {
                             new BezierLine(
                                     new Pose(56, 8),
 
-                                    new Pose(36, 8)
+                                    new Pose(137, 10)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(110))
+                    ).setConstantHeadingInterpolation(Math.toRadians(90))
 
                     .build();
         }
