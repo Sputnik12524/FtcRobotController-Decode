@@ -33,7 +33,7 @@ public class TurretPIDTest extends LinearOpMode {
         Follower fl = Constants.createFollower(hardwareMap);
         Limelight ll = new Limelight(this);
         Turret tt = new Turret(this, ll);
-        AutoSniper as = new AutoSniper(tt, new Shooter(this));
+        AutoSniper as = new AutoSniper(tt, new Shooter(this), ll);
         DriveTrain dt = new DriveTrain(this);
         t = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 

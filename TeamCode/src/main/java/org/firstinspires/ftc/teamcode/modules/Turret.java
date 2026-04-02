@@ -35,6 +35,7 @@ public class Turret {
     public static double kDL = 0.02;
     public static double kF = 0.1;
     private final double TPR = 537.7;
+    public double current;
     public double error;
     public double dError, dErrorCamera;
     public double sumError = 0;
@@ -58,6 +59,7 @@ public class Turret {
 
         turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+       // turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public Turret(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -105,13 +107,7 @@ public class Turret {
 
                         pastError = error;
                         timer.reset();
-
                         break;
-
-                    case NONE:
-                        turnInLimits(0);
-                        timer.reset();
-
                 }
 
             }

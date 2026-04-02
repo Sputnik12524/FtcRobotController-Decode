@@ -101,6 +101,8 @@ public class AutoSniper {
         if (AIMING_ACTIVE) {
             if (x <= 0) x = 1;
             if (x >= 144) x = 143;
+
+
             if ((ll.getGoalTag().get(0) == 20 || ll.getGoalTag().get(0) == 24) && y > 50) {
                 tt.setAimMethod(AimingMethod.CAMERA);
             } else {
@@ -121,7 +123,9 @@ public class AutoSniper {
 
                 target = tt.angleNormalising(target + targetBonus + driverTargetBonus);
                 tt.turnByTarget(target);
+                tt.current = 0;
             }
+
 
         } else {
             tt.turnByTarget(0);

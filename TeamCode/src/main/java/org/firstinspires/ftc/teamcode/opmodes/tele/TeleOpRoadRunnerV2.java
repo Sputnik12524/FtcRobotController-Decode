@@ -102,7 +102,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
                     af.complete = false;
                 }
             }
-            //updateAutomatic(as.l, sh.getAngleAdjusterPos());
+            updateAutomatic(as.l, sh.getAngleAdjusterPos());
             sh.update();
             updateTelemetry();
             voltageUpdate();

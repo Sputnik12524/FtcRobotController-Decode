@@ -128,7 +128,7 @@ public class Auto3ArtifactsShortRed extends LinearOpMode {
                 setPathState(3);
                 break;
             case 3:
-                if (!follower.isBusy() && !Shooter.isTunnelOpen) {
+                if (!follower.isBusy() && !sh.isTunnelOpen) {
                     lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
                     lg.fileClose();
                     setPathState(-100);

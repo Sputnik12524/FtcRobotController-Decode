@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
 public class Shooter {
@@ -46,6 +45,7 @@ public class Shooter {
     /// Shooter
     public static double VELOCITY_FOR_LONG_THROW = 71;  //47 //64
     public static double VELOCITY_FOR_SHORT_THROW = 50;
+    public static double VELOCITY_FOR_MEDIUM_THROW = 60;  //47 //64
     public static double POWER = 1;
 
     ///  Cover
@@ -57,7 +57,7 @@ public class Shooter {
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0.005;
     public static double TIME_BETWEEN_SHOOT = 130;
-    public static double TIME_AFTER_SHOOT = 400;
+    public static double TIME_AFTER_SHOOT = 500;
     public static double DELTA_ADJUSTER = 0.01;
     public static double DELTA_SECOND_SHOOT = 0.02;
     public static double DETECT_SHOOT = 5;
@@ -82,7 +82,7 @@ public class Shooter {
 
     //---------------------------------------------- BOOLEANS
     public boolean complete = false;
-    public static boolean isTunnelOpen;
+    public boolean isTunnelOpen;
 
     public Shooter(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -101,6 +101,11 @@ public class Shooter {
 
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+
+        //TODO: check and add the zero power behaviour if desired
+
+//        shooterUpper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        shooterLower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public Shooter(LinearOpMode opMode, Follower follower) {
@@ -267,6 +272,17 @@ public class Shooter {
                 canShoot = false;
             }
         } else {
+            closeTunnel();
+            timer.reset();
+        }
+    }
+
+    public void coverSwitch(){
+        if(canShoot){
+            openTunnel();
+            if(timer.milliseconds() > TIME_AFTER_SHOOT) canShoot = false;
+        }
+        else{
             closeTunnel();
             timer.reset();
         }
