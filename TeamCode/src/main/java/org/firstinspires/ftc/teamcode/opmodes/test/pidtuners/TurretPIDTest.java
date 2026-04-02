@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 
@@ -82,20 +81,7 @@ public class TurretPIDTest extends LinearOpMode {
                 tt.turnByTarget(0);
                 turretState = false;
             }
-//            if(ll.getGoalTag().get(0) == 20 || ll.getGoalTag().get(0) == 24) {
-//                tt.setAimMethod(AimingMethod.CAMERA);
-//
-//            } else {
-//                tt.setAimMethod(AimingMethod.LOCALIZATION);
-//                as.continuousTurnTurretToGate(fl.getPose().getX(), fl.getPose().getY(), fl.getHeading());
-//        }
-//            if(gamepad1.a){
-//                tt.turret.setPower(0.3);
-//            } else if (gamepad1.b){
-//                tt.turret.setPower(-0.3);
-//            } else {
-//                tt.turret.setPower(0);
-//            }
+
 
 
 

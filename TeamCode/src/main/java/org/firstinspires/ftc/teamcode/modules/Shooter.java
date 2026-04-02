@@ -102,10 +102,8 @@ public class Shooter {
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
 
-        //TODO: check and add the zero power behaviour if desired
+        //TO DO: check and add the zero power behaviour if desired
 
-//        shooterUpper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        shooterLower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public Shooter(LinearOpMode opMode, Follower follower) {

@@ -63,24 +63,7 @@ public class AutoAimingTest extends LinearOpMode {
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
         sh.setVelocityTarget(0);
-       // sh.setShortThrowMode();
 
-
-//        while (opModeInInit()) {
-//            telemetry.addLine("Start pose: X=72, Y=72");
-//            telemetry.addLine("SET ALLIANCE: X for blue, B for red");
-//            if (gamepad1.x) {
-//                as.setAlliance(Alliance.BLUE);
-//                telemetry.addLine("BLUE");
-//            } else if (gamepad1.b) {
-//                as.setAlliance(Alliance.RED);
-//                telemetry.addLine("RED");
-//            } else {
-//                as.setAlliance(Alliance.NONE);
-//                telemetry.addLine("NONE :(");
-//            }
-//            telemetry.update();
-//        }
 
         waitForStart();
 
@@ -131,29 +114,6 @@ public class AutoAimingTest extends LinearOpMode {
 
             //---------------------------------------------- VELOCITY
 
-//            if (gamepad1.b && !bState && !veloState) {
-//                veloState = true;
-//            } else if (gamepad1.b && !bState && veloState) {
-//                veloState = false;
-//            }
-//            bState = gamepad1.b;
-//
-//            if (gamepad1.y && !yState && !interpolState) {
-//                interpolState = true;
-//                angleLocState = true;
-//            } else if (gamepad1.y && !yState && interpolState) {
-//                interpolState = false;
-//                angleLocState = false;
-//            }
-//            yState = gamepad1.y;
-//
-//            if (gamepad1.right_stick_button && !RSBState && !constVeloState) {
-//                constVeloState = true;
-//            } else if (gamepad1.right_stick_button && !RSBState && constVeloState) {
-//                constVeloState = false;
-//            }
-//            RSBState = gamepad1.right_stick_button;
-//
 ////            sh.shootByVelocity();
 //
 //            telemetry.addLine("");

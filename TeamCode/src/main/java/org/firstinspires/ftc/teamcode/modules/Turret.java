@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 @Config
 public class Turret {
     LinearOpMode opMode;
-    public DcMotorEx turret;
+    public final DcMotorEx turret;
     Limelight limelight3A;
     DigitalChannel magneticSensor;
     Alliance alliance = Alliance.NONE;
