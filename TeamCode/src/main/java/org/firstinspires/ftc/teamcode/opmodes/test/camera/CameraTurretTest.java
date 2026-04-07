@@ -43,7 +43,7 @@ Shooter sh;
             telemetry.addData("target", tt.target);
             telemetry.addData("error", tt.error);
             telemetry.addData("Tx", ll.getGoalTag().get(1));
-            //telemetry.addData("Stabilize by camera byyyyy", tt.stabilizeTargetByCamera(0));
+            //telemetry.addData("Stabilize by camera by", tt.stabilizeTargetByCamera(0));
             telemetry.update();
 
         }

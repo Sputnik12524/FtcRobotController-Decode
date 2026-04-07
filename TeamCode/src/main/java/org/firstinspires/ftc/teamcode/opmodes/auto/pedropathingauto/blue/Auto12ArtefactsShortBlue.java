@@ -12,10 +12,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -34,6 +35,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
     Shooter sh;
     AutoSniper as;
     Turret tt;
+    Limelight ll;
 
     @Override
     public void runOpMode() {
@@ -45,21 +47,26 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
         actionTimer.resetTimer();
 
         in = new Intake(this);
+        ll = new Limelight(this);
         lg = new Logger("pospos");
-
+        tt = new Turret(this, ll);
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(21, 125, Math.toRadians(-36)));
-        sh = new Shooter(this, follower, new Transfer(this));
-        as = new AutoSniper(tt, sh);
-
+        sh = new Shooter(this, follower);
+        as = new AutoSniper(tt, sh, ll);
 
         paths = new Paths(follower); // Build paths
 
         sh.closeTunnel();
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 2);
+        as.setAlliance(Alliance.BLUE);
+        tt.turretRegulator.start();
+        tt.setAimMethod(AimingMethod.LOCALIZATION);
+
+        ll.startOrStopLL(false);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -67,6 +74,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
 
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(),follower.getHeading());
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
@@ -78,6 +86,8 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
         }
         lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
+        tt.turretRegulator.interrupt();
+        ll.startOrStopLL(true);
     }
 
 
@@ -93,7 +103,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
         public final PathChain PathThirdPresentArtefacts;
         public final PathChain PathThirdIntakingArtefacts;
         public final PathChain PathFourScoring;
-        public final PathChain PathToGate, PathOpenGate;
+        public final PathChain PathOpenGate;
         public final Pose scoringPose = new Pose(43, 120);
 
 
@@ -104,7 +114,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
 
                                     scoringPose
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-36))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
 
                     .build();
 
@@ -112,39 +122,40 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
 
                                     scoringPose,
-                                    new Pose(48, 95) //55,100
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
 
-                    .build();
-            PathIntakingArtifacts = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(48, 95), //55,100
-
-                                    new Pose(25, 95) //35,100
+                                    new Pose(48, 84) //55,100
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
-            PathToGate = follower.pathBuilder().addPath(new BezierLine(
-                    new Pose(1,1),
-                            new Pose(1,1)
-            )
-            ).setConstantHeadingInterpolation(Math.toRadians(-180)).build();
+            PathIntakingArtifacts = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(48, 84), //55,100
 
-            PathOpenGate = follower.pathBuilder().addPath(new BezierLine(
-                            new Pose(1,1),
-                            new Pose(1,1)
-                    )
-            ).setConstantHeadingInterpolation(Math.toRadians(-180)).build();
+                                    new Pose(22, 84) //35,100
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
+
+                    .build();
+
+
+            PathOpenGate = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(22, 84),
+
+                                    new Pose(18, 75)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(90))
+
+                    .build();
 
             PathSecondScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(25, 95), //35,100
+                                    new Pose(18, 75), //35,100
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-36)) //-36
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180)) //-36
 
                     .build();
 
@@ -152,17 +163,17 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     scoringPose,
 
-                                    new Pose(50, 60)
+                                    new Pose(50, 56)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
             PathSecondIntakingArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(50, 60),
+                                    new Pose(50, 56),
 
-                                    new Pose(35, 60)
+                                    new Pose(23, 56)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -170,29 +181,29 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
 
             PathThirdScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(35, 60),
+                                    new Pose(23, 56),
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-36))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
             PathThirdPresentArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(47, 111),
+                                    scoringPose,
 
-                                    new Pose(47, 43)
+                                    new Pose(44, 36)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-36), Math.toRadians(-180))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
             PathThirdIntakingArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(47, 43),
+                                    new Pose(44, 36),
 
-                                    new Pose(20, 43)
+                                    new Pose(8, 36)
                             )
 
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
@@ -200,11 +211,11 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
 
             PathFourScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(20, 43),
+                                    new Pose(8, 36),
 
                                     scoringPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-36))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
 
@@ -213,9 +224,9 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     scoringPose,
 
-                                    new Pose(125, 103)
+                                    new Pose(42, 130)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(-36))
+                    ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
         }
@@ -240,12 +251,12 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 2:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1100) break;
                 follower.followPath(paths.PathToPresetArtifacts);
-                setPathState(4);
+                setPathState(3);
                 break;
 
-            case 4:
+            case 3:
                 if (!follower.isBusy()) {
                     in.rotateIn();
                     sh.closeTunnel();
@@ -256,90 +267,90 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
 
             case 5:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.PathSecondScoring, true);
+                    in.rotateStop();
+                    follower.followPath(paths.PathOpenGate, true);
+                   // if (follower.isBusy() || actionTimer.getElapsedTime() < 1200) break;
                     setPathState(6);
                 }
                 break;
 
             case 6:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
-                sh.openTunnel();
-                setPathState(7);
+                if (!follower.isBusy() || actionTimer.getElapsedTime() > 1000) {
+                    follower.followPath(paths.PathSecondScoring, true);
+                    setPathState(7);
+                }
                 break;
 
             case 7:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                follower.followPath(paths.PathSecondPresentArtefacts, true);
-                sh.closeTunnel();
-                in.rotateIn();
+                if (!sh.isSpinUp() || follower.isBusy()) break;
+                sh.openTunnel();
                 setPathState(8);
                 break;
 
             case 8:
-                if (!follower.isBusy()) {
-                    follower.followPath(paths.PathSecondIntakingArtefacts, true);
-                    setPathState(9);
-                }
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
+                follower.followPath(paths.PathSecondPresentArtefacts, true);
+                setPathState(9);
                 break;
 
             case 9:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.PathThirdScoring, true);
+                    sh.closeTunnel();
+                    in.rotateIn();
+                    follower.followPath(paths.PathSecondIntakingArtefacts, true);
                     setPathState(10);
                 }
                 break;
 
             case 10:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                sh.openTunnel();
-                setPathState(11);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.PathThirdScoring, true);
+                    setPathState(11);
+                }
                 break;
 
             case 11:
-                if (!follower.isBusy()) {
-                    sh.closeTunnel();
-
-                    follower.followPath(paths.PathThirdPresentArtefacts, true);
-                    setPathState(12);
-                }
+                if (!sh.isSpinUp() || follower.isBusy()) break;
+                sh.openTunnel();
+                setPathState(12);
                 break;
 
             case 12:
-                if (!follower.isBusy()) {
-                    in.rotateIn();
-
-                    follower.followPath(paths.PathThirdIntakingArtefacts, true);
-                    setPathState(13);
-                }
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1100) break;
+                follower.followPath(paths.PathThirdPresentArtefacts);
+                setPathState(13);
                 break;
 
             case 13:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.PathFourScoring, true);
+                    sh.closeTunnel();
+                    in.rotateIn();
+                    follower.followPath(paths.PathThirdIntakingArtefacts);
                     setPathState(14);
                 }
                 break;
 
             case 14:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.PathThirdIntakingArtefacts, true);
+                    follower.followPath(paths.PathFourScoring);
                     setPathState(15);
                 }
                 break;
 
             case 15:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
-                sh.openTunnel();
-                setPathState(16);
+                if (sh.isSpinUp() && !follower.isBusy()) {
+                    sh.openTunnel();
+                    setPathState(16);
+                }
                 break;
-
             case 16:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1100) break;
+                as.enableAutoTurretAiming(false);
                 in.rotateStop();
+                sh.shootStop();
                 follower.followPath(paths.PathLeaving);
                 setPathState(-101);
                 break;
-
         }
 
     }

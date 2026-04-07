@@ -9,7 +9,6 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -57,7 +56,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
 
 
         in = new Intake(this);
-        sh = new Shooter(this, follower, new Transfer(this));
+        sh = new Shooter(this, follower);
         ll = new Limelight(this);
         tt = new Turret(this,ll);
         as = new AutoSniper(tt, sh);

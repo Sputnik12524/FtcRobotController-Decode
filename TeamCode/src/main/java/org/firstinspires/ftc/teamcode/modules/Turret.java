@@ -8,37 +8,47 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
 public class Turret {
     LinearOpMode opMode;
-    public DcMotorEx turret;
+    public final DcMotorEx turret;
     Limelight limelight3A;
     DigitalChannel magneticSensor;
     Alliance alliance = Alliance.NONE;
+    AimingMethod aimMethod = AimingMethod.LOCALIZATION;
     public TurretRegulator turretRegulator = new TurretRegulator();
 
     public final double rSmallGear = 60;
     public final double rBigGear = 178;
 
-    public static double kP = 0.02;
-    public static double kI = 0;
-    public static double kD = 0.01;
+    public static double kPC = 0.015;
+    public static double kDC = 0;
+
+    public static double kPL = 0.02;
+
+    public static double kIL = 0;
+    public static double kDL = 0.02;
     public static double kF = 0.1;
     private final double TPR = 537.7;
+    public double current;
     public double error;
-    public double dError;
+    public double dError, dErrorCamera;
     public double sumError = 0;
-    public double pastError;
+    public double pastError, pastErrorCamera;
     public double target = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = 155;
-    public static double POS_LEFTMOST = -180;
+    public static double POS_RIGHTMOST = 225;
+    public static double POS_LEFTMOST = -130;
+    public static double errorPlus = 0;
 
     private boolean stateMagneting = false;
 
     public boolean isInLimits = false;
+    public double voltage;
 
     public Turret(LinearOpMode opMode, Limelight ll) {
         this.opMode = opMode;
@@ -48,6 +58,7 @@ public class Turret {
 
         turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+       // turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public Turret(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -69,41 +80,38 @@ public class Turret {
             turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             timer.reset();
             while (!isInterrupted()) {
-                error = target - getCurrentPosOfTurret();
-                dError = error - pastError;
-                sumError = sumError + error * getCurrentPosOfTurret();
+                switch(aimMethod) {
+                    case CAMERA:
+                        error = -limelight3A.getTagInfo().get(1) ;
+                        dErrorCamera = error - pastErrorCamera;
 
-                double power = error * kP + sumError * kI + dError * kD / timer.milliseconds();
+                        double powerP = error * kPC + kDC * dErrorCamera/timer.milliseconds() + errorPlus;
 
-                turnInLimits(power);
+                        turnInLimits(powerP);
 
-                pastError = error;
-                timer.reset();
+                        pastErrorCamera = error;
+
+                        timer.reset();
+
+                        break;
+
+                    case LOCALIZATION:
+                        error = target - getCurrentPosOfTurret();
+                        dError = error - pastError;
+                        sumError = sumError + error * getCurrentPosOfTurret();
+
+                        double power = error * kPL + sumError * kIL + dError * kDL / timer.milliseconds();
+
+                        turnInLimits(power);
+
+                        pastError = error;
+                        timer.reset();
+                        break;
+                }
+
             }
         }
     }
-
-    public class TurretCameraAiming extends Thread {
-
-        private final ElapsedTime timer = new ElapsedTime();
-
-        @Override
-        public void run() {
-            timer.reset();
-            while (!isInterrupted()) {
-
-                error = -limelight3A.getTagInfo().get(1);
-                // error = центр - координаты_эйприл_тега
-
-                double powerP = error * kP;
-
-                turnInLimits(powerP);
-
-                timer.reset();
-            }
-        }
-    }
-
 
 
     public double getCurrentPosOfTurret() {
@@ -133,25 +141,7 @@ public class Turret {
     }
 
     public void turnByTarget(double target) { this.target = target; }
-    public double stabilizeTargetByCamera(double tar){
-        return (tar - limelight3A.getGoalTag().get(1));
-    }
 
-    public void continuousTurnToGate(Alliance alliance, double x, double y, double angleOfDrivetrain) {
-        if (x <= 0) x = 1;
-        if (x >= 144) x = 143;
-        switch(alliance) {
-            case RED:
-                angleOfTurret = Math.toDegrees(Math.atan((144-y)/(144-x)));
-                break;
-            case BLUE:
-                angleOfTurret = 180 - Math.toDegrees(Math.atan((144-y)/x));
-                break;
-        }
-        target = -(angleOfDrivetrain - angleOfTurret);
-        target -= 180;
-        target = angleNormalising(target);
-    }
     public double angleNormalising(double targetNew) {
         double normTarget = targetNew;
         if (targetNew > POS_RIGHTMOST) {
@@ -165,5 +155,33 @@ public class Turret {
     public void turnStopByPower() {
         turret.setPower(0);
     }
+
+    public void tuneTurretPID(double kPL, double kIL, double kDL, double kPC, double kDC) {
+        Turret.kPL = kPL;
+        Turret.kIL = kIL;
+        Turret.kDL = kDL;
+
+        Turret.kPC = kPC;
+        Turret.kDC = kDC;
+    }
+
+    public double getVoltage(){
+        return turret.getCurrent(CurrentUnit.AMPS);
+    }
+
+    public void setAimMethod(AimingMethod aimingMethod){
+        aimMethod = aimingMethod;
+    }
+
+    public void update(double y){
+        if(y < 50){
+            errorPlus = 3.5;
+        }
+        else errorPlus =0;
+    }
+    public AimingMethod getAimMethod(){
+        return aimMethod;
+    }
+
 
 }

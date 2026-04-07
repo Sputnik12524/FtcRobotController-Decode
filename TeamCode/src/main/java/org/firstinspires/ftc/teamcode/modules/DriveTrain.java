@@ -12,7 +12,7 @@ public class DriveTrain {
     public final DcMotor rightBack;
 
     public static final double WHEEL_DIAMETER = 10.1;
-    public static double MODE_SLOW_POWER = 0.5;
+    public static double MODE_SLOW_POWER = 0.3;
     public static final double PULSES = 537.7;
     public static final double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
     public static double multiplier = 1;

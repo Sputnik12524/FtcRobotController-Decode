@@ -110,7 +110,6 @@ public class Auto3ArtifactsLongRed extends LinearOpMode {
                 if (!sh.isSpinUp()) break;
 
               //  sh.openTunnel();
-                sh.waitForShoot();
                setPathState(2);
                 break;
             case 2:
@@ -123,7 +122,7 @@ public class Auto3ArtifactsLongRed extends LinearOpMode {
                 setPathState(3);
                 break;
             case 3:
-                if (!follower.isBusy() && !Shooter.isTunnelOpen) {
+                if (!follower.isBusy() && !sh.isTunnelOpen) {
                     lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
                     lg.fileClose();
                     setPathState(-100);

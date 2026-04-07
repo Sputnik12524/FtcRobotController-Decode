@@ -133,7 +133,7 @@ public class ArtBlueTravel3 extends LinearOpMode {
                 setPathState(3);
                 break;
             case 3:
-                if (!follower.isBusy() && !Shooter.isTunnelOpen ) {
+                if (!follower.isBusy() && !sh.isTunnelOpen ) {
                     lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
                     lg.fileClose();
                     setPathState(-100);

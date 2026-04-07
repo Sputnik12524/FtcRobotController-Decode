@@ -48,10 +48,13 @@ public class Limelight {
         }
 
         double tx = result.getTx();
-        double ty = result.getTy();
+        double poseX = result.getBotpose().getPosition().x;
+        double poseY = result.getBotpose().getPosition().y;
         tagInfo.add(id);
         tagInfo.add(tx);
-        tagInfo.add(ty);
+        tagInfo.add(poseX);
+        tagInfo.add(poseY);
+
         return tagInfo;
     }
 
@@ -60,9 +63,9 @@ public class Limelight {
             return getTagInfo();
         } else {
             tagInfo.clear();
-            tagInfo.add(0.0);
-            tagInfo.add(0.0);
-            tagInfo.add(0.0);
+            for(int i = 0; i < 4; i++){
+                tagInfo.add(.0);
+            }
             return tagInfo;
         }
     }
