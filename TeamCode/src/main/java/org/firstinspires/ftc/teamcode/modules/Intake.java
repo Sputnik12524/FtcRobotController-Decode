@@ -38,7 +38,7 @@ public class Intake {
         transferServo.setPower(0);
     }
 
-    public double getVoltage(){
+    public double getAmps(){
         return catcher.getCurrent(CurrentUnit.AMPS);
     }
 

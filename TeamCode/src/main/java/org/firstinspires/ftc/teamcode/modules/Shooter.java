@@ -32,6 +32,7 @@ public class Shooter {
     LinearOpMode opMode;
     Follower follower;
     Pose currentPose;
+    ElapsedTime isSpinUpTimer =new ElapsedTime();
 
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(12, 0, 0, 17);
     private final ElapsedTime timer = new ElapsedTime();
@@ -78,7 +79,7 @@ public class Shooter {
     public double voltageUP;
     public double voltageLOW;
     public boolean isCanShoot = false;
-    public boolean isShootStop = false;
+
 
     //---------------------------------------------- BOOLEANS
     public boolean complete = false;
@@ -130,7 +131,6 @@ public class Shooter {
         if (mode == MODE.MANUAL) return;
         switch (state) {
             case STOP:
-                if (!isShootStop) transit(ShStates.SPINNING);
                 shootStop();
                 break;
 
@@ -237,44 +237,6 @@ public class Shooter {
         else angleAdjuster.setPosition(pos);
     }
 
-    public void threeArtefactsShooting() {
-        switch (st) {
-            case 0:
-                switchCover();
-                shootPos = angleAdjuster.getPosition();
-                if (isTunnelOpen) tr(1);
-            case 1:
-                setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-                if (timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(2);
-            case 2:
-                setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-                if (timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(3);
-            case 3:
-                if (timer.milliseconds() > TIME_AFTER_SHOOT) {
-                    complete = true;
-                    canShoot = false;
-                    setMode(shootPos);
-                    tr(0);
-                }
-        }
-    }
-
-
-    public void switchCover() {
-        if (!inZone()) {
-            canShoot = false;
-        }
-        if (canShoot) {
-            openTunnel();
-            if (timer.milliseconds() > TIME_AFTER_SHOOT) {
-                canShoot = false;
-            }
-        } else {
-            closeTunnel();
-            timer.reset();
-        }
-    }
-
     public void coverSwitch(){
         if(canShoot){
             openTunnel();
@@ -300,11 +262,11 @@ public class Shooter {
         this.state = state;
     }
 
-    public double getUpVoltage() {
+    public double getUpAmps() {
         return shooterUpper.getCurrent(CurrentUnit.AMPS);
     }
 
-    public double getLowVoltage() {
+    public double getLowAmps() {
         return shooterLower.getCurrent(CurrentUnit.AMPS);
     }
 
@@ -312,7 +274,11 @@ public class Shooter {
     //---------------------------------------------- AUTONOMOUS
     public boolean isSpinUp() {
         if (getVelocityRPS() == 0) return false;
-        return getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP;
+        if(!(getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP)){
+            isSpinUpTimer.reset();
+            return false;
+        }
+        else return timer.milliseconds() > 150;
     }
 
 
@@ -328,7 +294,7 @@ public class Shooter {
 
 
     public double getVelocityRPS() {
-        return shooterUpper.getVelocity() / TPR;
+        return (shooterUpper.getVelocity()+shooterLower.getVelocity()) / (TPR*2);
     }
 
     public double getVelocityTPS() {

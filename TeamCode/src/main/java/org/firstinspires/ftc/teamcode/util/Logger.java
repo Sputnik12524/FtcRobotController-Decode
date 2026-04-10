@@ -14,6 +14,7 @@ public class Logger {
     String directoryPath = "/sdcard/FIRST/";
     BufferedReader reader;
     BufferedWriter writer;
+    BufferedWriter ampsWriter;
     public String fileName;
     public String line;
     public Alliance al;
@@ -52,15 +53,6 @@ public class Logger {
         }
     }
 
-    public void createChart(double shUP, double shLow, double in, double tt){
-//        PieChart chart = new PieChartBuilder()
-//                .width(600)
-//                .height(500)
-//                .title("Потребление АМПЕР")
-//                .build();
-//        //chart.addSeries(")
-
-    }
 
     public void getAll(String fileName) throws IOException{
 

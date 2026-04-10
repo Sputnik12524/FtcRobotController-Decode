@@ -165,7 +165,7 @@ public class Turret {
         Turret.kDC = kDC;
     }
 
-    public double getVoltage(){
+    public double getAmps(){
         return turret.getCurrent(CurrentUnit.AMPS);
     }
 

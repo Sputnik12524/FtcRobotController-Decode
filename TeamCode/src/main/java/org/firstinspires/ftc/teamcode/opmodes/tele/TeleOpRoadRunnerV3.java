@@ -7,6 +7,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.DriveTrain;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
+import org.firstinspires.ftc.teamcode.util.Cycle;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 import java.io.IOException;
@@ -38,11 +40,14 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     Logger logger;
     Limelight ll;
     DriveTrain dt;
+    Cycle cc;
 
 
     boolean wroteLogger = true;
     boolean isPoseReset = false;
     boolean isInterpolActive = true;
+    boolean magnetic = false;
+    boolean mState = true;
     /// Intake
 
     /// Shooter
@@ -77,6 +82,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         dt = new DriveTrain(this);
         logger = new Logger("pospos");
         ll.startOrStopLL(false);
+        cc = new Cycle();
+
 
 
         try {
@@ -143,6 +150,12 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
 
+            if(tt.isMagneting() && mState){
+                magnetic = true;
+                mState = false;
+            }
+            if(gamepad2.aWasPressed()) mState = true;
+
             //---------------------------------------- SHOOTER
 
             if (gamepad1.y && !isShootingMedium && !stateY1) {
@@ -206,13 +219,18 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             RSBState = gamepad1.right_stick_button;
 
 
+            cc.update();
+
 
             telemetry.addData("l", as.l);
             telemetry.addData("Velocity", sh.getVelocityRPS());
+            telemetry.addData("All time", cc.getAll());
+            telemetry.addData("Average Cycle", cc.getAverage());
+            telemetry.addData("MAX Cycle", cc.getMax());
 
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
             telemetry.addData("isInterpol", isInterpolActive);
-//            telemetry.addData("Magnetic state", tt.isMagneting());
+            telemetry.addData("Magnetic state", magnetic);
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
             // telemetry.addData("Позиция сброшена", isPoseReset);

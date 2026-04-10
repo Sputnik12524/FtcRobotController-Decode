@@ -65,7 +65,7 @@ public class ArtRedTravel3 extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
-            sh.threeArtefactsShooting();
+            
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);

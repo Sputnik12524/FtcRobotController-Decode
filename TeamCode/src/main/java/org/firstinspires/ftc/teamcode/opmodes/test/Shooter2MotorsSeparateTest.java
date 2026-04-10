@@ -75,10 +75,7 @@ public class Shooter2MotorsSeparateTest extends LinearOpMode {
             }
 
             //------------------------------------ SHOOTER
-            if (!attentionControl) {
-                sh.threeArtefactsShooting();
-                sh.switchCover();
-            }
+
             if (!attentionControl) {
                 if (gamepad2.x) sh.canShoot = true;
             }

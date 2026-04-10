@@ -183,9 +183,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             //---------------------------------------- TURRET
             if (!attentionControl)
                 as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
-            if (!attentionControl) {
-                sh.switchCover();
-            }
+
 
 
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ
