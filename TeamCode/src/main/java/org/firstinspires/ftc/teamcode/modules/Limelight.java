@@ -29,7 +29,7 @@ public class Limelight {
         tagInfo = new ArrayList<>();
 
     }
-
+//--------------------------------------------------------------START OR STOP CAMERA
     public void startOrStopLL(boolean isStarted) {
         if (isStarted) {
             limelight3A.stop();
@@ -37,7 +37,7 @@ public class Limelight {
             limelight3A.start();
         }
     }
-
+//--------------------------------------------------------------GETTING INFO FROM APRIL TAG
     public ArrayList<Double> getTagInfo() {
         tagInfo.clear();
         LLResult result = limelightResult();
@@ -69,8 +69,26 @@ public class Limelight {
             return tagInfo;
         }
     }
+    public Position getPoseByAprilTag() {
+        Position pose;
+        if (limelightResult().isValid()) pose = limelightResult().getBotpose().getPosition();
+        else pose = null;
+        return pose;
+    }
 
-    //---------------------------------------------- GETTING
+//-----------------------------------------------------------GETTING ARTIFACTS FROM THE NEURAL DETECTOR
+// WARNING: (SWITCH PIPELINE IN WEB INTERFACE BEFORE USING!)
+    public String getArtifactClassname(){
+        LLResult result = limelightResult();
+        String classname = " ";
+        List<LLResultTypes.DetectorResult> detectorRes = result.getDetectorResults();
+        for (LLResultTypes.DetectorResult dr : detectorRes) {
+            classname = dr.getClassName();
+        }
+        return classname;
+    }
+
+    //------------------------------------------------------GETTING STATUS & RESULT FOR CAMERA WORK
     public LLResult limelightResult() {
         return limelight3A.getLatestResult();
     }
@@ -79,10 +97,5 @@ public class Limelight {
         return limelight3A.getStatus();
     }
 
-    public Position getPoseByAprilTag() {
-        Position pose;
-        if (limelightResult().isValid()) pose = limelightResult().getBotpose().getPosition();
-        else pose = null;
-        return pose;
-    }
+
 }
