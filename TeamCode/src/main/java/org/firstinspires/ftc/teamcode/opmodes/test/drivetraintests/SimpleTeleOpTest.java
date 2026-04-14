@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 
 @TeleOp(name="Simple TeleOp", group="3")
-@Disabled
+
 public class SimpleTeleOpTest extends LinearOpMode {
 
     @Override
