@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.DriveTrain;
+import org.firstinspires.ftc.teamcode.util.Cycle;
 
 @TeleOp(name="Simple TeleOp", group="3")
 
@@ -16,13 +17,24 @@ public class SimpleTeleOpTest extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
+            Cycle cc = new Cycle();
 
-            double main = -gamepad1.left_stick_y;
-            double side = gamepad1.left_stick_x;
-            double rotate = gamepad1.right_trigger - gamepad1.left_trigger;
+            double main = Math.signum(-gamepad1.left_stick_y) * Math.pow(-gamepad1.left_stick_y, 2);
+            double side_input = gamepad1.left_stick_x;
+            double side = Math.signum(side_input) * Math.pow(side_input, 2);
+            double rotate_input = gamepad1.right_trigger - gamepad1.left_trigger;
+            double rotate = Math.signum(rotate_input) * Math.pow(rotate_input, 2);
+
 
 
             dt.setPower(main, side, rotate);
+            cc.update();
+
+
+            telemetry.addData("All time", cc.getAll());
+            telemetry.addData("Average Cycle", cc.getAverage());
+            telemetry.addData("MAX Cycle", cc.getMax());
+
 
             telemetry.addData("main", main);
             telemetry.addData("side", side);
