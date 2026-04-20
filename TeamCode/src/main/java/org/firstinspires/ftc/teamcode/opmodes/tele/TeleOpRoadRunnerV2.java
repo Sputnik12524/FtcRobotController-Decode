@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoFSM;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
-import org.firstinspires.ftc.teamcode.util.Cycle;
 import org.firstinspires.ftc.teamcode.util.GamepadManager;
 import org.firstinspires.ftc.teamcode.util.Logger;
 import org.firstinspires.ftc.teamcode.util.Paths;
@@ -45,7 +44,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     AutoFSM af;
     Telemetry dashtele;
     FtcDashboard dashboard;
-    Cycle cc;
 
     boolean wroteLogger = true;
     boolean isPoseReset = false;
@@ -67,9 +65,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         dt = new DriveTrain(this);
         paths = new Paths(follower);
         af = new AutoFSM(follower, tr, sh, ll, in, tt, logger, as, paths);
-        cc = new Cycle();
-
-
 
         dashboard = FtcDashboard.getInstance();
         dashtele = dashboard.getTelemetry();
@@ -110,7 +105,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             sh.update();
             updateTelemetry();
             ampsUpdate();
-            cc.update();
         }
         ll.startOrStopLL(true);
         tt.turretRegulator.interrupt();
@@ -248,29 +242,26 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         if(follower.getPose().getX() == 0 && follower.getPose().getY() == 0) attentionControl = true;
     }
 
-
     void updateTelemetry() {
-//        telemetry.addData("Max cycle",cc.getMax());
-//        telemetry.addData("Average cycle", cc.getAverage());
         telemetry.addData("TeleState", af.mode);
         telemetry.addData("autoState", af.autoState);
-//        telemetry.addData("Shooter LOW AMPS", sh.getLowAmps());
-//        telemetry.addData("Shooter UP AMPS", sh.getUpAmps());
-//        telemetry.addData("Intake AMPS", in.getAmps());
-//        telemetry.addData("Turret AMPS", tt.getAmps());
-//        telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-//        telemetry.addData("Velocity", sh.getVelocityRPS());
-//        telemetry.addData("InZone", sh.inZone());
-//        telemetry.addData("howMany", tr.howMany());
-//        // telemetry.addData("Позиция сброшена", isPoseReset);
-//        telemetry.addData("Alliance", as.alliance);
-//        telemetry.addData("TARGET", sh.velocityTarget / 28);
-//        telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
-//        telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-//        telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
-//        dashtele.addData("Target ", sh.velocityTarget / 28);
-//        dashtele.addData("Velocity shooter", sh.getVelocityRPS());
-//        dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
+        telemetry.addData("Shooter LOW AMPS", sh.getLowAmps());
+        telemetry.addData("Shooter UP AMPS", sh.getUpAmps());
+        telemetry.addData("Intake AMPS", in.getAmps());
+        telemetry.addData("Turret AMPS", tt.getAmps());
+        telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
+        telemetry.addData("Velocity", sh.getVelocityRPS());
+        telemetry.addData("InZone", sh.inZone());
+        telemetry.addData("howMany", tr.howMany());
+        // telemetry.addData("Позиция сброшена", isPoseReset);
+        telemetry.addData("Alliance", as.alliance);
+        telemetry.addData("TARGET", sh.velocityTarget / 28);
+        telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
+        telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
+        telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
+        dashtele.addData("Target ", sh.velocityTarget / 28);
+        dashtele.addData("Velocity shooter", sh.getVelocityRPS());
+        dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
         dashtele.update();
         telemetry.update();
     }
