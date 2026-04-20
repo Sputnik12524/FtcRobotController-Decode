@@ -157,6 +157,10 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 in.rotateOut();
                 isRotateOut = true;
                 isRotateIn = false;
+                sleep(100);
+                in.rotateIn();
+                isRotateOut = false;
+                isRotateIn = true;
             } else if (gamepad1.b && isRotateOut && !stateB1) {
                 in.rotateStop();
                 isRotateOut = false;
@@ -193,8 +197,10 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
 
-            if (gamepad1.dpad_up) sh.canShoot = true;
-            sh.coverSwitch();
+            if (gamepad1.left_bumper) {
+                sh.canShoot = true;
+                sh.coverSwitch();
+            }
 
             //-------------------------------- TURRET
             if (!attentionControl) {
@@ -205,14 +211,14 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             }
 
             //--------------------------------- RESET AIM
-            if (gamepad1.dpad_left && gamepad1.a) {
+            if (gamepad1.dpad_left) {
                 tt.turnByTarget(0);
                 isPoseReset = true;
                 follower.setPose(new Pose(16, 80, Math.toRadians(90)));
                 as.setAlliance(Alliance.BLUE);
             }
 
-            if (gamepad1.dpad_right && gamepad1.a) {
+            if (gamepad1.dpad_right) {
                 isPoseReset = true;
                 tt.turnByTarget(0);
                 follower.setPose(new Pose(129, 80, Math.toRadians(90)));
