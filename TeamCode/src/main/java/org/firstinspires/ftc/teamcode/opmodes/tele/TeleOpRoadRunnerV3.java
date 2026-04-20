@@ -42,6 +42,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     DriveTrain dt;
     Cycle cc;
 
+    public static double p = 2;
+
 
     boolean wroteLogger = true;
     boolean isPoseReset = false;
@@ -86,6 +88,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         ElapsedTime timerTelemetry = new ElapsedTime();
 
 
+
         try {
             logger.getAll("pospos");
             follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
@@ -128,11 +131,12 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             double y = pose.getY();
             double head = pose.getHeading();
 
-            double main = Math.signum(-gamepad1.left_stick_y) * Math.pow(-gamepad1.left_stick_y, 2);
+            double main_input = -gamepad1.left_stick_y;
+            double main = main_input + (1-main_input) * main_input * Math.abs(Math.pow(main_input,p-1));
             double side_input = gamepad1.left_stick_x;
-            double side = Math.signum(side_input) * Math.pow(side_input, 2);
+            double side = side_input + (1-side_input) * side_input * Math.abs(Math.pow(side_input,p-1));
             double rotate_input = gamepad1.right_trigger - gamepad1.left_trigger;
-            double rotate = Math.signum(rotate_input) * Math.pow(rotate_input, 2);
+            double rotate = rotate_input + (1-rotate_input) * rotate_input * Math.abs(Math.pow(rotate_input,p-1));
 
 //
 //            if (gamepad1.right_bumper) {
@@ -159,8 +163,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 isRotateIn = false;
                 sleep(100);
                 in.rotateIn();
-                isRotateOut = false;
-                isRotateIn = true;
+                isRotateOut = true;
+                isRotateIn = false;
             } else if (gamepad1.b && isRotateOut && !stateB1) {
                 in.rotateStop();
                 isRotateOut = false;
@@ -235,6 +239,11 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             RSBState = gamepad1.right_stick_button;
 
 
+            as.continuousCalculateGeneralValues(
+                    x,y,head,
+                    lastVelo
+            );
+            lastVelo = sh.getVelocityRPS();
             cc.update();
 
 
@@ -243,7 +252,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
             telemetry.addData("Loop ms", loopMs);
 
-////            telemetry.addData("l", as.l);
+            telemetry.addData("l", as.l);
 //            telemetry.addData("All time", cc.getAll());
 //            telemetry.addData("Average Cycle", cc.getAverage());
 //            telemetry.addData("MAX Cycle", cc.getMax());
@@ -261,8 +270,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            telemetry.addLine(String.valueOf((int) y));
 //            telemetry.addLine(String.valueOf((int) Math.toDegrees(head)));
 //
-//            dashtele.addData("Target ", sh.velocityTarget / 28);
-//            dashtele.addData("Velocity shooter", sh.getVelocityRPS());
+            dashtele.addData("Target ", sh.velocityTarget / 28);
+            dashtele.addData("Velocity shooter", sh.getVelocityRPS());
 //            dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
             dashtele.update();
             telemetry.update();

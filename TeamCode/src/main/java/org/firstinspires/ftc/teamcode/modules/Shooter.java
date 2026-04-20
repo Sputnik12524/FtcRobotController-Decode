@@ -34,7 +34,7 @@ public class Shooter {
     Pose currentPose;
     ElapsedTime isSpinUpTimer =new ElapsedTime();
 
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(12, 0, 0, 17);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(11, 0, 10, 13.5);
     private final ElapsedTime timer = new ElapsedTime();
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}

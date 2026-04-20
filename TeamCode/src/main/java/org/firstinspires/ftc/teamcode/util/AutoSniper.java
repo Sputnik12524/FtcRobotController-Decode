@@ -59,8 +59,8 @@ public class AutoSniper {
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
 
-    double[] ValuesOfVelocity = {41, 52, 56.8, 58, 61, 61.75, 69.25}; // {40, 51, 56, 62-63, 63, 67, 75}
-    double[] ValuesOfDistance = {1.0755, 1.825, 2.4381, 2.8065, 3.2954, 3.5351, 3.9292};
+    double[] ValuesOfVelocity = {45, 52, 56.8, 58, 61, 61.75, 69.25}; // {44, 51, 56, 62-63, 63, 67, 75}
+    double[] ValuesOfDistance = {1.0311, 1.825, 2.4381, 2.8065, 3.2954, 3.5351, 3.9292};
     public boolean isShort, isLong = false;
 
     public AutoSniper(Turret turret, Shooter shooter) {
