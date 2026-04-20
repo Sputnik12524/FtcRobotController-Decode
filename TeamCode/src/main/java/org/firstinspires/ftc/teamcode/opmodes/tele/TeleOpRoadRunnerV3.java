@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.util.Logger;
 import java.io.IOException;
 
 
-@TeleOp(name = "TeleOpRR V3", group = "0")
+@TeleOp(name = "TeleOpRRV3", group = "0")
 @Config
 public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
@@ -41,6 +41,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     Limelight ll;
     DriveTrain dt;
     Cycle cc;
+    ElapsedTime time;
+    ElapsedTime timer1;
 
 
     boolean wroteLogger = true;
@@ -68,6 +70,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     boolean isShootingShort = false;
     boolean isShootingMedium = false;
     boolean RSBState = false;
+    double cycles;
 
 
     @Override
@@ -84,6 +87,10 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         ll.startOrStopLL(false);
         cc = new Cycle();
         ElapsedTime timerTelemetry = new ElapsedTime();
+        time = new ElapsedTime();
+
+        timer1 = new ElapsedTime();
+
 
 
         try {
@@ -168,11 +175,12 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
 
-            if (tt.isMagneting() && mState) {
+            if(tt.isMagneting() && mState){
                 magnetic = true;
                 mState = false;
             }
             if (gamepad2.aWasPressed()) mState = true;
+            if (gamepad2.aWasPressed()) magnetic = false;
 
             //---------------------------------------- SHOOTER
 
@@ -235,8 +243,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             RSBState = gamepad1.right_stick_button;
 
 
-            cc.update();
 
+            telemetry.update();
 
             long loopTimeNs = System.nanoTime() - loopStart;
             double loopMs = loopTimeNs / 1e6;
@@ -266,11 +274,21 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
             dashtele.update();
             telemetry.update();
-
         }
         ll.startOrStopLL(true);
         tt.turretRegulator.interrupt();
 
+
+    }
+
+    void ampsUpdate() {
+        if (time.milliseconds() > 100) {
+            sh.voltageUP += sh.getUpAmps();
+            sh.voltageLOW += sh.getLowAmps();
+            in.voltage += in.getAmps();
+            tt.voltage += tt.getAmps();
+            time.reset();
+        }
     }
 
 

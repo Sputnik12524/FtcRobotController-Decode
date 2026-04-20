@@ -103,7 +103,7 @@ public class AutoSniper {
             if (x >= 144) x = 143;
 
 
-            if ((ll.getGoalTag().get(0) == 20 || ll.getGoalTag().get(0) == 24) && y > 50) {
+            if ((ll.getGoalTag().get(0) == 20 || ll.getGoalTag().get(0) == 24) ) {
                 tt.setAimMethod(AimingMethod.CAMERA);
             } else {
                 tt.setAimMethod(AimingMethod.LOCALIZATION);

@@ -3,13 +3,16 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @Config
 public class DriveTrain {
-    public final DcMotor leftFront;
-    public final DcMotor leftBack;
-    public final DcMotor rightFront;
-    public final DcMotor rightBack;
+    public final DcMotorEx leftFront;
+    public final DcMotorEx leftBack;
+    public final DcMotorEx rightFront;
+    public final DcMotorEx rightBack;
 
     public static final double WHEEL_DIAMETER = 10.1;
     public static double MODE_SLOW_POWER = 0.3;
@@ -17,11 +20,13 @@ public class DriveTrain {
     public static final double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
     public static double multiplier = 1;
 
+
+
     public DriveTrain(LinearOpMode opMode) {
-        this.leftFront = opMode.hardwareMap.get(DcMotor.class, "leftFront");
-        this.leftBack = opMode.hardwareMap.get(DcMotor.class, "leftBack");
-        this.rightFront = opMode.hardwareMap.get(DcMotor.class, "rightFront");
-        this.rightBack = opMode.hardwareMap.get(DcMotor.class, "rightBack");
+        this.leftFront = opMode.hardwareMap.get(DcMotorEx.class, "leftFront");
+        this.leftBack = opMode.hardwareMap.get(DcMotorEx.class, "leftBack");
+        this.rightFront = opMode.hardwareMap.get(DcMotorEx.class, "rightFront");
+        this.rightBack = opMode.hardwareMap.get(DcMotorEx.class, "rightBack");
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
@@ -170,5 +175,21 @@ public class DriveTrain {
         leftBack.setPower(-MODE_SLOW_POWER);
         rightFront.setPower(MODE_SLOW_POWER);
         rightBack.setPower(MODE_SLOW_POWER);
+    }
+
+    public double getLfAMPS(){
+        return leftFront.getCurrent(CurrentUnit.AMPS);
+    }
+    public double getLbAMPS(){
+        return leftBack.getCurrent(CurrentUnit.AMPS);
+    }
+    public double getRfAMPS(){
+        return rightFront.getCurrent(CurrentUnit.AMPS);
+    }
+    public double getRbAMPS(){
+        return rightBack.getCurrent(CurrentUnit.AMPS);
+    }
+    public double getAverageAmps(){
+        return getLbAMPS() + getRbAMPS() + getRfAMPS() + getLfAMPS();
     }
 }

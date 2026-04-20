@@ -14,10 +14,11 @@ public class SimpleTeleOpTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         DriveTrain dt = new DriveTrain(this);
+        Cycle cc = new Cycle();
 
         waitForStart();
         while (opModeIsActive()) {
-            Cycle cc = new Cycle();
+            cc.update();
 
             double main = Math.signum(-gamepad1.left_stick_y) * Math.pow(-gamepad1.left_stick_y, 2);
             double side_input = gamepad1.left_stick_x;
@@ -28,13 +29,15 @@ public class SimpleTeleOpTest extends LinearOpMode {
 
 
             dt.setPower(main, side, rotate);
-            cc.update();
 
-
-            telemetry.addData("All time", cc.getAll());
-            telemetry.addData("Average Cycle", cc.getAverage());
-            telemetry.addData("MAX Cycle", cc.getMax());
-
+            telemetry.addData("Max cycle",cc.getMax());
+            telemetry.addData("Average cycle", cc.getAverage());
+            telemetry.addData("Cycles", cc.getCycles());
+            telemetry.addData("DriveTrain", dt.getAverageAmps());
+            telemetry.addData("LeftBack", dt.getLbAMPS());
+            telemetry.addData("LeftFront", dt.getLfAMPS());
+            telemetry.addData("RightBack", dt.getRbAMPS());
+            telemetry.addData("RightFront", dt.getRfAMPS());
 
             telemetry.addData("main", main);
             telemetry.addData("side", side);

@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode.util;
 
+
+
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Cycle {
+    Telemetry telemetry = new MultipleTelemetry();
     ElapsedTime timer = new ElapsedTime();
     private double max_time;
     private double cycles;
@@ -23,6 +29,14 @@ public class Cycle {
     }
     public double getAll(){
         return all_time;
+    }
+    public double getCycles(){
+        return cycles;
+    }
+    public void updateTelemetry(){
+        telemetry.addData("Max cycle",getMax());
+        telemetry.addData("Average cycle", getAverage());
+        telemetry.addData("Cycles", getCycles());
     }
 
 }
