@@ -200,8 +200,15 @@ public class AutoFSM {
         autoTimer.reset();
     }
 
+    public void artefactsControl(){
+        if (tr.howMany() > 3) {
+            in.rotateStop();
+        }
+    }
+
     public void updateArtefacts() {
         if (tr.howMany() > 3) {
+            in.rotateStop();
             if (follower.getPose().getY() >= 48) setAuto(AUTO.GOAL);
             else setAuto(AUTO.HUMAN);
         }

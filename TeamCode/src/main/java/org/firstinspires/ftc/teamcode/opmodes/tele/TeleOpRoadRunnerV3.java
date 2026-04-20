@@ -92,7 +92,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         timer1 = new ElapsedTime();
 
 
-
         try {
             logger.getAll("pospos");
             follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
@@ -129,6 +128,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
             //-------------------------------- DRIVETRAIN
             follower.update();
+            artefactsControl();
 
             Pose pose = follower.getPose();
             double x = pose.getX();
@@ -164,10 +164,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 in.rotateOut();
                 isRotateOut = true;
                 isRotateIn = false;
-                sleep(100);
-                in.rotateIn();
-                isRotateOut = false;
-                isRotateIn = true;
             } else if (gamepad1.b && isRotateOut && !stateB1) {
                 in.rotateStop();
                 isRotateOut = false;
@@ -175,7 +171,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
 
-            if(tt.isMagneting() && mState){
+            if (tt.isMagneting() && mState) {
                 magnetic = true;
                 mState = false;
             }
@@ -205,10 +201,11 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
 
-            if (gamepad1.left_bumper) {
+            if (gamepad1.dpad_up) {
                 sh.canShoot = true;
-                sh.coverSwitch();
+                in.rotateIn();
             }
+            sh.coverSwitch();
 
             //-------------------------------- TURRET
             if (!attentionControl) {
@@ -243,6 +240,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             RSBState = gamepad1.right_stick_button;
 
 
+            cc.update();
 
             telemetry.update();
 
@@ -288,6 +286,13 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             in.voltage += in.getAmps();
             tt.voltage += tt.getAmps();
             time.reset();
+        }
+    }
+
+    void artefactsControl() {
+        if (tr.howMany() > 3 && timer1.milliseconds() > 300) {
+            in.rotateStop();
+            timer1.reset();
         }
     }
 
