@@ -41,6 +41,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     Limelight ll;
     DriveTrain dt;
     Cycle cc;
+    ElapsedTime time;
+    ElapsedTime timer1;
 
     public static double p = 2;
 
@@ -70,6 +72,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     boolean isShootingShort = false;
     boolean isShootingMedium = false;
     boolean RSBState = false;
+    double cycles;
 
 
     @Override
@@ -86,6 +89,9 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         ll.startOrStopLL(false);
         cc = new Cycle();
         ElapsedTime timerTelemetry = new ElapsedTime();
+        time = new ElapsedTime();
+
+        timer1 = new ElapsedTime();
 
 
 
@@ -125,6 +131,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
             //-------------------------------- DRIVETRAIN
             follower.update();
+            artefactsControl();
 
             Pose pose = follower.getPose();
             double x = pose.getX();
@@ -177,6 +184,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 mState = false;
             }
             if (gamepad2.aWasPressed()) mState = true;
+            if (gamepad2.aWasPressed()) magnetic = false;
 
             //---------------------------------------- SHOOTER
 
@@ -201,10 +209,11 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             stateY1 = gamepad1.y;
             stateX1 = gamepad1.x;
 
-            if (gamepad1.left_bumper) {
+            if (gamepad1.dpad_up) {
                 sh.canShoot = true;
-                sh.coverSwitch();
+                in.rotateIn();
             }
+            sh.coverSwitch();
 
             //-------------------------------- TURRET
             if (!attentionControl) {
@@ -246,6 +255,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             lastVelo = sh.getVelocityRPS();
             cc.update();
 
+            telemetry.update();
 
             long loopTimeNs = System.nanoTime() - loopStart;
             double loopMs = loopTimeNs / 1e6;
@@ -280,6 +290,24 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         ll.startOrStopLL(true);
         tt.turretRegulator.interrupt();
 
+
+    }
+
+    void ampsUpdate() {
+        if (time.milliseconds() > 100) {
+            sh.voltageUP += sh.getUpAmps();
+            sh.voltageLOW += sh.getLowAmps();
+            in.voltage += in.getAmps();
+            tt.voltage += tt.getAmps();
+            time.reset();
+        }
+    }
+
+    void artefactsControl() {
+        if (tr.howMany() > 3 && timer1.milliseconds() > 300) {
+            in.rotateStop();
+            timer1.reset();
+        }
     }
 
 
