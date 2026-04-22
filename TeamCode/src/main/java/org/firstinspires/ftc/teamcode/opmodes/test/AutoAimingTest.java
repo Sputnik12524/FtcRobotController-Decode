@@ -114,8 +114,16 @@ public class AutoAimingTest extends LinearOpMode {
 
             //---------------------------------------------- VELOCITY
 
-////            sh.shootByVelocity();
 //
+            as.continuousSetVelocityTargetByInterpol(
+                    follower.getPose().getY()
+            );
+            sh.shootByVelocity();
+            telemetry.addLine("VELOCITY TELEMETRY (INTERPOL):");
+                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
+                telemetry.addData("realVelocity", sh.getVelocityRPS());
+            lastVelo = sh.getVelocityRPS();
+
 //            telemetry.addLine("");
 //            if (veloState && !constVeloState && !interpolState) {
 //                as.continuousSetVelocityTargetByFormula(

@@ -54,13 +54,15 @@ public class AutoSniper {
 
     public double sX, sY, c, a, D, l = 0;
     public double v1, v2, l1, l2 = 0;
-    public double minDistanceForLongThrowMode = 3;
+    public double minDistanceForLongThrowMode = 2.63;
 
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
 
-    double[] ValuesOfVelocity = {45, 52, 56.8, 58, 61, 61.75, 69.25}; // {44, 51, 56, 62-63, 63, 67, 75}
-    double[] ValuesOfDistance = {1.0311, 1.825, 2.4381, 2.8065, 3.2954, 3.5351, 3.9292};
+    double[] ValuesOfVelocity = {43.5, 47, 51, 53, 57, 60.75, 62, 64}; // {45-47, 49-50, 56-57, 60, 61-62}
+    double[] ValuesOfDistance = {1.061, 1.2058, 1.463, 1.8165, 2.0397, 2.3578, 2.4738, 2.6415};
+
+    public static double tag = 24;
     public boolean isShort, isLong = false;
 
     public AutoSniper(Turret turret, Shooter shooter) {
@@ -86,11 +88,13 @@ public class AutoSniper {
         switch (alliance) {
             case BLUE:
                 goalX = 1;
+                tag = 20;
                 this.alliance = Alliance.BLUE;
                 break;
             case RED:
                 this.alliance = Alliance.RED;
                 goalX = 138;
+                tag = 24;
                 break;
             case NONE:
                 this.alliance = Alliance.NONE;
@@ -102,8 +106,7 @@ public class AutoSniper {
             if (x <= 0) x = 1;
             if (x >= 144) x = 143;
 
-
-            if ((ll.getGoalTag().get(0) == 20 || ll.getGoalTag().get(0) == 24) ) {
+            if ((ll.getGoalTag().get(0) == tag) ) {
                 tt.setAimMethod(AimingMethod.CAMERA);
             } else {
                 tt.setAimMethod(AimingMethod.LOCALIZATION);
@@ -123,7 +126,8 @@ public class AutoSniper {
 
                 target = tt.angleNormalising(target + targetBonus + driverTargetBonus);
                 tt.turnByTarget(target);
-                tt.current = 0;
+                //tt.current = 0;
+
             }
 
 
@@ -192,10 +196,10 @@ public class AutoSniper {
     public void continuousSetVelocityTargetByInterpol(double y) {
         if (y > interpolPose) {
             for (int i = 0; i < ValuesOfDistance.length - 1; i++) {
-                if (l > ValuesOfDistance[5]) {
-                    l = ValuesOfDistance[5];
+                if (l > ValuesOfDistance[7]) {
+                    l = ValuesOfDistance[7];
                 } else if (l < ValuesOfDistance[0]) {
-                    l = ValuesOfDistance[0];
+                    l = ValuesOfDistance[7];
                 }
                 if (ValuesOfDistance[i] <= l && l <= ValuesOfDistance[i + 1]) {
                     v1 = ValuesOfVelocity[i];
@@ -207,6 +211,8 @@ public class AutoSniper {
                     sh.setVelocityTarget(targetVelo);
                 }
             }
+        } else {
+            sh.setVelocityTarget(targetVelo);
         }
     }
 

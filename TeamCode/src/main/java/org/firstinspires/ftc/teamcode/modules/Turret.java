@@ -33,7 +33,7 @@ public class Turret {
     public static double kDL = 0.02;
     public static double kF = 0.1;
     private final double TPR = 537.7;
-    public double current;
+    //public double current;
     public double error;
     public double dError;
     public double sumError = 0;
@@ -82,7 +82,7 @@ public class Turret {
                 switch (aimMethod) {
                     case CAMERA:
                         error = -limelight3A.getTagInfo().get(1);
-                        if (error < 2.5 || error > -2.5) turnInLimits(0);
+                        if (error < 0.25 && error > -0.25) turnInLimits(0);
                         else {
                             dError = error - pastError;
 

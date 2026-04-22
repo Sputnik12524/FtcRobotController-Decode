@@ -58,7 +58,7 @@ public class Shooter {
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0.005;
     public static double TIME_BETWEEN_SHOOT = 130;
-    public static double TIME_AFTER_SHOOT = 500;
+    public static double TIME_AFTER_SHOOT = 1500;
     public static double DELTA_ADJUSTER = 0.01;
     public static double DELTA_SECOND_SHOOT = 0.02;
     public static double DETECT_SHOOT = 5;

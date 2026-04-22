@@ -48,6 +48,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     boolean wroteLogger = true;
     boolean isPoseReset = false;
     boolean attentionControl = false;
+    double lastVelo = 0;
 
     @Override
     public void runOpMode() {
