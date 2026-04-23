@@ -22,7 +22,7 @@ public class AutoSniper {
     public double goalZ = 51.5;
     public Alliance alliance = Alliance.NONE;
 
-    public double interpolPose = 65;
+    public double interpolPose = 70;
 
     public double highOfShooting = 9.84;
     public double R = 0.1; // meters
@@ -193,8 +193,8 @@ public class AutoSniper {
         }
     }
 
-    public void continuousSetVelocityTargetByInterpol(double y) {
-        if (y > interpolPose) {
+    public void continuousSetVelocityTargetByInterpol(double x, double y) {
+        if ((follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 60)) {
             for (int i = 0; i < ValuesOfDistance.length - 1; i++) {
                 if (l > ValuesOfDistance[7]) {
                     l = ValuesOfDistance[7];

@@ -165,7 +165,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
                 if (isInterpolActive) {
                     as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
-                    as.continuousSetVelocityTargetByInterpol(follower.getPose().getY());
+                    as.continuousSetVelocityTargetByInterpol(follower.getPose().getX(), follower.getPose().getY());
                     sh.shootByVelocity();
                     as.continuousSetAngleByFormula(
                             sh.getAngleAdjusterPos()

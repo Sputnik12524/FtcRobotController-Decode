@@ -150,14 +150,14 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             double rotate = gamepad1.right_trigger - gamepad1.left_trigger;
             dt.setMotorsPowerNonLinear(main, side, rotate);
 
-            if (gamepad1.left_stick_button && !stateLSB && !slowMode) {
-                DriveTrain.multiplier = 0.5;
-                slowMode = true;
-            } else if(gamepad1.left_stick_button && !stateLSB && slowMode) {
-                DriveTrain.multiplier = 1;
-                slowMode = false;
-            }
-            stateLSB = gamepad1.left_stick_button;
+//            if (gamepad1.left_stick_button && !stateLSB && !slowMode) {
+//                DriveTrain.multiplier = 0.5;
+//                slowMode = true;
+//            } else if(gamepad1.left_stick_button && !stateLSB && slowMode) {
+//                DriveTrain.multiplier = 1;
+//                slowMode = false;
+//            }
+//            stateLSB = gamepad1.left_stick_button;
 
             //-------------------------------- INTAKE
 
@@ -213,7 +213,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            stateX1 = gamepad1.x;
 
             as.continuousSetVelocityTargetByInterpol(
-                    follower.getPose().getY()
+                    follower.getPose().getX(), follower.getPose().getY()
             );
             sh.shootByVelocity();
             lastVelo = sh.getVelocityRPS();
