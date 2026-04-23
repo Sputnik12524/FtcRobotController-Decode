@@ -44,8 +44,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     ElapsedTime time;
     ElapsedTime timer1;
 
-    public static double p = 2;
-
 
     boolean wroteLogger = true;
     boolean isPoseReset = false;
@@ -147,21 +145,17 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             double y = pose.getY();
             double head = pose.getHeading();
 
-            double main_input = -gamepad1.left_stick_y;
-            double main = main_input + (1-main_input) * main_input * Math.abs(Math.pow(main_input,p-1));
-            double side_input = gamepad1.left_stick_x;
-            double side = side_input + (1-side_input) * side_input * Math.abs(Math.pow(side_input,p-1));
-            double rotate_input = gamepad1.right_trigger - gamepad1.left_trigger;
-            double rotate = rotate_input + (1-rotate_input) * rotate_input * Math.abs(Math.pow(rotate_input,p-1));
+            double main = -gamepad1.left_stick_y;
+            double side = gamepad1.left_stick_x;
+            double rotate = gamepad1.right_trigger - gamepad1.left_trigger;
+            dt.setMotorsPowerNonLinear(main, side, rotate);
 
-
-            dt.setMotorsPower(main, side, rotate);
             if (gamepad1.left_stick_button && !stateLSB && !slowMode) {
                 DriveTrain.multiplier = 0.5;
                 slowMode = true;
-            } else if(ZOV) {
+            } else if(gamepad1.left_stick_button && !stateLSB && slowMode) {
                 DriveTrain.multiplier = 1;
-                slowMode = true;
+                slowMode = false;
             }
             stateLSB = gamepad1.left_stick_button;
 
@@ -222,7 +216,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                     follower.getPose().getY()
             );
             sh.shootByVelocity();
-            lastVel = sh.getVelocityRPS();
+            lastVelo = sh.getVelocityRPS();
 
             as.setAngleByLocalisation(
                     as.l,

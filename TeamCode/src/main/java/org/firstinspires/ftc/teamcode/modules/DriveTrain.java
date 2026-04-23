@@ -19,7 +19,7 @@ public class DriveTrain {
     public static final double PULSES = 537.7;
     public static final double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
     public static double multiplier = 1;
-
+    public static double p = 2;
 
 
     public DriveTrain(LinearOpMode opMode) {
@@ -66,7 +66,7 @@ public class DriveTrain {
         rightFront.setPower(power);
         rightBack.setPower(power);
 
-        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance);
+        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance) ;
         leftFront.setPower(0);
         leftBack.setPower(0);
         rightFront.setPower(0);
@@ -89,7 +89,7 @@ public class DriveTrain {
         rightFront.setPower(-power);
         rightBack.setPower(power);
 
-        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance);
+        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance) ;
 
         leftFront.setPower(0);
         leftBack.setPower(0);
@@ -113,7 +113,7 @@ public class DriveTrain {
         rightFront.setPower(power);
         rightBack.setPower(power);
 
-        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance);
+        while (leftFront.getCurrentPosition() < CENTI_TO_PULSES * distance) ;
 
         leftFront.setPower(0);
         leftBack.setPower(0);
@@ -122,12 +122,14 @@ public class DriveTrain {
     }
 
     public enum RobotDirection {FORWARD, BACK, RIGHT, LEFT, FORWARD_LEFT, FORWARD_RIGHT, BACK_LEFT, BACK_RIGHT, ROTATION_CLOCKWISE, COUNTERCLOCKWISE_ROTATION}
-    public void setPower (double main, double side, double rotation){
+
+    public void setPower(double main, double side, double rotation) {
         leftFront.setPower(multiplier * (main + side + rotation));
         leftBack.setPower(multiplier * (main - side + rotation));
         rightFront.setPower(multiplier * (main - side - rotation));
         rightBack.setPower(multiplier * (main + side - rotation));
     }
+
     public void setDTPower(RobotDirection direction, double power, double distance) {
         switch (direction) {
 
@@ -158,18 +160,32 @@ public class DriveTrain {
         }
 
     }
+
     public void setMotorsPower(double main, double side, double rotation) {
         leftFront.setPower(multiplier * (main + side + rotation));
         leftBack.setPower(multiplier * (main - side + rotation));
         rightFront.setPower(multiplier * (main - side - rotation));
         rightBack.setPower(multiplier * (main + side - rotation));
     }
+
+    public void setMotorsPowerNonLinear(double main, double side, double rotation) {
+        double main_power = main + (1 - main) * main * Math.abs(Math.pow(main, p - 1));
+        double side_power = side + (1 - side) * side * Math.abs(Math.pow(side, p - 1));
+        double rotate_power = rotation + (1 - rotation) * rotation * Math.abs(Math.pow(rotation, p - 1));
+
+        leftFront.setPower(multiplier * (main_power + side_power + rotate_power));
+        leftBack.setPower(multiplier * (main_power - side_power + rotate_power));
+        rightFront.setPower(multiplier * (main_power - side_power - rotate_power));
+        rightBack.setPower(multiplier * (main_power + side_power - rotate_power));
+    }
+
     public void turnRightSlowMode() {
         leftFront.setPower(MODE_SLOW_POWER);
         leftBack.setPower(MODE_SLOW_POWER);
         rightFront.setPower(-MODE_SLOW_POWER);
         rightBack.setPower(-MODE_SLOW_POWER);
     }
+
     public void turnLeftSlowMode() {
         leftFront.setPower(-MODE_SLOW_POWER);
         leftBack.setPower(-MODE_SLOW_POWER);
@@ -177,19 +193,23 @@ public class DriveTrain {
         rightBack.setPower(MODE_SLOW_POWER);
     }
 
-    public double getLfAMPS(){
+    public double getLfAMPS() {
         return leftFront.getCurrent(CurrentUnit.AMPS);
     }
-    public double getLbAMPS(){
+
+    public double getLbAMPS() {
         return leftBack.getCurrent(CurrentUnit.AMPS);
     }
-    public double getRfAMPS(){
+
+    public double getRfAMPS() {
         return rightFront.getCurrent(CurrentUnit.AMPS);
     }
-    public double getRbAMPS(){
+
+    public double getRbAMPS() {
         return rightBack.getCurrent(CurrentUnit.AMPS);
     }
-    public double getAverageAmps(){
+
+    public double getAverageAmps() {
         return getLbAMPS() + getRbAMPS() + getRfAMPS() + getLfAMPS();
     }
 }
