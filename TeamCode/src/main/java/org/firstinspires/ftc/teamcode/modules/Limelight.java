@@ -111,14 +111,15 @@ public class Limelight {
     }
 
     public void relocalizeWhenError() {
+        Pose tagPose = getPoseByAprilTag();
+        if (tagPose == null) return;
         double [] poseOdo = {fl.getPose().getX(), fl.getPose().getY(), fl.getHeading()};
         double [] poseTag = {getPoseByAprilTag().getX(), getPoseByAprilTag().getY(), getPoseByAprilTag().getHeading()};
         double [] localizationErrors = comparePose(poseOdo,poseTag);
 
-        Pose tagPose = getPoseByAprilTag();
-        if (tagPose != null &&
-                (Math.abs(localizationErrors[0]) > 2 || Math.abs(localizationErrors[1]) > 2
-                        || Math.abs(localizationErrors[2]) > 5)) {
+
+        if (Math.abs(localizationErrors[0]) > 2 || Math.abs(localizationErrors[1]) > 2
+                        || Math.abs(localizationErrors[2]) > 5) {
             fl.setPose(tagPose);
         }
     }
