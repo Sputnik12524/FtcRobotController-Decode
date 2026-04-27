@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Cycle;
+import org.firstinspires.ftc.teamcode.util.GamepadManager;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 import java.io.IOException;
@@ -29,7 +30,8 @@ import java.io.IOException;
 @TeleOp(name = "TeleOpRR V3", group = "0")
 @Config
 public class TeleOpRoadRunnerV3 extends LinearOpMode {
-
+    enum IN_STATES {DEFAULT, WAIT, IN, OUT}
+    IN_STATES state = IN_STATES.DEFAULT;
 
     Shooter sh;
     Intake in;
@@ -42,8 +44,10 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     DriveTrain dt;
     Cycle cc;
     ElapsedTime time;
+    ElapsedTime timer;
     ElapsedTime timer1;
-
+    GamepadManager g1;
+    GamepadManager g2;
 
     boolean wroteLogger = true;
     boolean isPoseReset = false;
@@ -65,6 +69,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     boolean stateB1 = false;
     boolean stateLSB = false;
     boolean stateB2 = false;
+    final double WAIT_TIME = 120;
 
     //shooter
     boolean stateY1 = false;
@@ -79,6 +84,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        g1 = new GamepadManager(gamepad1);
+        g2 = new GamepadManager(gamepad2);
         follower = Constants.createFollower(hardwareMap);
         tr = new Transfer(this);
         ll = new Limelight(this);
@@ -92,7 +99,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         cc = new Cycle();
         ElapsedTime timerTelemetry = new ElapsedTime();
         time = new ElapsedTime();
-
+        timer = new ElapsedTime();
         timer1 = new ElapsedTime();
 
 
@@ -138,6 +145,9 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
             //-------------------------------- DRIVETRAIN
             follower.update();
+            g1.update();
+            g2.update();
+            inUpdate();
             artefactsControl();
 
             Pose pose = follower.getPose();
@@ -168,26 +178,26 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
             //-------------------------------- INTAKE
 
-            if (gamepad1.a && !isRotateIn && !stateA1) {
-                in.rotateIn();
-                isRotateIn = true;
-                isRotateOut = false;
-            } else if (gamepad1.a && isRotateIn && !stateA1) {
-                in.rotateStop();
-                isRotateIn = false;
-                isRotateOut = false;
-            } else if ((gamepad1.b && !isRotateOut && !stateB1) || (gamepad2.b && !isRotateOut && !stateB2)) {
-                in.rotateOut();
-                isRotateOut = true;
-                isRotateIn = false;
-                sleep(120);
-                in.rotateIn();
-                isRotateOut = false;
-                isRotateIn = true;
-            }
-            stateA1 = gamepad1.a;
-            stateB1 = gamepad1.b;
-            stateB2 = gamepad2.b;
+//            if (gamepad1.a && !isRotateIn && !stateA1) {
+//                in.rotateIn();
+//                isRotateIn = true;
+//                isRotateOut = false;
+//            } else if (gamepad1.a && isRotateIn && !stateA1) {
+//                in.rotateStop();
+//                isRotateIn = false;
+//                isRotateOut = false;
+//            } else if ((gamepad1.b && !isRotateOut && !stateB1) || (gamepad2.b && !isRotateOut && !stateB2)) {
+//                in.rotateOut();
+//                isRotateOut = true;
+//                isRotateIn = false;
+//                sleep(120);
+//                in.rotateIn();
+//                isRotateOut = false;
+//                isRotateIn = true;
+//            }
+//            stateA1 = gamepad1.a;
+//            stateB1 = gamepad1.b;
+//            stateB2 = gamepad2.b;
 
             if (tt.isMagneting() && mState) {
                 magnetic = true;
@@ -329,13 +339,43 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         }
     }
 
+    void setInState(IN_STATES state) {
+        timer.reset();
+        this.state = state;
+    }
+
     void artefactsControl() {
-        if (tr.howMany() > 3 && timer1.milliseconds() > 300) {
+        if (tr.howMany() == 3 && timer1.milliseconds() > 300) {
             in.rotateStop();
             timer1.reset();
         }
     }
-
+    void inUpdate() {
+        g1.update();
+        g2.update();
+        switch (state) {
+            case DEFAULT:
+                if (g1.A.isPressed() && !g1.A.getToggleState()) {
+                    setInState(IN_STATES.IN);
+                } else if (g2.B.isPressed() && !g2.B.getToggleState()) {
+                    setInState(IN_STATES.OUT);
+                } else in.rotateStop();
+                break;
+            case IN:
+                if (g1.A.isPressed() && g1.A.getToggleState()) {
+                    in.rotateIn();
+                    setInState(IN_STATES.DEFAULT);
+                }
+                break;
+            case OUT:
+                in.rotateOut();
+                setInState(IN_STATES.WAIT);
+                break;
+            case WAIT:
+                if (timer.milliseconds() > WAIT_TIME) setInState(IN_STATES.DEFAULT);
+                break;
+        }
+    }
 
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
