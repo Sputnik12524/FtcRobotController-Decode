@@ -110,7 +110,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));
             attentionControl = true;
-            as.setAlliance(Alliance.RED);
+            as.setAlliance(Alliance.BLUE);
         }
 
         follower.update();
@@ -138,7 +138,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
             //-------------------------------- DRIVETRAIN
             follower.update();
-            //artefactsControl();
+            artefactsControl();
 
             Pose pose = follower.getPose();
             double x = pose.getX();
@@ -286,7 +286,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            double loopMs = loopTimeNs / 1e6;
 
    //           telemetry.addData("Loop ms", loopMs);
-            telemetry.addData("l", as.l);
+ //           telemetry.addData("l", as.l);
 //            telemetry.addData("All time", cc.getAll());
 //            telemetry.addData("Average Cycle", cc.getAverage());
 //            telemetry.addData("MAX Cycle", cc.getMax());
@@ -302,15 +302,14 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 ////**            telemetry.addLine(String.valueOf((int) (x)));
 ////            telemetry.addLine(String.valueOf((int) y));
 ////            telemetry.addLine(String.valueOf((int) Math.toDegrees(head)));
-////
-            telemetry.addData("error TT", tt.error);
-            telemetry.addData("target TT", tt.target);
-            telemetry.addData("target TT AS", as.target);
+//            telemetry.addData("error TT", tt.error);
+//            telemetry.addData("target TT", tt.target);
+//            telemetry.addData("target TT AS", as.target);
             telemetry.addData("Target", as.targetVelo);
             telemetry.addData("Velocity shooter", sh.getVelocityRPS());
             telemetry.addData("x", follower.getPose().getX());
             telemetry.addData("y", follower.getPose().getY());
-//          //  dashtele.update();
+          //  dashtele.update();
             telemetry.update();
 
         }
