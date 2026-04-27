@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.pedropathing.follower.Follower;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Turret;
@@ -16,6 +18,9 @@ public class AutoSniper {
 
     AimingMethod state = AimingMethod.LOCALIZATION;
 
+    ElapsedTime isSpinUpTimer = new ElapsedTime();
+    private final ElapsedTime timer = new ElapsedTime();
+
     //---------------------------------------------- GENERAL COEFFICIENTS
     public double goalY = 138;
     public double goalX = 138; // Изначально для красного
@@ -30,6 +35,7 @@ public class AutoSniper {
     public boolean AIMING_ACTIVE = true;
     public double targetVeloForArtifact = 0;
     public double targetVelo = 0;
+    public double mainVelo = 52;
 
     public double z = goalZ - highOfShooting;
 
@@ -51,6 +57,8 @@ public class AutoSniper {
     public static double MIN_ANGLE = 45;
     public static double POS_FOR_MAX_ANGLE = 0.125;
     public static double POS_FOR_MIN_ANGLE = 0.005;
+
+    public static double IS_SPIN_UP = 1;
 
     public double sX, sY, c, a, D, l = 0;
     public double v1, v2, l1, l2 = 0;
@@ -106,7 +114,7 @@ public class AutoSniper {
             if (x <= 0) x = 1;
             if (x >= 144) x = 143;
 
-            if ((ll.getGoalTag().get(0) == tag) ) {
+            if ((ll.getGoalTag().get(0) == 20 || ll.getGoalTag().get(0) == 24) ) {
                 tt.setAimMethod(AimingMethod.CAMERA);
             } else {
                 tt.setAimMethod(AimingMethod.LOCALIZATION);
@@ -194,7 +202,7 @@ public class AutoSniper {
     }
 
     public void continuousSetVelocityTargetByInterpol(double x, double y) {
-        if ((follower.getPose().getY() >= Math.abs(follower.getPose().getX() - 72) + 60)) {
+        if ((y >= Math.abs(x - 72) + 60)) {
             for (int i = 0; i < ValuesOfDistance.length - 1; i++) {
                 if (l > ValuesOfDistance[7]) {
                     l = ValuesOfDistance[7];
@@ -212,8 +220,12 @@ public class AutoSniper {
                 }
             }
         } else {
-            sh.setVelocityTarget(targetVelo);
+            sh.setVelocityTarget(mainVelo);
         }
+    }
+    public boolean isSpinUp() {
+        if (sh.getVelocityRPS() == 0) return false;
+        return sh.getVelocityRPS() >= targetVelo - IS_SPIN_UP;
     }
 
 

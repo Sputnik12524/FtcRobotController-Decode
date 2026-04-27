@@ -71,7 +71,8 @@ public class Limelight {
     }
     public Position getPoseByAprilTag() {
         Position pose;
-        if (limelightResult().isValid()) pose = limelightResult().getBotpose().getPosition();
+        LLResult res = limelightResult();
+        if (res.isValid()) pose = limelightResult().getBotpose().getPosition();
         else pose = null;
         return pose;
     }

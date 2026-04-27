@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -29,10 +30,14 @@ public class Shooter {
     public final Servo angleAdjuster;
     public final Servo cover;
     private final VoltageSensor batteryVoltageSensor;
+
+    public final DigitalChannel light1;
+    public final DigitalChannel light2;
+
     LinearOpMode opMode;
     Follower follower;
     Pose currentPose;
-    ElapsedTime isSpinUpTimer =new ElapsedTime();
+    ElapsedTime isSpinUpTimer = new ElapsedTime();
 
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(11, 0, 10, 13.5);
     private final ElapsedTime timer = new ElapsedTime();
@@ -91,6 +96,8 @@ public class Shooter {
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
+        light1 = opMode.hardwareMap.get(DigitalChannel.class, "LED1");
+        light2 = opMode.hardwareMap.get(DigitalChannel.class, "LED2");
         batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
 
         shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -103,8 +110,8 @@ public class Shooter {
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
 
-        //TO DO: check and add the zero power behaviour if desired
-
+        light1.setMode(DigitalChannel.Mode.OUTPUT);
+        light2.setMode(DigitalChannel.Mode.OUTPUT);
     }
 
     public Shooter(LinearOpMode opMode, Follower follower) {
@@ -114,6 +121,8 @@ public class Shooter {
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
+        light1 = opMode.hardwareMap.get(DigitalChannel.class, "LED1");
+        light2 = opMode.hardwareMap.get(DigitalChannel.class, "LED2");
         batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
 
         shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -125,6 +134,9 @@ public class Shooter {
 
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+
+        light1.setMode(DigitalChannel.Mode.OUTPUT);
+        light2.setMode(DigitalChannel.Mode.OUTPUT);
     }
 
     public void update() {
@@ -237,15 +249,24 @@ public class Shooter {
         else angleAdjuster.setPosition(pos);
     }
 
-    public void coverSwitch(){
-        if(canShoot){
+    public void coverSwitch() {
+        if (canShoot) {
             openTunnel();
-            if(timer.milliseconds() > TIME_AFTER_SHOOT) canShoot = false;
-        }
-        else{
+            if (timer.milliseconds() > TIME_AFTER_SHOOT) canShoot = false;
+        } else {
             closeTunnel();
             timer.reset();
         }
+    }
+
+    public void turnOnLight() {
+        light1.setState(true);
+        light2.setState(true);
+    }
+
+    public void turnOffLight() {
+        light1.setState(false);
+        light2.setState(false);
     }
 
     public void tr(int state) {
@@ -274,11 +295,10 @@ public class Shooter {
     //---------------------------------------------- AUTONOMOUS
     public boolean isSpinUp() {
         if (getVelocityRPS() == 0) return false;
-        if(!(getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP)){
+        if (!(getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP)) {
             isSpinUpTimer.reset();
             return false;
-        }
-        else return timer.milliseconds() > 150;
+        } else return timer.milliseconds() > 150;
     }
 
 
@@ -294,7 +314,7 @@ public class Shooter {
 
 
     public double getVelocityRPS() {
-        return (shooterUpper.getVelocity()+shooterLower.getVelocity()) / (TPR*2);
+        return (shooterUpper.getVelocity() + shooterLower.getVelocity()) / (TPR * 2);
     }
 
     public double getVelocityTPS() {
