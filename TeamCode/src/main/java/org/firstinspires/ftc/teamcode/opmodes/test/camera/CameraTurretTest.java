@@ -37,12 +37,13 @@ Shooter sh;
         waitForStart();
 
         while (opModeIsActive()) {
+            ll.update();
             follower.update();
             as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
          //   tt.turnByTarget(tt.stabilizeTargetByCamera());
             telemetry.addData("target", tt.target);
             telemetry.addData("error", tt.error);
-            telemetry.addData("Tx", ll.getGoalTag().get(1));
+            telemetry.addData("Tx", ll.getGoalTag()[1]);
             //telemetry.addData("Stabilize by camera by", tt.stabilizeTargetByCamera(0));
             telemetry.update();
 

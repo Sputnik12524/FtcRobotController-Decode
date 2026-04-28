@@ -50,7 +50,7 @@ public class Shooter {
 
     /// Shooter
     public static double VELOCITY_FOR_LONG_THROW = 71;  //47 //64
-    public static double VELOCITY_FOR_SHORT_THROW = 50;
+    public static double VELOCITY_FOR_SHORT_THROW = 50;//52
     public static double VELOCITY_FOR_MEDIUM_THROW = 60;  //47 //64
     public static double POWER = 1;
 

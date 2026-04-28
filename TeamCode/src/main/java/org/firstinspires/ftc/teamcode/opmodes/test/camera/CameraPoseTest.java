@@ -27,6 +27,8 @@ public class CameraPoseTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            limelight3A.update();
+
             follower.update();
             try {
                 telemetry.addData("Tag ID", limelight3A.getTagInfo());
@@ -34,9 +36,9 @@ public class CameraPoseTest extends LinearOpMode {
                // limelight3A.relocalizeWhenError();
 
                 if (gamepad1.b) {
-                    telemetry.addData("Tag ID", limelight3A.getTagInfo());
-                    telemetry.addData("X by Tag", limelight3A.getGoalTag().get(2));
-                    telemetry.addData("Y by Tag", limelight3A.getGoalTag().get(3));
+                    telemetry.addData("Tag ID", limelight3A.getTagInfo()[0]);
+                    telemetry.addData("X by Tag", limelight3A.getGoalTag()[2]);
+                    telemetry.addData("Y by Tag", limelight3A.getGoalTag()[3]);
                 }
 
             } catch (Exception e) {

@@ -70,6 +70,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
+            ll.update();
             follower.update(); // Update Pedro Pathing
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -91,7 +92,6 @@ public class AutoSniper {
         this.follower = follower;
     }
 
-
     public void setAlliance(Alliance alliance) {
         switch (alliance) {
             case BLUE:
@@ -114,7 +114,7 @@ public class AutoSniper {
             if (x <= 0) x = 1;
             if (x >= 144) x = 143;
 
-            if ((ll.getGoalTag().get(0) == 20 || ll.getGoalTag().get(0) == 24) ) {
+            if ((ll.getGoalTag()[0] == 20 || ll.getGoalTag()[0] == 24)) {
                 tt.setAimMethod(AimingMethod.CAMERA);
             } else {
                 tt.setAimMethod(AimingMethod.LOCALIZATION);

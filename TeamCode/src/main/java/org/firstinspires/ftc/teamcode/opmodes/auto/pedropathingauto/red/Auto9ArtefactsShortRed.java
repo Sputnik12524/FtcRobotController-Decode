@@ -69,7 +69,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         sh.closeTunnel();
         as.setAlliance(Alliance.RED);
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 6.5);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
         tt.turretRegulator.start();
         ll.startOrStopLL(false);
 

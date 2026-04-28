@@ -81,7 +81,7 @@ public class Turret {
             while (!isInterrupted()) {
                 switch (aimMethod) {
                     case CAMERA:
-                        error = -limelight3A.getTagInfo().get(1);
+                        error = -limelight3A.getTagInfo()[1];
                         if (error < 0.25 && error > -0.25) turnInLimits(0);
                         else {
                             dError = error - pastError;

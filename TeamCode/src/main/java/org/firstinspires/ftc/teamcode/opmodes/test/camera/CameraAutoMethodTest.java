@@ -18,8 +18,8 @@ public class CameraAutoMethodTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-           telemetry.addData("Tag ID", limelight3A.getTagInfo().get(0));
-           telemetry.addData("Tx", limelight3A.getTagInfo().get(1));
+           telemetry.addData("Tag ID", limelight3A.getTagInfo()[0]);
+           telemetry.addData("Tx", limelight3A.getTagInfo()[1]);
            telemetry.update();
         }
         limelight3A.startOrStopLL(true);

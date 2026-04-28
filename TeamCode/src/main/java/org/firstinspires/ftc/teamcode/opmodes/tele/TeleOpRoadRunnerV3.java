@@ -31,6 +31,7 @@ import java.io.IOException;
 @Config
 public class TeleOpRoadRunnerV3 extends LinearOpMode {
     enum IN_STATES {DEFAULT, WAIT, IN, OUT}
+
     IN_STATES state = IN_STATES.DEFAULT;
 
     Shooter sh;
@@ -43,9 +44,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     Limelight ll;
     DriveTrain dt;
     Cycle cc;
-    ElapsedTime time;
-    ElapsedTime timer;
-    ElapsedTime timer1;
+    ElapsedTime timerTurret, timerCalc, timer, timer1, time, timerVelo;
     GamepadManager g1;
     GamepadManager g2;
 
@@ -60,7 +59,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     boolean attentionControl = false;
     public double shortBonusVelocity = 0;
     public double longBonusVelocity = 0;
-    double lastVelo = 0;
+    public double lastVelo = 0;
 
     //intake
     boolean isRotateIn = false;
@@ -69,7 +68,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     boolean stateB1 = false;
     boolean stateLSB = false;
     boolean stateB2 = false;
-    final double WAIT_TIME = 120;
+    final double WAIT_TIME = 150;
 
     //shooter
     boolean stateY1 = false;
@@ -79,7 +78,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     boolean RSBState = false;
     double cycles;
     boolean slowMode = false;
-
 
 
     @Override
@@ -97,12 +95,17 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         logger = new Logger("pospos");
         ll.startOrStopLL(false);
         cc = new Cycle();
-        ElapsedTime timerTelemetry = new ElapsedTime();
-        time = new ElapsedTime();
+
+        InterpolAndAimingThread interpolAndAimingThread = new InterpolAndAimingThread();
+
+        timerTurret = new ElapsedTime();
         timer = new ElapsedTime();
         timer1 = new ElapsedTime();
+        timerCalc = new ElapsedTime();
+        timerVelo = new ElapsedTime();
+        time = new ElapsedTime();
 
-
+        ll.update();
 
         try {
             logger.getAll("pospos");
@@ -126,7 +129,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             as.continuousTurnTurretToGate(follower.getPose().getX(),
                     follower.getPose().getY(),
                     follower.getHeading()
-                    );
+            );
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
@@ -135,21 +138,19 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         tt.turretRegulator.start();
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
-
-        follower.update();
-
         waitForStart();
+        interpolAndAimingThread.start();
 
         while (opModeIsActive()) {
-//            long loopStart = System.nanoTime();
+            ll.update();
+            long loopStart = System.nanoTime();
 
-            //-------------------------------- DRIVETRAIN
+//            //-------------------------------- DRIVETRAIN
+
             follower.update();
+            inUpdate();
             g1.update();
             g2.update();
-            inUpdate();
-            artefactsControl();
-
             Pose pose = follower.getPose();
             double x = pose.getX();
             double y = pose.getY();
@@ -170,7 +171,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            stateLSB = gamepad1.left_stick_button;
             //-------------------------------- BACKLIGHT
 
-            if(as.isSpinUp() && !sh.ifNotInLaunchZoneGoal() && !sh.ifNotInLaunchZoneHuman()) {
+            if (as.isSpinUp() && !sh.ifNotInLaunchZoneGoal() && !sh.ifNotInLaunchZoneHuman()) {
                 sh.turnOnLight();
             } else {
                 sh.turnOffLight();
@@ -230,49 +231,50 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            stateY1 = gamepad1.y;
 //            stateX1 = gamepad1.x;
 
-            as.continuousSetVelocityTargetByInterpol(
-                    x, y
-            );
+
+//            as.continuousCalculateGeneralValues(
+//                    x, y, head,
+//                    lastVelo
+//            );
+//            as.continuousSetVelocityTargetByInterpol(
+//                    x, y
+//            );
             sh.shootByVelocity();
             lastVelo = sh.getVelocityRPS();
+//            as.setAngleByLocalisation(
+//                    as.l,
+//                    sh.getAngleAdjusterPos()
+//            );
 
-            as.setAngleByLocalisation(
-                    as.l,
-                    sh.getAngleAdjusterPos()
-            );
 
-
-            if (gamepad1.dpad_up) {
-                sh.canShoot = true;
-                in.rotateIn();
-            }
             sh.coverSwitch();
 
             //-------------------------------- TURRET
-            if (!attentionControl) {
-                as.continuousTurnTurretToGate(x, y, head);
+
+            if ((ll.getGoalTag()[0] == AutoSniper.tag)) {
+                tt.setAimMethod(AimingMethod.CAMERA);
             } else {
-                if ((ll.getGoalTag().get(0) == AutoSniper.tag) ) {
-                    tt.setAimMethod(AimingMethod.CAMERA);
-                } else {
-                    tt.setAimMethod(AimingMethod.LOCALIZATION);
-                    tt.turnByTarget(0);
-                }
+                tt.setAimMethod(AimingMethod.LOCALIZATION);
+                tt.turnByTarget(0);
             }
+
 
             //--------------------------------- RESET AIM
             if (gamepad1.dpad_left) {
-//                tt.turnByTarget(0);
-           //     isPoseReset = true;
+                tt.turnByTarget(0);
+                isPoseReset = true;
                 follower.setPose(new Pose(16, 80, Math.toRadians(90)));
                 as.setAlliance(Alliance.BLUE);
             }
 
             if (gamepad1.dpad_right) {
-//                tt.turnByTarget(0);
-           //     isPoseReset = true;
+                tt.turnByTarget(0);
+                isPoseReset = true;
                 follower.setPose(new Pose(129, 80, Math.toRadians(90)));
                 as.setAlliance(Alliance.RED);
+            }
+            if (gamepad1.leftBumperWasPressed()) {
+                sh.canShoot = true;
             }
 
             /// EXTRA MANUAL CONTROL
@@ -284,42 +286,36 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             }
             RSBState = gamepad1.right_stick_button;
 
-
-            as.continuousCalculateGeneralValues(
-                    x,y,head,
-                    lastVelo
-            );
-            lastVelo = sh.getVelocityRPS();
 //            cc.update();
 //
-//            long loopTimeNs = System.nanoTime() - loopStart;
-//            double loopMs = loopTimeNs / 1e6;
+            long loopTimeNs = System.nanoTime() - loopStart;
+            double loopMs = loopTimeNs / 1e6;
 
-   //           telemetry.addData("Loop ms", loopMs);
- //           telemetry.addData("l", as.l);
+            telemetry.addData("Loop ms", loopMs);
+            //           telemetry.addData("l", as.l);
 //            telemetry.addData("All time", cc.getAll());
 //            telemetry.addData("Average Cycle", cc.getAverage());
 //            telemetry.addData("MAX Cycle", cc.getMax());
 //
-  //            telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
+            //            telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
 //            telemetry.addData("isInterpol", isInterpolActive
 //            telemetry.addData("Magnetic state", tt.isMagneting());
-////            telemetry.addData("InZone", sh.inZone());
-////            telemetry.addData("howMany", tr.howMany());
-////            //telemetry.addData("Позиция сброшена", isPoseReset);
+//            telemetry.addData("InZone", sh.inZone());
+//            telemetry.addData("howMany", tr.howMany());
+//            //telemetry.addData("Позиция сброшена", isPoseReset);
 //            telemetry.addData("Alliance", as.alliance);
-            telemetry.addData("AimMethod", tt.getAimMethod());
-////**            telemetry.addLine(String.valueOf((int) (x)));
-////            telemetry.addLine(String.valueOf((int) y));
-////            telemetry.addLine(String.valueOf((int) Math.toDegrees(head)));
+            //           telemetry.addData("AimMethod", tt.getAimMethod());
+//**            telemetry.addLine(String.valueOf((int) (x)));
+//            telemetry.addLine(String.valueOf((int) y));
+//            telemetry.addLine(String.valueOf((int) Math.toDegrees(head)));
 //            telemetry.addData("error TT", tt.error);
 //            telemetry.addData("target TT", tt.target);
 //            telemetry.addData("target TT AS", as.target);
-            telemetry.addData("Target", as.targetVelo);
-            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
-            telemetry.addData("x", follower.getPose().getX());
-            telemetry.addData("y", follower.getPose().getY());
-          //  dashtele.update();
+//            telemetry.addData("Target", as.targetVelo);
+//            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
+//            telemetry.addData("x", follower.getPose().getX());
+//            telemetry.addData("y", follower.getPose().getY());
+            //  dashtele.update();
             telemetry.update();
 
         }
@@ -350,21 +346,23 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             timer1.reset();
         }
     }
+
+
     void inUpdate() {
-        g1.update();
-        g2.update();
         switch (state) {
             case DEFAULT:
-                if (g1.A.isPressed() && !g1.A.getToggleState()) {
+                if (g1.A.isPressed() && g1.A.getToggleState()) {
                     setInState(IN_STATES.IN);
-                } else if (g2.B.isPressed() && !g2.B.getToggleState()) {
+                } else if (g1.B.isPressed()) {
                     setInState(IN_STATES.OUT);
                 } else in.rotateStop();
                 break;
             case IN:
-                if (g1.A.isPressed() && g1.A.getToggleState()) {
-                    in.rotateIn();
+                in.rotateIn();
+                if (g1.A.isPressed() && !g1.A.getToggleState()) {
                     setInState(IN_STATES.DEFAULT);
+                } else if (g1.B.isPressed()) {
+                    setInState(IN_STATES.WAIT);
                 }
                 break;
             case OUT:
@@ -372,12 +370,35 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 setInState(IN_STATES.WAIT);
                 break;
             case WAIT:
+                in.rotateOut();
+
+                // g2.B.setToggleState(false);
                 if (timer.milliseconds() > WAIT_TIME) setInState(IN_STATES.DEFAULT);
                 break;
         }
     }
 
+
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
+    }
+
+    public class InterpolAndAimingThread extends Thread {
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+                Pose pose = follower.getPose();
+                double x = pose.getX();
+                double y = pose.getY();
+                double head = pose.getHeading();
+                as.continuousCalculateGeneralValues(x, y, head, lastVelo);
+
+                as.continuousSetVelocityTargetByInterpol(x, y);
+                as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
+                if (!attentionControl) {
+                    as.continuousTurnTurretToGate(x, y, head);
+                }
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +23,12 @@ public class Limelight {
     Turret tt;
     Follower fl;
     LinearOpMode opMode;
+    public LLResult cachedResult;
+
     public double X_RESOLUTION = 1280;
     public double X_MIDDLE = X_RESOLUTION / 2;
     public double Y_RESOLUTION = 960;
     public double Y_MIDDLE = Y_RESOLUTION / 2;
-    ArrayList<Double> tagInfo;
-
     double turret_offset_x = 1;
     double turret_offset_y = 0;
     double camera_offset_x = 1;
@@ -39,7 +39,6 @@ public class Limelight {
         this.opMode = opMode;
         limelight3A = opMode.hardwareMap.get(Limelight3A.class, "limelight");
         limelight3A.pipelineSwitch(0);
-        tagInfo = new ArrayList<>();
 
     }
 
@@ -49,7 +48,6 @@ public class Limelight {
         this.tt = tt;
         this.fl = fl;
         limelight3A.pipelineSwitch(0);
-        tagInfo = new ArrayList<>();
 
     }
 
@@ -63,42 +61,41 @@ public class Limelight {
     }
 
     //--------------------------------------------------------------GETTING INFO FROM APRIL TAG
-    public ArrayList<Double> getTagInfo() {
-        tagInfo.clear();
-        LLResult result = limelightResult();
+    public double[] getTagInfo() {
+        double[] tagInfo = new double[4];
+        LLResult result = getResult();
         double id = 0;
-        List<LLResultTypes.FiducialResult> fidResults = result.getFiducialResults();
-        for (LLResultTypes.FiducialResult fr : fidResults) {
-            id = fr.getFiducialId();
+        if (!result.getFiducialResults().isEmpty()) {
+            id = result.getFiducialResults().get(0).getFiducialId();
         }
 
         double tx = result.getTx();
         double poseX = result.getBotpose().getPosition().x;
         double poseY = result.getBotpose().getPosition().y;
-        tagInfo.add(id);
-        tagInfo.add(tx);
-        tagInfo.add(poseX);
-        tagInfo.add(poseY);
+        tagInfo[0] = id;
+        tagInfo[1] = tx;
+        tagInfo[2] = poseX;
+        tagInfo[3] = poseY;
 
         return tagInfo;
     }
 
-    public ArrayList<Double> getGoalTag() {
-        if (getTagInfo().get(0) == 24 || getTagInfo().get(0) == 20) {
-            return getTagInfo();
+    public double[] getGoalTag() {
+        double[] tag = getTagInfo();
+        if (tag[0] == 24 || tag[0] == 20) {
+            return tag;
         } else {
-            tagInfo.clear();
-            for (int i = 0; i < 4; i++) {
-                tagInfo.add(.0);
+            if (cachedResult == null || !cachedResult.isValid()) {
+                return new double[]{0, 0, 0, 0};
             }
-            return tagInfo;
+            return getTagInfo();
         }
     }
 
     //------------------------------------------------КРИНЖ ПОЗА ПО APRIL TAG
     public Pose getPoseByAprilTag() {
         Pose pp;
-        LLResult result = limelightResult();
+        LLResult result = getResult();
         if (!result.isValid()) pp = null;
         else {
             double x = result.getBotpose().getPosition().x;
@@ -113,13 +110,13 @@ public class Limelight {
     public void relocalizeWhenError() {
         Pose tagPose = getPoseByAprilTag();
         if (tagPose == null) return;
-        double [] poseOdo = {fl.getPose().getX(), fl.getPose().getY(), fl.getHeading()};
-        double [] poseTag = {getPoseByAprilTag().getX(), getPoseByAprilTag().getY(), getPoseByAprilTag().getHeading()};
-        double [] localizationErrors = comparePose(poseOdo,poseTag);
+        double[] poseOdo = {fl.getPose().getX(), fl.getPose().getY(), fl.getHeading()};
+        double[] poseTag = {getPoseByAprilTag().getX(), getPoseByAprilTag().getY(), getPoseByAprilTag().getHeading()};
+        double[] localizationErrors = comparePose(poseOdo, poseTag);
 
 
         if (Math.abs(localizationErrors[0]) > 2 || Math.abs(localizationErrors[1]) > 2
-                        || Math.abs(localizationErrors[2]) > 5) {
+                || Math.abs(localizationErrors[2]) > 5) {
             fl.setPose(tagPose);
         }
     }
@@ -134,8 +131,8 @@ public class Limelight {
 
     public double[] calculatePose(double x, double y, double heading) {
 
-        double[] c_in_t = {rotateVector(camera_offset_x, camera_offset_y, tt.getCurrentPosOfTurret()).get(0),
-                rotateVector(camera_offset_x, camera_offset_y, tt.getCurrentPosOfTurret()).get(1)};
+        double[] c_in_t = {rotateVector(camera_offset_x, camera_offset_y, tt.getCurrentPosOfTurret())[0],
+                rotateVector(camera_offset_x, camera_offset_y, tt.getCurrentPosOfTurret())[1]};
         double[] t_in_r = {turret_offset_x, turret_offset_y};
         double[] c_in_r = {
                 t_in_r[0] + c_in_t[0],
@@ -149,17 +146,17 @@ public class Limelight {
         return tagPose;
     }
 
-    public ArrayList<Double> rotateVector(double x, double y, double theta) {
-        ArrayList<Double> rotatedVector = new ArrayList<>();
-        rotatedVector.add(x * Math.cos(theta) - y * Math.sin(theta));
-        rotatedVector.add(x * Math.sin(theta) + y * Math.cos(theta));
+    public double[] rotateVector(double x, double y, double theta) {
+        double[] rotatedVector = new double[2];
+        rotatedVector[0] = (x * Math.cos(theta) - y * Math.sin(theta));
+        rotatedVector[1] = (x * Math.sin(theta) + y * Math.cos(theta));
         return rotatedVector;
     }
 
     //-----------------------------------------------------------GETTING ARTIFACTS FROM THE NEURAL DETECTOR
 // WARNING: (SWITCH PIPELINE IN WEB INTERFACE BEFORE USING!)
     public String getArtifactClassname() {
-        LLResult result = limelightResult();
+        LLResult result = getResult();
         String classname = " ";
         List<LLResultTypes.DetectorResult> detectorRes = result.getDetectorResults();
         for (LLResultTypes.DetectorResult dr : detectorRes) {
@@ -169,8 +166,13 @@ public class Limelight {
     }
 
     //------------------------------------------------------GETTING STATUS & RESULT FOR CAMERA WORK
-    public LLResult limelightResult() {
-        return limelight3A.getLatestResult();
+
+    public void update() {
+        cachedResult = limelight3A.getLatestResult();
+    }
+
+    public LLResult getResult()  {
+        return cachedResult;
     }
 
     public LLStatus limelightStatus() {
