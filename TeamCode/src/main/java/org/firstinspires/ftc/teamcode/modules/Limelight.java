@@ -33,6 +33,7 @@ public class Limelight {
     double turret_offset_y = 0;
     double camera_offset_x = 1;
     double camera_offset_y = 1;
+    public LimelightThread lt = new LimelightThread();
 
 
     public Limelight(LinearOpMode opMode) {
@@ -89,6 +90,15 @@ public class Limelight {
                 return new double[]{0, 0, 0, 0};
             }
             return getTagInfo();
+        }
+    }
+
+    public class LimelightThread extends Thread{
+        @Override
+        public void run() {
+            while (!isInterrupted()){
+                getGoalTag();
+            }
         }
     }
 

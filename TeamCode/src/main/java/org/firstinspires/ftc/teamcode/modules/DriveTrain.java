@@ -179,6 +179,7 @@ public class DriveTrain {
         rightBack.setPower(multiplier * (main_power + side_power - rotate_power));
     }
 
+
     public void turnRightSlowMode() {
         leftFront.setPower(MODE_SLOW_POWER);
         leftBack.setPower(MODE_SLOW_POWER);

@@ -68,8 +68,8 @@ public class AutoSniper {
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
 
-    double[] ValuesOfVelocity = {43.5, 47, 51, 53, 57, 60.75, 62, 64}; // {45-47, 49-50, 56-57, 60, 61-62}
-    double[] ValuesOfDistance = {1.061, 1.2058, 1.463, 1.8165, 2.0397, 2.3578, 2.4738, 2.6415};
+    double[] ValuesOfVelocity = {42, 47, 51, 51, 52, 57, 60.75, 62, 64}; // {45-47, 49-50, 56-57, 60, 61-62}
+    double[] ValuesOfDistance = {1.061, 1.2058, 1.463, 1.8002,1.8165, 2.0397, 2.3578, 2.4738, 2.6415};
 
     public static double tag = 24;
     public boolean isShort, isLong = false;
@@ -207,7 +207,7 @@ public class AutoSniper {
                 if (l > ValuesOfDistance[7]) {
                     l = ValuesOfDistance[7];
                 } else if (l < ValuesOfDistance[0]) {
-                    l = ValuesOfDistance[7];
+                    l = ValuesOfDistance[0];
                 }
                 if (ValuesOfDistance[i] <= l && l <= ValuesOfDistance[i + 1]) {
                     v1 = ValuesOfVelocity[i];

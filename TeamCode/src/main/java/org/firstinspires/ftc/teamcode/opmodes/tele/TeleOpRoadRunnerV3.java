@@ -78,6 +78,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     boolean RSBState = false;
     double cycles;
     boolean slowMode = false;
+    Pose pose;
+    double x, y, head;
 
 
     @Override
@@ -97,6 +99,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         cc = new Cycle();
 
         InterpolAndAimingThread interpolAndAimingThread = new InterpolAndAimingThread();
+        DTFormulasThread dtFormulasThread = new DTFormulasThread();
 
         timerTurret = new ElapsedTime();
         timer = new ElapsedTime();
@@ -136,10 +139,12 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         sh.closeTunnel();
         tt.turnByTarget(0);
         tt.turretRegulator.start();
+        ll.lt.start();
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
         waitForStart();
         interpolAndAimingThread.start();
+        dtFormulasThread.start();
 
         while (opModeIsActive()) {
             ll.update();
@@ -148,18 +153,18 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            //-------------------------------- DRIVETRAIN
 
             follower.update();
+            pose = follower.getPose();
+            x = pose.getX();
+            y = pose.getY();
+            head = pose.getHeading();
             inUpdate();
             g1.update();
             g2.update();
-            Pose pose = follower.getPose();
-            double x = pose.getX();
-            double y = pose.getY();
-            double head = pose.getHeading();
-
-            double main = -gamepad1.left_stick_y;
-            double side = gamepad1.left_stick_x;
-            double rotate = gamepad1.right_trigger - gamepad1.left_trigger;
-            dt.setMotorsPowerNonLinear(main, side, rotate);
+//
+//            double main = -gamepad1.left_stick_y;
+//            double side = gamepad1.left_stick_x;
+//            double rotate = gamepad1.right_trigger - gamepad1.left_trigger;
+//            dt.setMotorsPowerNonLinear(main, side, rotate);
 
 //            if (gamepad1.right_bumper && !stateLSB && !slowMode) {
 //                DriveTrain.multiplier = 0.1;
@@ -200,12 +205,12 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            stateB1 = gamepad1.b;
 //            stateB2 = gamepad2.b;
 
-            if (tt.isMagneting() && mState) {
-                magnetic = true;
-                mState = false;
-            }
-            if (gamepad2.aWasPressed()) mState = true;
-            if (gamepad2.aWasPressed()) magnetic = false;
+//            if (tt.isMagneting() && mState) {
+//                magnetic = true;
+//                mState = false;
+//            }
+//            if (gamepad2.aWasPressed()) mState = true;
+//            if (gamepad2.aWasPressed()) magnetic = false;
 
             //---------------------------------------- SHOOTER`
 
@@ -232,31 +237,12 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            stateX1 = gamepad1.x;
 
 
-//            as.continuousCalculateGeneralValues(
-//                    x, y, head,
-//                    lastVelo
-//            );
-//            as.continuousSetVelocityTargetByInterpol(
-//                    x, y
-//            );
             sh.shootByVelocity();
             lastVelo = sh.getVelocityRPS();
-//            as.setAngleByLocalisation(
-//                    as.l,
-//                    sh.getAngleAdjusterPos()
-//            );
-
 
             sh.coverSwitch();
 
             //-------------------------------- TURRET
-
-            if ((ll.getGoalTag()[0] == AutoSniper.tag)) {
-                tt.setAimMethod(AimingMethod.CAMERA);
-            } else {
-                tt.setAimMethod(AimingMethod.LOCALIZATION);
-                tt.turnByTarget(0);
-            }
 
 
             //--------------------------------- RESET AIM
@@ -291,8 +277,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             long loopTimeNs = System.nanoTime() - loopStart;
             double loopMs = loopTimeNs / 1e6;
 
-            telemetry.addData("Loop ms", loopMs);
-            //           telemetry.addData("l", as.l);
+            //           telemetry.addData("Loop ms", loopMs);
+            telemetry.addData("l", as.l);
 //            telemetry.addData("All time", cc.getAll());
 //            telemetry.addData("Average Cycle", cc.getAverage());
 //            telemetry.addData("MAX Cycle", cc.getMax());
@@ -311,8 +297,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            telemetry.addData("error TT", tt.error);
 //            telemetry.addData("target TT", tt.target);
 //            telemetry.addData("target TT AS", as.target);
-//            telemetry.addData("Target", as.targetVelo);
-//            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
+            telemetry.addData("Target", as.targetVelo);
+            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
 //            telemetry.addData("x", follower.getPose().getX());
 //            telemetry.addData("y", follower.getPose().getY());
             //  dashtele.update();
@@ -320,6 +306,9 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
         }
         ll.startOrStopLL(true);
+        interpolAndAimingThread.interrupt();
+        ll.lt.interrupt();
+        dtFormulasThread.interrupt();
         tt.turretRegulator.interrupt();
 
 
@@ -387,17 +376,30 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         @Override
         public void run() {
             while (!isInterrupted()) {
-                Pose pose = follower.getPose();
-                double x = pose.getX();
-                double y = pose.getY();
-                double head = pose.getHeading();
-                as.continuousCalculateGeneralValues(x, y, head, lastVelo);
+//                Pose pose = follower.getPose();
+//                double x = pose.getX();
+//                double y = pose.getY();
+//                double head = pose.getHeading();
 
                 as.continuousSetVelocityTargetByInterpol(x, y);
                 as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
+                as.continuousCalculateGeneralValues(x, y, head, lastVelo);
+
                 if (!attentionControl) {
                     as.continuousTurnTurretToGate(x, y, head);
+                } else {
+                    tt.setAimMethod(AimingMethod.LOCALIZATION);
+                    tt.turnByTarget(0);
                 }
+            }
+        }
+    }
+
+    public class DTFormulasThread extends Thread {
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+                dt.setMotorsPowerNonLinear(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
             }
         }
     }
