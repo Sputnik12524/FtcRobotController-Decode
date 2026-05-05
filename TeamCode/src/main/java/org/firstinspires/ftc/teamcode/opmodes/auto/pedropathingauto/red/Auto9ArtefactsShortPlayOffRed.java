@@ -95,7 +95,7 @@ public class Auto9ArtefactsShortPlayOffRed extends LinearOpMode {
         }
         tt.turretRegulator.interrupt();
         ll.startOrStopLL(true);
-
+        tt.turnByTarget(0);
         lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
     }
@@ -176,7 +176,7 @@ public class Auto9ArtefactsShortPlayOffRed extends LinearOpMode {
                             new BezierLine(
                                     new Pose(100, 56),
 
-                                    new Pose(126, 56) //106, 72
+                                    new Pose(126, 52) //106, 72
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -184,7 +184,7 @@ public class Auto9ArtefactsShortPlayOffRed extends LinearOpMode {
 
             PathThirdScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(126, 56),
+                                    new Pose(126, 52),
 
                                     scoringPath
                             )
@@ -290,6 +290,7 @@ public class Auto9ArtefactsShortPlayOffRed extends LinearOpMode {
 
             case 12:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
+                tt.turnByTarget(0);
                 as.enableAutoTurretAiming(false);
                 in.rotateStop();
                 sh.shootStop();

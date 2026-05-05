@@ -69,7 +69,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
 
         sh.closeTunnel();
         sh.setLongThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW + 0.1);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
         as.setAlliance(Alliance.BLUE);
         tt.turretRegulator.start();
         ll.startOrStopLL(false);
@@ -157,13 +157,14 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                sh.closeTunnel();
                 sh.shootByVelocity();
+                in.rotateIn();
                 setPathState(1);
                 break;
             case 1:
                 if (sh.isSpinUp() && !follower.isBusy()) {
                     sh.openTunnel();
-                    in.rotateIn();
                     setPathState(2);
                 }
                 break;

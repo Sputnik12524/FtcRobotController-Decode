@@ -101,7 +101,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
                             new BezierLine(
                                     new Pose(56, 8),
 
-                                    new Pose(56, 20)
+                                    new Pose(56, 27)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
 
@@ -112,26 +112,34 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                if(actionTimer.getElapsedTime() < 15000) break;
+
+                setPathState(1);
+            case 1:
                 sh.closeTunnel();
                 sh.shootByVelocity();
                 in.rotateIn();
-                setPathState(1);
-                break;
-            case 1:
-                if (!sh.isSpinUp()||follower.isBusy())  break;
-                sh.openTunnel();
                 setPathState(2);
                 break;
             case 2:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
-                follower.followPath(paths.PathLeaving);
-                sh.closeTunnel();
-                sh.shootStop();
-                tt.turnByTarget(0);
-                in.rotateStop();
+                if (!sh.isSpinUp()||follower.isBusy())  break;
+                sh.openTunnel();
                 setPathState(3);
                 break;
             case 3:
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
+                tt.turnByTarget(0);
+                follower.followPath(paths.PathLeaving);
+                setPathState(4);
+                break;
+            case 4:
+                if(follower.isBusy()) break;
+                sh.closeTunnel();
+                sh.shootStop();
+                in.rotateStop();
+                setPathState(5);
+                break;
+            case 5:
                 if (!follower.isBusy() && !sh.isTunnelOpen) {
                     lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
                     lg.fileClose();

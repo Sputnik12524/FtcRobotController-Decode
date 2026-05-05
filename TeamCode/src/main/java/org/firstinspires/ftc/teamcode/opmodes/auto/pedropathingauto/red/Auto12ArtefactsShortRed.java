@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -55,7 +56,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
         tt = new Turret(this, ll);
         sh = new Shooter(this);
         lg = new Logger("pospos");
-        as = new AutoSniper(tt, sh);
+     //   as = new AutoSniper(tt, sh, ll);
 
 
         paths = new Paths(follower); // Build paths
@@ -63,8 +64,9 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
         sh.closeTunnel();
         sh.setShortThrowMode();
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-        as.setAlliance(Alliance.RED);
+        //as.setAlliance(Alliance.RED);
         tt.turretRegulator.start();
+        tt.setAimMethod(AimingMethod.LOCALIZATION);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -73,16 +75,21 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
 
-            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+            tt.turnByTarget(25);
 
-            // Log values to Panels and Driver Station
+           // as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+
+//            // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
             t.addData("Shooter Velocity", sh.getVelocityRPS());
+            t.addData("Turret heading", tt.getCurrentPosOfTurret());
+          //  t.addData("turre target", as.target);
             t.update();
         }
+        tt.turnByTarget(0);
         lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
         lg.fileClose();
         tt.turretRegulator.interrupt();
@@ -132,7 +139,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     new Pose(125, 84),
 
-                                    new Pose(128, 73)
+                                    new Pose(133, 72)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
                     .build();
@@ -140,7 +147,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
             SecondPathScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(128, 73),
+                                    new Pose(133, 72),
 
                                     scoringPath
                             )
@@ -162,7 +169,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     new Pose(100, 58),
 
-                                    new Pose(127, 58) //106, 72
+                                    new Pose(127, 52) //106, 72
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -170,7 +177,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
             ThirdPathScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(127, 58),
+                                    new Pose(127, 52),
 
                                     scoringPath
                             )
@@ -225,6 +232,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                tt.turnByTarget(30);
                 sh.closeTunnel();
                 sh.shootByVelocity();
                 in.rotateIn();
@@ -264,6 +272,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
             case 6:
                 if (!follower.isBusy()) {
                     follower.followPath(paths.SecondPathScoring, true);
+                    in.rotateIn();
                     setPathState(7);
                 }
                 break;
@@ -275,7 +284,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 8:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 1100) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1400) break;
                 sh.closeTunnel();
                 in.rotateIn();
                 follower.followPath(paths.ThirdPathPresetArtefacts, true);
@@ -304,7 +313,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 12:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 1100) break;
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1400) break;
                 sh.closeTunnel();
                 in.rotateIn();
                 follower.followPath(paths.FourthPathToPreset);
@@ -332,11 +341,10 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 }
                 break;
             case 16:
-                if (follower.isBusy() || actionTimer.getElapsedTime() < 1100) break;
-                as.enableAutoTurretAiming(false);
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 1400) break;
+                tt.turnByTarget(0);
                 in.rotateStop();
                 sh.shootStop();
-                follower.followPath(paths.PathLeaving);
                 setPathState(-101);
                 break;
         }

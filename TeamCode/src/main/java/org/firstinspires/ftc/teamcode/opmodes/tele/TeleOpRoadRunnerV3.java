@@ -56,7 +56,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     /// Intake
 
     /// Shooter
-    boolean attentionControl = false;
+    boolean attentionControl = true;
     public double shortBonusVelocity = 0;
     public double longBonusVelocity = 0;
     public double lastVelo = 0;
@@ -376,14 +376,23 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         @Override
         public void run() {
             while (!isInterrupted()) {
-//                Pose pose = follower.getPose();
-//                double x = pose.getX();
-//                double y = pose.getY();
-//                double head = pose.getHeading();
-
-                as.continuousSetVelocityTargetByInterpol(x, y);
-                as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
-                as.continuousCalculateGeneralValues(x, y, head, lastVelo);
+                if (!attentionControl) {
+                    as.continuousSetVelocityTargetByInterpol(x, y);
+                    as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
+                    as.continuousCalculateGeneralValues(x, y, head, lastVelo);
+                } else {
+                    if (gamepad1.x && !isShootingShort && !stateX1) {
+                        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                        sh.setShortThrowMode();
+                        sh.shootByVelocity();
+                        isShootingMedium = false;
+                        isShootingShort = true;
+                    } else if (gamepad1.x && !stateX1 && isShootingShort) {
+                        sh.closeTunnel();
+                        sh.shootStop();
+                        isShootingMedium = false;
+                    }
+                }
 
                 if (!attentionControl) {
                     as.continuousTurnTurretToGate(x, y, head);
@@ -391,6 +400,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                     tt.setAimMethod(AimingMethod.LOCALIZATION);
                     tt.turnByTarget(0);
                 }
+
             }
         }
     }

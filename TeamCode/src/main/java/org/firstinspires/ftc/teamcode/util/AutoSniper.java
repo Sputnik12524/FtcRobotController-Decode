@@ -68,7 +68,7 @@ public class AutoSniper {
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
 
-    double[] ValuesOfVelocity = {42, 47, 51, 51, 52, 57, 60.75, 62, 64}; // {45-47, 49-50, 56-57, 60, 61-62}
+    double[] ValuesOfVelocity = {42.5, 47.5, 51.5, 51.5, 52.5, 57.5, 61, 62.5, 64.5}; // {45-47, 49-50, 56-57, 60, 61-62}
     double[] ValuesOfDistance = {1.061, 1.2058, 1.463, 1.8002,1.8165, 2.0397, 2.3578, 2.4738, 2.6415};
 
     public static double tag = 24;
