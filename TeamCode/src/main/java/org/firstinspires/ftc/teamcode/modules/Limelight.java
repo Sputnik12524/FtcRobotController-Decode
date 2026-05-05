@@ -12,9 +12,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Config
@@ -148,12 +146,11 @@ public class Limelight {
                 t_in_r[0] + c_in_t[0],
                 t_in_r[1] + c_in_t[1]
         };
-        double[] tagPose = {
+        return new double[]{
                 x + c_in_r[0],
                 y + c_in_r[1],
                 heading - tt.getCurrentPosOfTurret()
         };
-        return tagPose;
     }
 
     public double[] rotateVector(double x, double y, double theta) {

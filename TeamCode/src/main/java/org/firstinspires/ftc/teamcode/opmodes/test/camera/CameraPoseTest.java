@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes.test.camera;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.ftc.FTCCoordinates;
-import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

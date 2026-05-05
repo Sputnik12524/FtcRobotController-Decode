@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Limelight;

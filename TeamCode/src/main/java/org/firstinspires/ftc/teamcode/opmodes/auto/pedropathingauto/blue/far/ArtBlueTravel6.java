@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "c проездом Blue 6", group = "Autonomous")
+@Autonomous(name = "With travel Blue 6", group = "Autonomous")
 @Disabled
 public class ArtBlueTravel6 extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance

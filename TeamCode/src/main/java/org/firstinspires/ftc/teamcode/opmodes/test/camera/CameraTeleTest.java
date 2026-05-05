@@ -45,9 +45,6 @@ public class CameraTeleTest extends LinearOpMode {
                 telemetry.addData("Botpose", botpose.toString());
 
                 List<LLResultTypes.DetectorResult> detectorResults = result.getDetectorResults();
-                for (LLResultTypes.DetectorResult dr : detectorResults){
-
-                }
 
 
                 List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();

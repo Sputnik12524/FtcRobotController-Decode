@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "С проездом красни 3", group = "Autonomous")
+@Autonomous(name = "With Travel RED 3", group = "Autonomous")
 @Disabled
 @Configurable // Panels
 public class ArtRedTravel3 extends LinearOpMode {

@@ -56,7 +56,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
         tt = new Turret(this, ll);
         sh = new Shooter(this);
         lg = new Logger("pospos");
-     //   as = new AutoSniper(tt, sh, ll);
+        as = new AutoSniper(tt, sh, ll);
 
 
         paths = new Paths(follower); // Build paths
@@ -64,7 +64,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
         sh.closeTunnel();
         sh.setShortThrowMode();
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-        //as.setAlliance(Alliance.RED);
+        as.setAlliance(Alliance.RED);
         tt.turretRegulator.start();
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
@@ -77,8 +77,6 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
             tt.turnByTarget(25);
 
-           // as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
-
 //            // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
@@ -86,7 +84,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
             t.addData("Heading", follower.getPose().getHeading());
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.addData("Turret heading", tt.getCurrentPosOfTurret());
-          //  t.addData("turre target", as.target);
+            t.addData("turret target", as.target);
             t.update();
         }
         tt.turnByTarget(0);

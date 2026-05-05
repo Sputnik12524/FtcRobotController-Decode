@@ -15,10 +15,8 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Turret;
-import org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.red.far.Auto3ArtifactsLongRed;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
-import org.firstinspires.ftc.teamcode.util.AutoFSM;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
 

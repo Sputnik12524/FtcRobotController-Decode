@@ -13,10 +13,10 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
 public class Turret {
-    LinearOpMode opMode;
-    public DcMotorEx turret;
+    final LinearOpMode opMode;
+    public final DcMotorEx turret;
     Limelight limelight3A;
-    DigitalChannel magneticSensor;
+    final DigitalChannel magneticSensor;
     Alliance alliance = Alliance.NONE;
     AimingMethod aimMethod = AimingMethod.NONE;
     public TurretRegulator turretRegulator = new TurretRegulator();
