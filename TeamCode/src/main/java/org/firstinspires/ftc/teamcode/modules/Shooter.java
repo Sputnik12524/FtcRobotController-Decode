@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -29,11 +30,16 @@ public class Shooter {
     public final Servo angleAdjuster;
     public final Servo cover;
     private final VoltageSensor batteryVoltageSensor;
+
+    public final DigitalChannel light1;
+    public final DigitalChannel light2;
+
     LinearOpMode opMode;
     Follower follower;
     Pose currentPose;
+    ElapsedTime isSpinUpTimer = new ElapsedTime();
 
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(12, 0, 0, 17);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(11, 0, 10, 13.5);
     private final ElapsedTime timer = new ElapsedTime();
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
@@ -43,8 +49,8 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 71;  //47 //64
-    public static double VELOCITY_FOR_SHORT_THROW = 50;
+    public static double VELOCITY_FOR_LONG_THROW = 77;  //47 //64
+    public static double VELOCITY_FOR_SHORT_THROW = 50;//52
     public static double VELOCITY_FOR_MEDIUM_THROW = 60;  //47 //64
     public static double POWER = 1;
 
@@ -57,7 +63,7 @@ public class Shooter {
     public static double POS_SHORT_THROW = 0.05;
     public static double POS_LONG_THROW = 0.005;
     public static double TIME_BETWEEN_SHOOT = 130;
-    public static double TIME_AFTER_SHOOT = 500;
+    public static double TIME_AFTER_SHOOT = 1500;
     public static double DELTA_ADJUSTER = 0.01;
     public static double DELTA_SECOND_SHOOT = 0.02;
     public static double DETECT_SHOOT = 5;
@@ -78,7 +84,7 @@ public class Shooter {
     public double voltageUP;
     public double voltageLOW;
     public boolean isCanShoot = false;
-    public boolean isShootStop = false;
+
 
     //---------------------------------------------- BOOLEANS
     public boolean complete = false;
@@ -90,6 +96,8 @@ public class Shooter {
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
+        light1 = opMode.hardwareMap.get(DigitalChannel.class, "LED1");
+        light2 = opMode.hardwareMap.get(DigitalChannel.class, "LED2");
         batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
 
         shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -102,8 +110,8 @@ public class Shooter {
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
 
-        //TO DO: check and add the zero power behaviour if desired
-
+        light1.setMode(DigitalChannel.Mode.OUTPUT);
+        light2.setMode(DigitalChannel.Mode.OUTPUT);
     }
 
     public Shooter(LinearOpMode opMode, Follower follower) {
@@ -113,6 +121,8 @@ public class Shooter {
         shooterLower = opMode.hardwareMap.get(DcMotorEx.class, "shooterLower");
         angleAdjuster = opMode.hardwareMap.get(Servo.class, "angleAdjuster");
         cover = opMode.hardwareMap.get(Servo.class, "cover");
+        light1 = opMode.hardwareMap.get(DigitalChannel.class, "LED1");
+        light2 = opMode.hardwareMap.get(DigitalChannel.class, "LED2");
         batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
 
         shooterUpper.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -124,13 +134,15 @@ public class Shooter {
 
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
+
+        light1.setMode(DigitalChannel.Mode.OUTPUT);
+        light2.setMode(DigitalChannel.Mode.OUTPUT);
     }
 
     public void update() {
         if (mode == MODE.MANUAL) return;
         switch (state) {
             case STOP:
-                if (!isShootStop) transit(ShStates.SPINNING);
                 shootStop();
                 break;
 
@@ -237,53 +249,24 @@ public class Shooter {
         else angleAdjuster.setPosition(pos);
     }
 
-    public void threeArtefactsShooting() {
-        switch (st) {
-            case 0:
-                switchCover();
-                shootPos = angleAdjuster.getPosition();
-                if (isTunnelOpen) tr(1);
-            case 1:
-                setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-                if (timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(2);
-            case 2:
-                setMode(angleAdjuster.getPosition() - DELTA_ADJUSTER);
-                if (timer.milliseconds() > TIME_BETWEEN_SHOOT) tr(3);
-            case 3:
-                if (timer.milliseconds() > TIME_AFTER_SHOOT) {
-                    complete = true;
-                    canShoot = false;
-                    setMode(shootPos);
-                    tr(0);
-                }
-        }
-    }
-
-
-    public void switchCover() {
-        if (!inZone()) {
-            canShoot = false;
-        }
+    public void coverSwitch() {
         if (canShoot) {
             openTunnel();
-            if (timer.milliseconds() > TIME_AFTER_SHOOT) {
-                canShoot = false;
-            }
+            if (timer.milliseconds() > TIME_AFTER_SHOOT) canShoot = false;
         } else {
             closeTunnel();
             timer.reset();
         }
     }
 
-    public void coverSwitch(){
-        if(canShoot){
-            openTunnel();
-            if(timer.milliseconds() > TIME_AFTER_SHOOT) canShoot = false;
-        }
-        else{
-            closeTunnel();
-            timer.reset();
-        }
+    public void turnOnLight() {
+        light1.setState(true);
+        light2.setState(true);
+    }
+
+    public void turnOffLight() {
+        light1.setState(false);
+        light2.setState(false);
     }
 
     public void tr(int state) {
@@ -300,11 +283,11 @@ public class Shooter {
         this.state = state;
     }
 
-    public double getUpVoltage() {
+    public double getUpAmps() {
         return shooterUpper.getCurrent(CurrentUnit.AMPS);
     }
 
-    public double getLowVoltage() {
+    public double getLowAmps() {
         return shooterLower.getCurrent(CurrentUnit.AMPS);
     }
 
@@ -312,7 +295,10 @@ public class Shooter {
     //---------------------------------------------- AUTONOMOUS
     public boolean isSpinUp() {
         if (getVelocityRPS() == 0) return false;
-        return getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP;
+        if (!(getVelocityRPS() >= velocityTarget / TPR - IS_SPIN_UP)) {
+            isSpinUpTimer.reset();
+            return false;
+        } else return timer.milliseconds() > 150;
     }
 
 
@@ -328,7 +314,7 @@ public class Shooter {
 
 
     public double getVelocityRPS() {
-        return shooterUpper.getVelocity() / TPR;
+        return (shooterUpper.getVelocity() + shooterLower.getVelocity()) / (TPR * 2);
     }
 
     public double getVelocityTPS() {

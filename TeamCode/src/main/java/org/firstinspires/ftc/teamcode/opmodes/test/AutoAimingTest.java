@@ -25,6 +25,7 @@ public class AutoAimingTest extends LinearOpMode {
     Limelight ll;
 
     double lastVelo = 0;
+    double constVelo = 100;
 
     boolean xState = false;
     boolean turretState = false;
@@ -47,6 +48,7 @@ public class AutoAimingTest extends LinearOpMode {
 
 
 
+
     @Override
     public void runOpMode() {
         ll = new Limelight(this);
@@ -59,7 +61,7 @@ public class AutoAimingTest extends LinearOpMode {
 
         tt.turretRegulator.start();
 
-        as.setAlliance(Alliance.BLUE);
+        as.setAlliance(Alliance.RED);
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
         sh.setVelocityTarget(0);
@@ -114,8 +116,16 @@ public class AutoAimingTest extends LinearOpMode {
 
             //---------------------------------------------- VELOCITY
 
-////            sh.shootByVelocity();
 //
+//            as.continuousSetVelocityTargetByInterpol(
+//                    follower.getPose().getX(), follower.getPose().getY()
+//            );
+//            sh.shootByVelocity();
+//            telemetry.addLine("VELOCITY TELEMETRY (INTERPOL):");
+//                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
+//                telemetry.addData("realVelocity", sh.getVelocityRPS());
+//            lastVelo = sh.getVelocityRPS();
+
 //            telemetry.addLine("");
 //            if (veloState && !constVeloState && !interpolState) {
 //                as.continuousSetVelocityTargetByFormula(
@@ -127,12 +137,14 @@ public class AutoAimingTest extends LinearOpMode {
 //                telemetry.addData("realVelocity", sh.getVelocityRPS());
 //                telemetry.addData("isCalculateNewVelocity?", as.isCalculateNewVelocity);
 //            } else if (constVeloState && !veloState && !interpolState) {
-//                sh.setVelocityTarget(50);
+//                sh.setVelocityTarget(constVelo);
+//                sh.shootByVelocity();
 //                telemetry.addLine("VELOCITY IS CONST");
-//            } else if (interpolState && !constVeloState && !veloState) {
-//                as.continuousSetVelocityTargetByInterpol();
-//                telemetry.addLine("VELOCITY TELEMETRY (INTERPOL):");
+////            } else if (interpolState && !constVeloState && !veloState) {
+////                as.continuousSetVelocityTargetByInterpol();
+////                telemetry.addLine("VELOCITY TELEMETRY (INTERPOL):");
 //                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
+//                telemetry.addData("targetVelocity", constVelo);
 //                telemetry.addData("realVelocity", sh.getVelocityRPS());
 //            } else {
 //                telemetry.addLine("VELOCITY is stopped (put Y, B or RS)");

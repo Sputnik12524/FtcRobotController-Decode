@@ -10,7 +10,7 @@ public class WheelTest extends LinearOpMode {
     public DcMotor leftBack;
     public DcMotor rightFront;
     public DcMotor rightBack;
-    double SPEED = 0.5;
+    final double SPEED = 0.5;
 
     @Override
     public void runOpMode() {

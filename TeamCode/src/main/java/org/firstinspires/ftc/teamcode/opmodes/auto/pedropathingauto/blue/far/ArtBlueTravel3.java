@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "С проездом BLUE 3", group = "Autonomous")
+@Autonomous(name = "With travel BLUE 3", group = "Autonomous")
 @Disabled
 @Configurable // Panels
 public class ArtBlueTravel3 extends LinearOpMode {
@@ -67,7 +67,7 @@ public class ArtBlueTravel3 extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
-            sh.threeArtefactsShooting();
+            
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);

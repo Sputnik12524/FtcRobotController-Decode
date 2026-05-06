@@ -48,7 +48,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     boolean wroteLogger = true;
     boolean isPoseReset = false;
     boolean attentionControl = false;
-    boolean shootStop = false;
+    double lastVelo = 0;
 
     @Override
     public void runOpMode() {
@@ -93,18 +93,19 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
             if (af.mode == AutoFSM.MODE.DRIVER){
                 driverUpdate(g1, g2);
             }
-
             else {
                     af.update();
                 if (af.complete) {
+                    if(follower.isBusy()) follower.breakFollowing();
                     af.mode = AutoFSM.MODE.DRIVER;
                     af.complete = false;
                 }
             }
             updateAutomatic(as.l, sh.getAngleAdjusterPos());
+            checkFollower();
             sh.update();
             updateTelemetry();
-            voltageUpdate();
+            ampsUpdate();
         }
         ll.startOrStopLL(true);
         tt.turretRegulator.interrupt();
@@ -118,23 +119,23 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         /// =====================AUTO===============================///
 
         if (gamepad2.bWasPressed()) {
-            af.setAuto(AutoFSM.AUTO.PARK);
+            if(canMove())af.setAuto(AutoFSM.AUTO.PARK);
         }
         if (gamepad2.aWasPressed()) { //кнопки переписать
-            af.setAuto(AutoFSM.AUTO.GOAL);
+            if(canMove())af.setAuto(AutoFSM.AUTO.GOAL);
         }
         if (gamepad2.xWasPressed()) {
-            af.setAuto(AutoFSM.AUTO.HUMAN);
+            if(canMove())af.setAuto(AutoFSM.AUTO.HUMAN);
         }
 
         /// =====================DRIVE TRAIN===============================///
 
-        if (gamepad1.right_bumper) {
+        if (g1.rightBumper.isPressed()) { //посмотреть работает ли
             dt.turnRightSlowMode();
-        } else if (gamepad1.left_bumper) {
+        } else if (g1.leftBumper.isPressed()) {
             dt.turnLeftSlowMode();
         } else {
-            dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
+            dt.setMotorsPower(-g1.leftStickY, g1.leftStickX, g1.rightTrigger - g1.leftTrigger); //проверить ездит ли
         }
 
         /// =====================INTAKE===============================///
@@ -157,10 +158,8 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
         if (g1.X.isPressed() && !g1.X.getToggleState()) {
             sh.transit(Shooter.ShStates.SPINNING);
-            sh.isShootStop = false;
         } else if (g1.X.isPressed() && g1.X.getToggleState()) {
             sh.transit(Shooter.ShStates.STOP);
-            sh.isShootStop = true;
         }
 
         /// =====================TURRET===============================///
@@ -176,75 +175,81 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
         /// =====================ATTENTION CONTROL===============================///
 
-        if (g1.dpadRight.isPressed() && g1.dpadRight.getToggleState()) {
+        if (g1.rightStickButton.isPressed() && g1.rightStickButton.getToggleState()) {
             sh.mode = Shooter.MODE.MANUAL;
             attentionControl = true;
             sh.setManual(true);
             tt.turnByTarget(0);
-        } else if (g1.dpadRight.isPressed() && !g1.dpadRight.getToggleState()) {
+        } else if (g1.rightStickButton.isPressed() && !g1.rightStickButton.getToggleState()) {
             sh.mode = Shooter.MODE.AUTO;
             attentionControl = false;
             sh.setManual(false);
         }
 
         if (attentionControl) {
-            if (gamepad1.dpad_up) {
+            if (g1.dpadUp.isPressed()) {
                 sh.openTunnel();
-            } else if (gamepad1.dpad_down) {
+            } else if (g1.dpadDown.isPressed()) {
                 sh.closeTunnel();
             }
         }
 
         /// =====================POSE RESET===============================///
 
-        if (g2.dpadUp.isPressed()) {
+        if (g2.dpadLeft.isPressed()) {
             resetPose(Alliance.BLUE);
         }
 
-        if (g2.dpadDown.isPressed()) {
+        if (g2.dpadRight.isPressed()) {
             resetPose(Alliance.RED);
         }
 
-        /// =====================ЗАЩИТА😎===============================///
+        /// =====================ЗАЩИТА😎==============================///
 
         if (g1.dpadUp.isPressed() && af.mode == AutoFSM.MODE.AUTO) af.mode = AutoFSM.MODE.DRIVER;
     }
 
-    public void resetPose(Alliance alliance) {
-        isPoseReset = true;          //tt.turnByTarget(0); //пересмотреть
-        follower.setPose(new Pose(11, 7, 0));
+    void resetPose(Alliance alliance) {
+        isPoseReset = true;
+        if(alliance == Alliance.BLUE) follower.setPose(new Pose(16, 80, Math.toRadians(90)));
+        else follower.setPose(new Pose(129, 80, Math.toRadians(90)));
         as.setAlliance(alliance);
     }
 
-    public void voltageUpdate() {
+    void ampsUpdate() {
         if (timer.milliseconds() > 100) {
-            sh.voltageUP += sh.getUpVoltage();
-            sh.voltageLOW += sh.getLowVoltage();
-            in.voltage += in.getVoltage();
-            tt.voltage += tt.getVoltage();
+            sh.voltageUP += sh.getUpAmps();
+            sh.voltageLOW += sh.getLowAmps();
+            in.voltage += in.getAmps();
+            tt.voltage += tt.getAmps();
             timer.reset();
         }
     }
 
     void updateAutomatic(double l, double pose) {
-        if (attentionControl && shootStop) return;
+        if (attentionControl) return;
         as.setAngleByLocalisation(l, pose);
-        as.continuousSetVelocityTargetByInterpol(follower.getPose().getY());
+        as.continuousSetVelocityTargetByInterpol(follower.getPose().getX(), follower.getPose().getY());
         sh.shootByVelocity();
         as.continuousSetAngleByFormula(
                 sh.getAngleAdjusterPos()
         );
     }
 
-    public void updateTelemetry() {
+    boolean canMove(){
+        return  (!follower.isBusy() && af.mode == AutoFSM.MODE.DRIVER);
+    }
+    void checkFollower(){
+        if(follower.getPose().getX() == 0 && follower.getPose().getY() == 0) attentionControl = true;
+    }
+
+    void updateTelemetry() {
         telemetry.addData("TeleState", af.mode);
         telemetry.addData("autoState", af.autoState);
-
-
-        telemetry.addData("Shooter LOW AMPS", sh.getLowVoltage());
-        telemetry.addData("Shooter UP AMPS", sh.getUpVoltage());
-        telemetry.addData("Intake AMPS", in.getVoltage());
-        telemetry.addData("Turret AMPS", tt.getVoltage());
+        telemetry.addData("Shooter LOW AMPS", sh.getLowAmps());
+        telemetry.addData("Shooter UP AMPS", sh.getUpAmps());
+        telemetry.addData("Intake AMPS", in.getAmps());
+        telemetry.addData("Turret AMPS", tt.getAmps());
         telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
         telemetry.addData("Velocity", sh.getVelocityRPS());
         telemetry.addData("InZone", sh.inZone());

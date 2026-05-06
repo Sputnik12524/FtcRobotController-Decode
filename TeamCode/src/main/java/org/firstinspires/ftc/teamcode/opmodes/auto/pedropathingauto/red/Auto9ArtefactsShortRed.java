@@ -69,13 +69,14 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         sh.closeTunnel();
         as.setAlliance(Alliance.RED);
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW - 6.5);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
         tt.turretRegulator.start();
         ll.startOrStopLL(false);
 
 
         waitForStart();
         while (opModeIsActive()) {
+            ll.update();
             follower.update(); // Update Pedro Pathing
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
@@ -92,6 +93,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
             t.update();
         }
+        tt.turnByTarget(0);
         tt.turretRegulator.interrupt();
         ll.startOrStopLL(true);
 
@@ -165,7 +167,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                             new BezierLine(
                                     new Pose(100, 56),
 
-                                    new Pose(126, 56) //106, 72
+                                    new Pose(126, 52) //106, 72
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -173,7 +175,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
 
             PathThirdScoring = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(126, 56),
+                                    new Pose(126, 52),
 
                                     scoringPath
                             )
@@ -274,6 +276,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
 
             case 11:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
+                tt.turnByTarget(0);
                 as.enableAutoTurretAiming(false);
                 in.rotateStop();
                 sh.shootStop();

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -14,12 +13,12 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 
 @Config
 public class Turret {
-    LinearOpMode opMode;
+    final LinearOpMode opMode;
     public final DcMotorEx turret;
     Limelight limelight3A;
-    DigitalChannel magneticSensor;
+    final DigitalChannel magneticSensor;
     Alliance alliance = Alliance.NONE;
-    AimingMethod aimMethod = AimingMethod.LOCALIZATION;
+    AimingMethod aimMethod = AimingMethod.NONE;
     public TurretRegulator turretRegulator = new TurretRegulator();
 
     public final double rSmallGear = 60;
@@ -34,21 +33,21 @@ public class Turret {
     public static double kDL = 0.02;
     public static double kF = 0.1;
     private final double TPR = 537.7;
-    public double current;
+    //public double current;
     public double error;
-    public double dError, dErrorCamera;
+    public double dError;
     public double sumError = 0;
-    public double pastError, pastErrorCamera;
+    public double pastError;
     public double target = 0;
     public double angleOfTurret;
     public static double POS_RIGHTMOST = 225;
     public static double POS_LEFTMOST = -130;
-    public static double errorPlus = 0;
 
     private boolean stateMagneting = false;
 
     public boolean isInLimits = false;
     public double voltage;
+    public double errorPlus;
 
     public Turret(LinearOpMode opMode, Limelight ll) {
         this.opMode = opMode;
@@ -58,8 +57,8 @@ public class Turret {
 
         turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-       // turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+
     public Turret(LinearOpMode opMode) {
         this.opMode = opMode;
         turret = opMode.hardwareMap.get(DcMotorEx.class, "turret");
@@ -80,18 +79,20 @@ public class Turret {
             turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             timer.reset();
             while (!isInterrupted()) {
-                switch(aimMethod) {
+                switch (aimMethod) {
                     case CAMERA:
-                        error = -limelight3A.getTagInfo().get(1) ;
-                        dErrorCamera = error - pastErrorCamera;
+                        error = -limelight3A.getTagInfo()[1];
+                        if (error < 0.25 && error > -0.25) turnInLimits(0);
+                        else {
+                            dError = error - pastError;
 
-                        double powerP = error * kPC + kDC * dErrorCamera/timer.milliseconds() + errorPlus;
+                            double powerP = error * kPC + kDC * dError / timer.milliseconds();
 
-                        turnInLimits(powerP);
-
-                        pastErrorCamera = error;
-
+                            turnInLimits(powerP);
+                        }
+//ошибка
                         timer.reset();
+
 
                         break;
 
@@ -106,7 +107,13 @@ public class Turret {
 
                         pastError = error;
                         timer.reset();
+
                         break;
+
+                    case NONE:
+                        turnInLimits(0);
+                        timer.reset();
+
                 }
 
             }
@@ -115,21 +122,28 @@ public class Turret {
 
 
     public double getCurrentPosOfTurret() {
-        return turret.getCurrentPosition()/TPR * rSmallGear/rBigGear * 360;
+        return turret.getCurrentPosition() / TPR * rSmallGear / rBigGear * 360;
     }
 
     public void turnInLimits(double power) {
+        double pose = getCurrentPosOfTurret();
         if (isMagneting() && !stateMagneting) {
             turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        } else if (getCurrentPosOfTurret() > POS_RIGHTMOST && power > 0) {
+            kPL = 0.02;
+        } else if (pose > POS_RIGHTMOST && power > 0) {
             isInLimits = false;
             turnStopByPower();
-        } else if (getCurrentPosOfTurret() < POS_LEFTMOST && power < 0) {
+        } else if (pose < POS_LEFTMOST && power < 0) {
             isInLimits = false;
             turnStopByPower();
+        } else if (pose > -15 || pose < 15) {
+            kPL = 0.0075;
+            isInLimits = true;
+            turret.setPower(power);
         } else {
             isInLimits = true;
+            kPL = 0.02;
             turret.setPower(power);
         }
         stateMagneting = isMagneting();
@@ -140,7 +154,9 @@ public class Turret {
         return !magneticSensor.getState();
     }
 
-    public void turnByTarget(double target) { this.target = target; }
+    public void turnByTarget(double target) {
+        this.target = target;
+    }
 
     public double angleNormalising(double targetNew) {
         double normTarget = targetNew;
@@ -165,21 +181,21 @@ public class Turret {
         Turret.kDC = kDC;
     }
 
-    public double getVoltage(){
+    public double getAmps() {
         return turret.getCurrent(CurrentUnit.AMPS);
     }
 
-    public void setAimMethod(AimingMethod aimingMethod){
+    public void setAimMethod(AimingMethod aimingMethod) {
         aimMethod = aimingMethod;
     }
 
-    public void update(double y){
-        if(y < 50){
+    public void update(double y) {
+        if (y < 50) {
             errorPlus = 3.5;
-        }
-        else errorPlus =0;
+        } else errorPlus = 0;
     }
-    public AimingMethod getAimMethod(){
+
+    public AimingMethod getAimMethod() {
         return aimMethod;
     }
 

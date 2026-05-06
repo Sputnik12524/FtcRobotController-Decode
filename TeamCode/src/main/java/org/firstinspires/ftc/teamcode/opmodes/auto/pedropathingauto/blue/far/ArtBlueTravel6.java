@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "c проездом Blue 6", group = "Autonomous")
+@Autonomous(name = "With travel Blue 6", group = "Autonomous")
 @Disabled
 public class ArtBlueTravel6 extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
@@ -63,7 +63,7 @@ public class ArtBlueTravel6 extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
-            sh.threeArtefactsShooting();
+            
 
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);

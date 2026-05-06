@@ -87,10 +87,10 @@ public class GamepadManager {
         rightTrigger = rawGamepad.right_trigger;
 
         // Джойстики
-        leftStickX = rawGamepad.left_stick_x;
-        leftStickY = rawGamepad.left_stick_y;
-        rightStickX = rawGamepad.right_stick_x;
-        rightStickY = rawGamepad.right_stick_y;
+        leftStickX = Math.signum(rawGamepad.left_stick_x) + Math.pow(rawGamepad.left_stick_x, 2);
+        leftStickY = Math.signum(rawGamepad.left_stick_y) + Math.pow(rawGamepad.left_stick_y, 2);
+        rightStickX = Math.signum(rawGamepad.right_stick_x) + Math.pow(rawGamepad.right_stick_x, 2);
+        rightStickY = Math.signum(rawGamepad.right_stick_y) + Math.pow(rawGamepad.right_stick_y, 2);
     }
 
     //сброс кнопок

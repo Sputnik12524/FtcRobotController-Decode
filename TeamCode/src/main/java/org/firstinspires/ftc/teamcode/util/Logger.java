@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.util;
 
 
-//import org.knowm.xchart.PieChart;
-//import org.knowm.xchart.PieChartBuilder;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -14,6 +11,7 @@ public class Logger {
     String directoryPath = "/sdcard/FIRST/";
     BufferedReader reader;
     BufferedWriter writer;
+    BufferedWriter ampsWriter;
     public String fileName;
     public String line;
     public Alliance al;
@@ -52,15 +50,6 @@ public class Logger {
         }
     }
 
-    public void createChart(double shUP, double shLow, double in, double tt){
-//        PieChart chart = new PieChartBuilder()
-//                .width(600)
-//                .height(500)
-//                .title("Потребление АМПЕР")
-//                .build();
-//        //chart.addSeries(")
-
-    }
 
     public void getAll(String fileName) throws IOException{
 

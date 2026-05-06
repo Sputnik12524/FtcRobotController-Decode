@@ -165,7 +165,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
                 if (isInterpolActive) {
                     as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
-                    as.continuousSetVelocityTargetByInterpol(follower.getPose().getY());
+                    as.continuousSetVelocityTargetByInterpol(follower.getPose().getX(), follower.getPose().getY());
                     sh.shootByVelocity();
                     as.continuousSetAngleByFormula(
                             sh.getAngleAdjusterPos()
@@ -183,9 +183,7 @@ public class TeleOpRoadRunner extends LinearOpMode {
             //---------------------------------------- TURRET
             if (!attentionControl)
                 as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
-            if (!attentionControl) {
-                sh.switchCover();
-            }
+
 
 
             /// -------------------------------------- ЭКСТРЕННОЕ УПРАВЛЕНИЕ

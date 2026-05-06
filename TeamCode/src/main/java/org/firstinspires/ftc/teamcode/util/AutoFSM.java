@@ -17,7 +17,7 @@ public class AutoFSM {
 
     AUTO auto = AUTO.DEFAULT;
 
-    enum AutoStates {DEFAULT, MOVE, CHECK, SHOOT, INIT}
+    enum AutoStates {DEFAULT, MOVE, SHOOT, INIT}
 
     public AutoStates autoState = AutoStates.DEFAULT;
 
@@ -101,11 +101,14 @@ public class AutoFSM {
                     follower.followPath(paths.blueGoal(follower.getPose()));
                 else if (alliance == Alliance.RED)
                     follower.followPath(paths.redGoal(follower.getPose()));
-                ready = false;
                 setAutoState(AutoStates.MOVE);
                 break;
             case MOVE:
                 if (!follower.isBusy()) setAutoState(AutoStates.SHOOT);
+                if (autoStTimer.milliseconds() > 5000) {
+                    follower.breakFollowing();
+                    setAutoState(AutoStates.SHOOT);
+                }
                 break;
             case SHOOT:
                 in.rotateIn();
@@ -134,6 +137,10 @@ public class AutoFSM {
                 break;
             case MOVE:
                 if (!follower.isBusy()) setAutoState(AutoStates.SHOOT);
+                if (autoStTimer.milliseconds() > 5000) {
+                    follower.breakFollowing();
+                    setAutoState(AutoStates.SHOOT);
+                }
                 break;
             case SHOOT:
                 in.rotateIn();
@@ -168,9 +175,9 @@ public class AutoFSM {
                     ready = true;
                 }
 
-                if (ready && follower.isBusy()) return;
+                if (follower.isBusy()) return;
 
-                if (ready && !follower.isBusy()) {
+                else {
                     follower.breakFollowing();
                     setAuto(AUTO.DEFAULT);
                     setAutoState(AutoStates.DEFAULT);
@@ -193,8 +200,15 @@ public class AutoFSM {
         autoTimer.reset();
     }
 
+    public void artefactsControl(){
+        if (tr.howMany() > 3) {
+            in.rotateStop();
+        }
+    }
+
     public void updateArtefacts() {
         if (tr.howMany() > 3) {
+            in.rotateStop();
             if (follower.getPose().getY() >= 48) setAuto(AUTO.GOAL);
             else setAuto(AUTO.HUMAN);
         }

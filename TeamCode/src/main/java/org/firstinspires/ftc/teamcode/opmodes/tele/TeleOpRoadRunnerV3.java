@@ -7,6 +7,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.DriveTrain;
@@ -19,15 +20,19 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
+import org.firstinspires.ftc.teamcode.util.Cycle;
+import org.firstinspires.ftc.teamcode.util.GamepadManager;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 import java.io.IOException;
 
 
-@TeleOp(name = "TeleOpRR", group = "0")
+@TeleOp(name = "TeleOpRR V3", group = "0")
 @Config
 public class TeleOpRoadRunnerV3 extends LinearOpMode {
+    enum IN_STATES {DEFAULT, WAIT, IN, OUT}
 
+    IN_STATES state = IN_STATES.DEFAULT;
 
     Shooter sh;
     Intake in;
@@ -38,24 +43,32 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     Logger logger;
     Limelight ll;
     DriveTrain dt;
-
+    Cycle cc;
+    ElapsedTime timerTurret, timerCalc, timer, timer1, time, timerVelo;
+    GamepadManager g1;
+    GamepadManager g2;
 
     boolean wroteLogger = true;
     boolean isPoseReset = false;
     boolean isInterpolActive = true;
+    boolean magnetic = false;
+    boolean mState = true;
     /// Intake
 
     /// Shooter
-    boolean attentionControl = false;
+    boolean attentionControl = true;
     public double shortBonusVelocity = 0;
     public double longBonusVelocity = 0;
-    double lastVelo = 0;
+    public double lastVelo = 0;
 
     //intake
     boolean isRotateIn = false;
     boolean isRotateOut = false;
     boolean stateA1 = false;
     boolean stateB1 = false;
+    boolean stateLSB = false;
+    boolean stateB2 = false;
+    final double WAIT_TIME = 150;
 
     //shooter
     boolean stateY1 = false;
@@ -63,10 +76,16 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     boolean isShootingShort = false;
     boolean isShootingMedium = false;
     boolean RSBState = false;
+    double cycles;
+    boolean slowMode = false;
+    Pose pose;
+    double x, y, head;
 
 
     @Override
     public void runOpMode() {
+        g1 = new GamepadManager(gamepad1);
+        g2 = new GamepadManager(gamepad2);
         follower = Constants.createFollower(hardwareMap);
         tr = new Transfer(this);
         ll = new Limelight(this);
@@ -77,14 +96,28 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         dt = new DriveTrain(this);
         logger = new Logger("pospos");
         ll.startOrStopLL(false);
+        cc = new Cycle();
 
+        InterpolAndAimingThread interpolAndAimingThread = new InterpolAndAimingThread();
+        DTFormulasThread dtFormulasThread = new DTFormulasThread();
+
+        timerTurret = new ElapsedTime();
+        timer = new ElapsedTime();
+        timer1 = new ElapsedTime();
+        timerCalc = new ElapsedTime();
+        timerVelo = new ElapsedTime();
+        time = new ElapsedTime();
+
+        ll.update();
 
         try {
             logger.getAll("pospos");
             follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
             if (logger.al == Alliance.BLUE) {
                 as.setAlliance(Alliance.BLUE);
-            } else as.setAlliance(Alliance.RED);
+            } else {
+                as.setAlliance(Alliance.RED);
+            }
         } catch (IOException | NullPointerException e) {
             isInterpolActive = false;
             wroteLogger = false;
@@ -96,104 +129,81 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         follower.update();
 
         if (wroteLogger)
-            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
+            as.continuousTurnTurretToGate(follower.getPose().getX(),
+                    follower.getPose().getY(),
+                    follower.getHeading()
+            );
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashtele = dashboard.getTelemetry();
         sh.closeTunnel();
         tt.turnByTarget(0);
         tt.turretRegulator.start();
+        ll.lt.start();
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
-
-        follower.update();
-
         waitForStart();
+        interpolAndAimingThread.start();
+        dtFormulasThread.start();
 
         while (opModeIsActive()) {
-            //-------------------------------- DRIVETRAIN
-            follower.update();
+            ll.update();
+            long loopStart = System.nanoTime();
 
-            if (gamepad1.right_bumper) {
-                dt.turnRightSlowMode();
-            } else if (gamepad1.left_bumper) {
-                dt.turnLeftSlowMode();
+//            //-------------------------------- DRIVETRAIN
+
+            follower.update();
+            pose = follower.getPose();
+            x = pose.getX();
+            y = pose.getY();
+            head = pose.getHeading();
+            inUpdate();
+            g1.update();
+            g2.update();
+
+            //-------------------------------- BACKLIGHT
+
+            if (as.isSpinUp() && !sh.ifNotInLaunchZoneGoal() && !sh.ifNotInLaunchZoneHuman()) {
+                sh.turnOnLight();
             } else {
-                dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
+                sh.turnOffLight();
             }
 
             //-------------------------------- INTAKE
 
-            if (gamepad1.a && !isRotateIn && !stateA1) {
-                in.rotateIn();
-                isRotateIn = true;
-                isRotateOut = false;
-            } else if (gamepad1.a && isRotateIn && !stateA1) {
-                in.rotateStop();
-                isRotateIn = false;
+            if (tt.isMagneting() && mState) {
+                magnetic = true;
+                mState = false;
             }
-            if (gamepad1.b && !isRotateOut && !stateB1) {
-                in.rotateOut();
-                isRotateOut = true;
-                isRotateIn = false;
-            } else if (gamepad1.b && isRotateOut && !stateB1) {
-                in.rotateStop();
-                isRotateOut = false;
-            }
-            stateA1 = gamepad1.a;
-            stateB1 = gamepad1.b;
+            if (gamepad2.aWasPressed()) mState = true;
+            if (gamepad2.aWasPressed()) magnetic = false;
 
             //---------------------------------------- SHOOTER
 
-            if (gamepad1.y && !isShootingMedium && !stateY1) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_MEDIUM_THROW);
-                sh.setShortThrowMode();
-                sh.shootByVelocity();
-                isShootingMedium = true;
-                isShootingShort = false;
-            } else if (gamepad1.x && !isShootingShort && !stateX1) {
-                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
-                sh.setShortThrowMode();
-                sh.shootByVelocity();
-                isShootingMedium = false;
-                isShootingShort = true;
-            } else if ((gamepad1.y && !stateY1 && isShootingMedium) || (gamepad1.x && !stateX1 && isShootingShort)) {
-                sh.closeTunnel();
-                sh.shootStop();
-                isShootingMedium = false;
-                isShootingShort = false;
-            }
-            stateY1 = gamepad1.y;
-            stateX1 = gamepad1.x;
+            sh.shootByVelocity();
+            lastVelo = sh.getVelocityRPS();
 
-            if (gamepad1.dpad_up) sh.canShoot = true;
             sh.coverSwitch();
 
             //-------------------------------- TURRET
-            if (!attentionControl) {
-                as.continuousTurnTurretToGate(
-                        follower.getPose().getX(),
-                        follower.getPose().getY(),
-                        follower.getPose().getHeading()
-                );
-            } else {
-                tt.setAimMethod(AimingMethod.LOCALIZATION);
-                tt.turnByTarget(0);
-            }
+
 
             //--------------------------------- RESET AIM
-            if (gamepad1.dpad_left && gamepad1.a) {
+            if (gamepad1.dpad_left) {
                 tt.turnByTarget(0);
                 isPoseReset = true;
                 follower.setPose(new Pose(16, 80, Math.toRadians(90)));
                 as.setAlliance(Alliance.BLUE);
             }
 
-            if (gamepad1.dpad_right && gamepad1.a) {
-                isPoseReset = true;
+            if (gamepad1.dpad_right) {
                 tt.turnByTarget(0);
+                isPoseReset = true;
                 follower.setPose(new Pose(129, 80, Math.toRadians(90)));
                 as.setAlliance(Alliance.RED);
+            }
+            if (gamepad1.leftBumperWasPressed()) {
+                sh.canShoot = true;
             }
 
             /// EXTRA MANUAL CONTROL
@@ -206,36 +216,142 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             RSBState = gamepad1.right_stick_button;
 
 
+            long loopTimeNs = System.nanoTime() - loopStart;
+            double loopMs = loopTimeNs / 1e6;
 
+
+            telemetry.addData("Target", as.targetVelo);
+            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
+
+            /*telemetry.addData("Loop ms", loopMs);
             telemetry.addData("l", as.l);
-            telemetry.addData("Velocity", sh.getVelocityRPS());
-
+            telemetry.addData("All time", cc.getAll());
+            telemetry.addData("Average Cycle", cc.getAverage());
+            telemetry.addData("MAX Cycle", cc.getMax());
             telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-            telemetry.addData("isInterpol", isInterpolActive);
-//            telemetry.addData("Magnetic state", tt.isMagneting());
+            telemetry.addData("isInterpol", isInterpolActive
+                    telemetry.addData("Magnetic state", tt.isMagneting());
             telemetry.addData("InZone", sh.inZone());
             telemetry.addData("howMany", tr.howMany());
-            // telemetry.addData("Позиция сброшена", isPoseReset);
+            telemetry.addData("Позиция сброшена", isPoseReset);
             telemetry.addData("Alliance", as.alliance);
-            telemetry.addData("Metod", tt.getAimMethod());
-            telemetry.addData("TARGET", sh.velocityTarget / 28);
-            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
-            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
-
-            dashtele.addData("Target ", sh.velocityTarget / 28);
-            dashtele.addData("Velocity shooter", sh.getVelocityRPS());
-//            dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
-            dashtele.update();
+            telemetry.addData("AimMethod", tt.getAimMethod());
+            telemetry.addLine(String.valueOf((int) (x)));
+            telemetry.addLine(String.valueOf((int) y));
+            telemetry.addLine(String.valueOf((int) Math.toDegrees(head)));
+            telemetry.addData("error TT", tt.error);
+            telemetry.addData("target TT", tt.target);
+            telemetry.addData("target TT AS", as.target);
+            telemetry.addData("x", follower.getPose().getX());
+            telemetry.addData("y", follower.getPose().getY());
+            dashtele.update();*/
             telemetry.update();
+
         }
         ll.startOrStopLL(true);
+        interpolAndAimingThread.interrupt();
+        ll.lt.interrupt();
+        dtFormulasThread.interrupt();
         tt.turretRegulator.interrupt();
 
+
+    }
+
+    void ampsUpdate() {
+        if (time.milliseconds() > 100) {
+            sh.voltageUP += sh.getUpAmps();
+            sh.voltageLOW += sh.getLowAmps();
+            in.voltage += in.getAmps();
+            tt.voltage += tt.getAmps();
+            time.reset();
+        }
+    }
+
+    void setInState(IN_STATES state) {
+        timer.reset();
+        this.state = state;
+    }
+
+    void artefactsControl() {
+        if (tr.howMany() == 3 && timer1.milliseconds() > 300) {
+            in.rotateStop();
+            timer1.reset();
+        }
+    }
+
+
+    void inUpdate() {
+        switch (state) {
+            case DEFAULT:
+                if (g1.A.isPressed() && g1.A.getToggleState()) {
+                    setInState(IN_STATES.IN);
+                } else if (g1.B.isPressed()) {
+                    setInState(IN_STATES.OUT);
+                } else in.rotateStop();
+                break;
+            case IN:
+                in.rotateIn();
+                if (g1.A.isPressed() && !g1.A.getToggleState()) {
+                    setInState(IN_STATES.DEFAULT);
+                } else if (g1.B.isPressed()) {
+                    setInState(IN_STATES.WAIT);
+                }
+                break;
+            case OUT:
+                in.rotateOut();
+                setInState(IN_STATES.WAIT);
+                break;
+            case WAIT:
+                in.rotateOut();
+                if (timer.milliseconds() > WAIT_TIME) setInState(IN_STATES.DEFAULT);
+                break;
+        }
     }
 
 
     public static class PoseStorage {
         public static Pose2d currentPose = new Pose2d();
+    }
+
+    public class InterpolAndAimingThread extends Thread {
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+                if (!attentionControl) {
+                    as.continuousSetVelocityTargetByInterpol(x, y);
+                    as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
+                    as.continuousCalculateGeneralValues(x, y, head, lastVelo);
+                } else {
+                    if (gamepad1.x && !isShootingShort && !stateX1) {
+                        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                        sh.setShortThrowMode();
+                        sh.shootByVelocity();
+                        isShootingMedium = false;
+                        isShootingShort = true;
+                    } else if (gamepad1.x && !stateX1 && isShootingShort) {
+                        sh.closeTunnel();
+                        sh.shootStop();
+                        isShootingMedium = false;
+                    }
+                }
+
+                if (!attentionControl) {
+                    as.continuousTurnTurretToGate(x, y, head);
+                } else {
+                    tt.setAimMethod(AimingMethod.LOCALIZATION);
+                    tt.turnByTarget(0);
+                }
+
+            }
+        }
+    }
+
+    public class DTFormulasThread extends Thread {
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+                dt.setMotorsPowerNonLinear(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
+            }
+        }
     }
 }

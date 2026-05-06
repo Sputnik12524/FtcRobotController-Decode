@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes.test.camera;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.ftc.FTCCoordinates;
-import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@TeleOp(name = "TEST Pose Limelight", group="test")
+@TeleOp(name = "TEST Pose Limelight", group = "test")
 @Config
 public class CameraPoseTest extends LinearOpMode {
     Limelight limelight3A;
@@ -27,33 +25,24 @@ public class CameraPoseTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            follower.startTeleopDrive();
-            follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x,
-                    gamepad1.left_trigger - gamepad1.right_trigger,
-                    true // Robot Centric
-            );
-            try {
-                if(gamepad1.aWasPressed()) {
-                    telemetry.addData("Tag ID", limelight3A.getTagInfo());
-                    telemetry.addData("X by Tag", limelight3A.getPoseByAprilTag().x);
-                    telemetry.addData("Y by Tag", limelight3A.getPoseByAprilTag().y);
-                    telemetry.addData("Z by Tag", limelight3A.getPoseByAprilTag().z);
-                    telemetry.addData("botpose", new Pose(limelight3A.getPoseByAprilTag().x,
-                            limelight3A.getPoseByAprilTag().y,
-                            limelight3A.getPoseByAprilTag().z,
-                            FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE));
+            limelight3A.update();
 
-                    telemetry.update();
-                } else if (gamepad1.bWasPressed()) {
-                    telemetry.addData("Tag ID", limelight3A.getTagInfo());
-                    telemetry.addData("X by Tag", limelight3A.getGoalTag().get(2));
-                    telemetry.addData("Y by Tag", limelight3A.getGoalTag().get(3));
+            follower.update();
+            try {
+                telemetry.addData("Tag ID", limelight3A.getTagInfo());
+                telemetry.addData("botpose", limelight3A.getPoseByAprilTag());
+               // limelight3A.relocalizeWhenError();
+
+                if (gamepad1.b) {
+                    telemetry.addData("Tag ID", limelight3A.getTagInfo()[0]);
+                    telemetry.addData("X by Tag", limelight3A.getGoalTag()[2]);
+                    telemetry.addData("Y by Tag", limelight3A.getGoalTag()[3]);
                 }
-            } catch(Exception e){
+
+            } catch (Exception e) {
                 telemetry.addLine("Ахахахахаха лохи наллпойнтер");
             }
+            telemetry.update();
         }
         limelight3A.startOrStopLL(true);
     }
