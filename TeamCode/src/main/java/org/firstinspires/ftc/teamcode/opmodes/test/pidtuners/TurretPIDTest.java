@@ -48,11 +48,10 @@ public class TurretPIDTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-
-
+            ll.update();
             fl.update();
 
-            tt.tuneTurretPID(kP, kI, kD, kPC, kDC);
+            //tt.tuneTurretPID(kP, kI, kD, kPC, kDC);
 
             //---------------------------------------------- TURRET
 
@@ -82,6 +81,9 @@ public class TurretPIDTest extends LinearOpMode {
 //                t.addLine("TURRET TELEMETRY:");
                 t.addData("target", tt.target);
                 t.addData("current", tt.getCurrentPosOfTurret());
+                t.addData("ll_weight", tt.ll_weight);
+                t.addData("aim method", tt.getAimMethod());
+                t.addData("tx", ll.getGoalTag()[1]);
 //                t.addData("error", tt.error);
 //                t.addData("target FROM AutoSniper", as.target);
 //                t.addData("angleOfTurret (отн. поля)", as.angleOfTurret);
