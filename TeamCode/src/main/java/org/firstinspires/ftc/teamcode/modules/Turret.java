@@ -39,6 +39,7 @@ public class Turret {
     public double sumError = 0;
     public double pastError;
     public double target = 0;
+    public double ll_weight = 0;
     public double angleOfTurret;
     public static double POS_RIGHTMOST = 225;
     public static double POS_LEFTMOST = -130;
@@ -78,22 +79,23 @@ public class Turret {
             turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             timer.reset();
+            double power = 0; //
+            double powerP = 0; //
             while (!isInterrupted()) {
                 switch (aimMethod) {
                     case CAMERA:
+                        sumError = 0; //
                         error = -limelight3A.getTagInfo()[1];
                         if (error < 0.25 && error > -0.25) turnInLimits(0);
                         else {
                             dError = error - pastError;
 
-                            double powerP = error * kPC + kDC * dError / timer.milliseconds();
+                            powerP = error * kPC + kDC * dError / timer.milliseconds(); //
 
-                            turnInLimits(powerP);
+                            //  turnInLimits(power);
                         }
-//ошибка
+                        pastError = error; //
                         timer.reset();
-
-
                         break;
 
                     case LOCALIZATION:
@@ -101,9 +103,9 @@ public class Turret {
                         dError = error - pastError;
                         sumError = sumError + error * getCurrentPosOfTurret();
 
-                        double power = error * kPL + sumError * kIL + dError * kDL / timer.milliseconds();
+                        power = error * kPL + sumError * kIL + dError * kDL / timer.milliseconds(); //
 
-                        turnInLimits(power);
+                        //turnInLimits(power);
 
                         pastError = error;
                         timer.reset();
@@ -115,7 +117,14 @@ public class Turret {
                         timer.reset();
 
                 }
-
+                double delta = 0.05;//
+                if (aimMethod == AimingMethod.CAMERA) {
+                    ll_weight = clampValue(ll_weight + delta, 0, 1);
+                } else {
+                    ll_weight = clampValue(ll_weight - delta, 0, 1);
+                }
+                double output = (1 - ll_weight) * power + ll_weight*powerP; //
+                turnInLimits(output); //
             }
         }
     }
@@ -137,7 +146,7 @@ public class Turret {
         } else if (pose < POS_LEFTMOST && power < 0) {
             isInLimits = false;
             turnStopByPower();
-        } else if (pose > -15 || pose < 15) {
+        } else if (pose > -15 && pose < 15) { //!!!!!!! ПОМЕНЯНО ИЛИ НА И
             kPL = 0.0075;
             isInLimits = true;
             turret.setPower(power);
@@ -197,6 +206,12 @@ public class Turret {
 
     public AimingMethod getAimMethod() {
         return aimMethod;
+    }
+
+    public double clampValue(double value, double min, double max) {
+        if (value > max) value = max;
+        else if (value < min) value = min;
+        return value;
     }
 
 
