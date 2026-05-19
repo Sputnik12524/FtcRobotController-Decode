@@ -24,10 +24,10 @@ public class Turret {
     public final double rSmallGear = 60;
     public final double rBigGear = 178;
 
-    public static double kPC = 0.015;
+    public static double kPC = 0.0189; //0.015
     public static double kDC = 0;
 
-    public static double kPL = 0.02;
+    public static double kPL = 0.021; //0.02
 
     public static double kIL = 0;
     public static double kDL = 0.02;
@@ -79,22 +79,22 @@ public class Turret {
             turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             timer.reset();
-            double power = 0; //
-            double powerP = 0; //
+            //double power = 0;
+            //double powerP = 0;
             while (!isInterrupted()) {
                 switch (aimMethod) {
                     case CAMERA:
-                        sumError = 0; //
+                        //sumError = 0; //
                         error = -limelight3A.getTagInfo()[1];
                         if (error < 0.25 && error > -0.25) turnInLimits(0);
                         else {
                             dError = error - pastError;
 
-                            powerP = error * kPC + kDC * dError / timer.milliseconds(); //
+                            double powerP = error * kPC + kDC * dError / timer.milliseconds(); //ПРОСТО ПАВЕРП ЕСЛИ ПЛАВНОЕ
 
-                            //  turnInLimits(power);
+                            turnInLimits(powerP); // ЗАКОММЕНТИТЬ ЕСЛИ ПЛАВНОЕ ПЕРЕКЛЮЧЕНИЕ
                         }
-                        pastError = error; //
+                        //pastError = error; //
                         timer.reset();
                         break;
 
@@ -103,9 +103,9 @@ public class Turret {
                         dError = error - pastError;
                         sumError = sumError + error * getCurrentPosOfTurret();
 
-                        power = error * kPL + sumError * kIL + dError * kDL / timer.milliseconds(); //
+                        double power = error * kPL + sumError * kIL + dError * kDL / timer.milliseconds(); //JUST POWER
 
-                        //turnInLimits(power);
+                        turnInLimits(power); //COMMENT IF BLEND
 
                         pastError = error;
                         timer.reset();
@@ -117,14 +117,14 @@ public class Turret {
                         timer.reset();
 
                 }
-                double delta = 0.05;//
-                if (aimMethod == AimingMethod.CAMERA) {
-                    ll_weight = clampValue(ll_weight + delta, 0, 1);
-                } else {
-                    ll_weight = clampValue(ll_weight - delta, 0, 1);
-                }
-                double output = (1 - ll_weight) * power + ll_weight*powerP; //
-                turnInLimits(output); //
+//                double delta = 0.05;//
+//                if (aimMethod == AimingMethod.CAMERA) {
+//                    ll_weight = clampValue(ll_weight + delta, 0, 1);
+//                } else {
+//                    ll_weight = clampValue(ll_weight - delta, 0, 1);
+//                }
+//                double output = (1 - ll_weight) * power + ll_weight*powerP; //
+//                turnInLimits(output); //
             }
         }
     }
@@ -214,5 +214,15 @@ public class Turret {
         return value;
     }
 
+    public double[] getLocalizationCoefficients(){
+        return new double[] {
+                kPL, kIL, kDL
+        };
+    }
+    public double[] getCameraCoefficients(){
+        return new double[] {
+                kPC, kDC
+        };
+    }
 
 }

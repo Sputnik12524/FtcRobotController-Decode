@@ -48,6 +48,13 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     GamepadManager g1;
     GamepadManager g2;
 
+    public static double turret_kDC = 0;
+    public static double turret_kIC = 0;
+    public static double turret_kPC = 0.0189;
+    public static double turret_kDL = 0.02;
+    public static double turret_kIL = 0;
+    public static double turret_kPL = 0.021;
+
     boolean wroteLogger = true;
     boolean isPoseReset = false;
     boolean isInterpolActive = true;
@@ -149,6 +156,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         while (opModeIsActive()) {
             ll.update();
             long loopStart = System.nanoTime();
+            tt.tuneTurretPID(turret_kPL,turret_kIL,turret_kDL,turret_kPC,turret_kDC);
 
 //            //-------------------------------- DRIVETRAIN
 
@@ -219,9 +227,16 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             long loopTimeNs = System.nanoTime() - loopStart;
             double loopMs = loopTimeNs / 1e6;
 
+            telemetry.addData("Turret localization kP", tt.getLocalizationCoefficients()[0]);
+            telemetry.addData("turret kp", turret_kPL);
+            telemetry.addData("kI", tt.getLocalizationCoefficients()[1]);
+            telemetry.addData("kD", tt.getLocalizationCoefficients()[2]);
+            telemetry.addData("Turret camera kP", tt.getCameraCoefficients()[0]);
+            telemetry.addData("Turret camera kD", tt.getCameraCoefficients()[1]);
 
-            telemetry.addData("Target", as.targetVelo);
-            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
+
+//            telemetry.addData("Target", as.targetVelo);
+//            telemetry.addData("Velocity shooter", sh.getVelocityRPS());
 
             /*telemetry.addData("Loop ms", loopMs);
             telemetry.addData("l", as.l);

@@ -42,13 +42,15 @@ public class TurretPIDTest extends LinearOpMode {
         fl.update();
 
         ll.startOrStopLL(false);
-        as.setAlliance(Alliance.BLUE);
+        as.setAlliance(Alliance.RED);
         tt.turretRegulator.start();
 
         waitForStart();
 
         while (opModeIsActive()) {
             ll.update();
+
+
             fl.update();
 
             //tt.tuneTurretPID(kP, kI, kD, kPC, kDC);
@@ -78,7 +80,7 @@ public class TurretPIDTest extends LinearOpMode {
 //                        fl.getHeading()
 //                );
 
-//                t.addLine("TURRET TELEMETRY:");
+                t.addLine("TURRET TELEMETRY:");
                 t.addData("target", tt.target);
                 t.addData("current", tt.getCurrentPosOfTurret());
                 t.addData("ll_weight", tt.ll_weight);
@@ -87,7 +89,6 @@ public class TurretPIDTest extends LinearOpMode {
 //                t.addData("error", tt.error);
 //                t.addData("target FROM AutoSniper", as.target);
 //                t.addData("angleOfTurret (отн. поля)", as.angleOfTurret);
-
             } else {
                 t.addLine("TURRET is stopped (put X)");
                 tt.turnByTarget(0);
