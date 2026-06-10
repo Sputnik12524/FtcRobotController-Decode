@@ -35,6 +35,7 @@ public class AutoSniper {
     public double targetVeloForArtifact = 0;
     public double targetVelo = 0;
     public double mainVelo = 52;
+    public double targetAngle = 0;
 
     public double z = goalZ - highOfShooting;
 
@@ -67,7 +68,10 @@ public class AutoSniper {
     public boolean isCalculateNewAngle = false;
 
     double[] ValuesOfVelocity = {42.5, 47.5, 51.5, 51.5, 52.5, 57.5, 61, 62.5, 64.5}; // {45-47, 49-50, 56-57, 60, 61-62}
-    double[] ValuesOfDistance = {1.061, 1.2058, 1.463, 1.8002,1.8165, 2.0397, 2.3578, 2.4738, 2.6415};
+    double[] ValuesOfDistanceForVelocity = {1.061, 1.2058, 1.463, 1.8002,1.8165, 2.0397, 2.3578, 2.4738, 2.6415};
+
+    double[] ValuesOfAngle = {0, 1, 2, 3, 4, 5, 6, 7};
+    double[] ValuesOfDistanceForAngle = {0, 1, 2, 3, 4, 5, 6, 7};
 
     public static double tag = 24;
     public boolean isShort, isLong = false;
@@ -185,6 +189,24 @@ public class AutoSniper {
             isShort = false;
         }
     }
+    public void continuousSetAngleByInterpol() {
+        for (int i = 0; i < ValuesOfDistanceForAngle.length - 1; i++) {
+            if (l > ValuesOfDistanceForAngle[7]) {
+                l = ValuesOfDistanceForAngle[7];
+            } else if (l < ValuesOfDistanceForAngle[0]) {
+                l = ValuesOfDistanceForAngle[0];
+            }
+            if (ValuesOfDistanceForAngle[i] <= l && l <= ValuesOfDistanceForAngle[i + 1]) {
+                v1 = ValuesOfAngle[i];
+                v2 = ValuesOfAngle[i + 1];
+                l1 = ValuesOfDistanceForAngle[i];
+                l2 = ValuesOfDistanceForAngle[i + 1];
+
+                targetAngle = v1 + (((l - l1) / (l2 - l1)) * (v2 - v1));
+                sh.setAngleAdjuster(targetAngle);
+            }
+        }
+    }
 
     public void continuousSetVelocityTargetByFormula(double servoPos, double lastAngularVelocity) {
         double angleOfAdjuster = Math.toRadians(convertServoPosToAngle(servoPos));
@@ -201,17 +223,17 @@ public class AutoSniper {
 
     public void continuousSetVelocityTargetByInterpol(double x, double y) {
         if ((y >= Math.abs(x - 72) + 60)) {
-            for (int i = 0; i < ValuesOfDistance.length - 1; i++) {
-                if (l > ValuesOfDistance[7]) {
-                    l = ValuesOfDistance[7];
-                } else if (l < ValuesOfDistance[0]) {
-                    l = ValuesOfDistance[0];
+            for (int i = 0; i < ValuesOfDistanceForVelocity.length - 1; i++) {
+                if (l > ValuesOfDistanceForVelocity[7]) {
+                    l = ValuesOfDistanceForVelocity[7];
+                } else if (l < ValuesOfDistanceForVelocity[0]) {
+                    l = ValuesOfDistanceForVelocity[0];
                 }
-                if (ValuesOfDistance[i] <= l && l <= ValuesOfDistance[i + 1]) {
+                if (ValuesOfDistanceForVelocity[i] <= l && l <= ValuesOfDistanceForVelocity[i + 1]) {
                     v1 = ValuesOfVelocity[i];
                     v2 = ValuesOfVelocity[i + 1];
-                    l1 = ValuesOfDistance[i];
-                    l2 = ValuesOfDistance[i + 1];
+                    l1 = ValuesOfDistanceForVelocity[i];
+                    l2 = ValuesOfDistanceForVelocity[i + 1];
 
                     targetVelo = v1 + (((l - l1) / (l2 - l1)) * (v2 - v1));
                     sh.setVelocityTarget(targetVelo);
