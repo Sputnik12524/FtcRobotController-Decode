@@ -338,7 +338,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                     as.continuousCalculateGeneralValues(x, y, head, lastVelo);
                 } else {
                     if (gamepad1.x && !isShootingShort && !stateX1) {
-                        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                        sh.setVelocityTarget(-Shooter.VELOCITY_FOR_SHORT_THROW);
                         sh.setShortThrowMode();
                         sh.shootByVelocity();
                         isShootingMedium = false;

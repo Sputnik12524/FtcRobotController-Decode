@@ -130,7 +130,7 @@ public class Turret {
     }
 
 
-    public double getCurrentPosOfTurret() {
+    public double   getCurrentPosOfTurret() {
         return turret.getCurrentPosition() / TPR * rSmallGear / rBigGear * 360;
     }
 

@@ -108,11 +108,23 @@ public class Limelight {
         else {
             double x = result.getBotpose().getPosition().x;
             double y = result.getBotpose().getPosition().y;
-            double head = result.getBotpose().getOrientation().getYaw(AngleUnit.DEGREES);
+            double head = result.getBotpose().getOrientation().getYaw(AngleUnit.RADIANS);
             double[] pose = calculatePose(x, y, head);
             pp = new Pose(pose[0], pose[1], pose[2], FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE);
         }
         return pp;
+    }
+
+    public double[] getRawPose(){
+        LLResult res = getResult();
+        if(!res.isValid()) return new double[] {0,0,0};
+        else{
+            return new double[] {
+                    res.getBotpose().getPosition().x,
+                    res.getBotpose().getPosition().y,
+                    res.getBotpose().getOrientation().getYaw(AngleUnit.DEGREES)
+            };
+        }
     }
 
     public void relocalizeWhenError() {
@@ -155,6 +167,7 @@ public class Limelight {
 
     public double[] rotateVector(double x, double y, double theta) {
         double[] rotatedVector = new double[2];
+        theta = Math.toRadians(theta);
         rotatedVector[0] = (x * Math.cos(theta) - y * Math.sin(theta));
         rotatedVector[1] = (x * Math.sin(theta) + y * Math.cos(theta));
         return rotatedVector;
