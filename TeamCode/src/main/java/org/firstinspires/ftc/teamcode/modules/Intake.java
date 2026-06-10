@@ -12,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class Intake {
 
     private final DcMotorEx catcher;
-    private final CRServo transferServo;
 
     public static double POWER_CATCHER = 1;
     public static double POWER_SERVO = 1;
@@ -20,22 +19,18 @@ public class Intake {
 
     public Intake(LinearOpMode opMode) {
         this.catcher = opMode.hardwareMap.get(DcMotorEx.class, "catcher");
-        transferServo = opMode.hardwareMap.get(CRServo.class,"transferServo");
     }
 
     //---------------------------------------------- ROTATE
 
     public void rotateIn() {
         catcher.setPower(-POWER_CATCHER);
-        transferServo.setPower(POWER_SERVO);
     }
     public void rotateOut() {
         catcher.setPower(POWER_CATCHER);
-        transferServo.setPower(-POWER_SERVO);
     }
     public void rotateStop() {
         catcher.setPower(0);
-        transferServo.setPower(0);
     }
 
     public double getAmps(){

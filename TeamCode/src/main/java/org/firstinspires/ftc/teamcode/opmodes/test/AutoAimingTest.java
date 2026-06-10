@@ -116,41 +116,24 @@ public class AutoAimingTest extends LinearOpMode {
 
             //---------------------------------------------- VELOCITY
 
-//
-//            as.continuousSetVelocityTargetByInterpol(
-//                    follower.getPose().getX(), follower.getPose().getY()
-//            );
-//            sh.shootByVelocity();
-//            telemetry.addLine("VELOCITY TELEMETRY (INTERPOL):");
-//                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
-//                telemetry.addData("realVelocity", sh.getVelocityRPS());
-//            lastVelo = sh.getVelocityRPS();
-
-//            telemetry.addLine("");
-//            if (veloState && !constVeloState && !interpolState) {
-//                as.continuousSetVelocityTargetByFormula(
-//                        sh.getAngleAdjusterPos(),
-//                        lastVelo
-//                );
-//                telemetry.addLine("VELOCITY TELEMETRY (FORMULA):");
-//                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
-//                telemetry.addData("realVelocity", sh.getVelocityRPS());
-//                telemetry.addData("isCalculateNewVelocity?", as.isCalculateNewVelocity);
-//            } else if (constVeloState && !veloState && !interpolState) {
-//                sh.setVelocityTarget(constVelo);
-//                sh.shootByVelocity();
-//                telemetry.addLine("VELOCITY IS CONST");
-////            } else if (interpolState && !constVeloState && !veloState) {
-////                as.continuousSetVelocityTargetByInterpol();
-////                telemetry.addLine("VELOCITY TELEMETRY (INTERPOL):");
-//                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
-//                telemetry.addData("targetVelocity", constVelo);
-//                telemetry.addData("realVelocity", sh.getVelocityRPS());
-//            } else {
-//                telemetry.addLine("VELOCITY is stopped (put Y, B or RS)");
-//                sh.setVelocityTarget(0);
-//            }
-//            lastVelo = sh.getVelocityRPS();
+            if (gamepad1.b && !bState && !constVeloState) {
+                constVeloState = true;
+            } else if (gamepad1.b && !bState && constVeloState) {
+                constVeloState = false;
+            }
+            telemetry.addLine("");
+            if (constVeloState) {
+                sh.setVelocityTarget(constVelo);
+                sh.shootByVelocity();
+                telemetry.addLine("VELOCITY IS CONST");
+                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
+                telemetry.addData("targetVelocity", constVelo);
+                telemetry.addData("realVelocity", sh.getVelocityRPS());
+            } else {
+                telemetry.addLine("VELOCITY is stopped (put B)");
+                sh.setVelocityTarget(0);
+            }
+            lastVelo = sh.getVelocityRPS();
 
 
             //---------------------------------------------- ANGLE
@@ -175,14 +158,9 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addData("BY FORMULAS", as.angleByFormulas);
                 telemetry.addData("isCalculateNewAngle?", as.isCalculateNewAngle);
             } else if (angleLocState && !angleContState) {
-                as.setAngleByLocalisation(
-                        as.l,
-                        sh.getAngleAdjusterPos()
-                );
+                as.continuousSetAngleByInterpol();
                 telemetry.addLine("ANGLE TELEMETRY (INTERPOL):");
-                telemetry.addData("targetAngle", as.angleOfAdjuster);
-                telemetry.addData("Is long throw?", as.isLong);
-                telemetry.addData("Is short throw?", as.isShort);
+                telemetry.addData("targetAngle", as.targetAngle);
             } else {
                 telemetry.addLine("default long ANGLE (put Y or A)");
                 sh.setLongThrowMode();
