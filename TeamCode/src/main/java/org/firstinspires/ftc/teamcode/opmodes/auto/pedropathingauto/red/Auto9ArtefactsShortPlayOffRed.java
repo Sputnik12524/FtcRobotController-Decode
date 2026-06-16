@@ -29,6 +29,7 @@ public class Auto9ArtefactsShortPlayOffRed extends LinearOpMode {
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
     private Timer actionTimer;
+    ElapsedTime loggerTimer;
     ElapsedTime timer;
     public Pose currentPose; // Current pose of the robot
 
@@ -50,6 +51,7 @@ public class Auto9ArtefactsShortPlayOffRed extends LinearOpMode {
 
         actionTimer = new Timer();
         actionTimer.resetTimer();
+        loggerTimer = new ElapsedTime();
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
@@ -92,11 +94,16 @@ public class Auto9ArtefactsShortPlayOffRed extends LinearOpMode {
             telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
             telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
             t.update();
+
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+                loggerTimer.reset();
+            }
         }
         tt.turretRegulator.interrupt();
         ll.startOrStopLL(true);
         tt.turnByTarget(0);
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
     }
 

@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
+
 @Autonomous(name = "With travel Blue 6", group = "Autonomous")
 @Disabled
 public class ArtBlueTravel6 extends LinearOpMode {
@@ -31,6 +32,7 @@ public class ArtBlueTravel6 extends LinearOpMode {
     Intake in;
     Shooter sh;
     Logger lg;
+
 
     @Override
     public void runOpMode() {
@@ -72,8 +74,9 @@ public class ArtBlueTravel6 extends LinearOpMode {
             t.addData("Heading", follower.getPose().getHeading());
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
+
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
         lg.fileClose();
     }
 
@@ -184,8 +187,6 @@ public class ArtBlueTravel6 extends LinearOpMode {
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
                 in.rotateStop();
                 follower.followPath(paths.PathLeaving);
-                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                lg.fileClose();
                 setPathState(-100);
 
                 break;

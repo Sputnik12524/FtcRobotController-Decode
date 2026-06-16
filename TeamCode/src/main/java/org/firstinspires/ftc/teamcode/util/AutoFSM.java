@@ -61,7 +61,7 @@ public class AutoFSM {
     public void readLogger() {
         try {
             logger.getAll("pospos");
-            follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
+            follower.setStartingPose(new Pose(logger.x, logger.y, logger.heading));
             if (logger.al == Alliance.BLUE) {
                 alliance = Alliance.BLUE;
                 as.setAlliance(Alliance.BLUE);
@@ -69,7 +69,9 @@ public class AutoFSM {
                 as.setAlliance(Alliance.RED);
                 alliance = Alliance.RED;
             }
+            tt.ZeroRealPose = logger.turretPose;
         } catch (IOException | NullPointerException e) {
+            tt.isResetTurretPose = true;
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));
             as.setAlliance(Alliance.BLUE); //аккуратно
