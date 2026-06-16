@@ -43,8 +43,8 @@ public class Turret {
     public double target = 0;
     public double ll_weight = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = 225;
-    public static double POS_LEFTMOST = -130;
+    public static double POS_RIGHTMOST = 10;
+    public static double POS_LEFTMOST = -350;
 
     private boolean stateMagneting = false;
     public boolean isResetTurretPose = false;

@@ -35,7 +35,6 @@ public class MT2BotposeTest extends LinearOpMode {
         telemetry.setMsTransmissionInterval(11);
         limelight3A.pipelineSwitch(0);
         limelight3A.start();
-
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         MultipleTelemetry t = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
@@ -72,6 +71,7 @@ public class MT2BotposeTest extends LinearOpMode {
                     t.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
                 }
                 limelight3A.updateRobotOrientation(pinpoint.getYawScalar());
+
             } else {
                 t.addLine("No data available");
             }

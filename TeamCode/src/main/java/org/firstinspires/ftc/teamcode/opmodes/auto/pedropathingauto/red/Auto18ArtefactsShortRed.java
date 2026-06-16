@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
-@Autonomous(name = "RED 15 Short", group = "Autonomous")
+@Autonomous(name = "RED 18 Short", group = "Autonomous")
 public class Auto18ArtefactsShortRed extends LinearOpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)

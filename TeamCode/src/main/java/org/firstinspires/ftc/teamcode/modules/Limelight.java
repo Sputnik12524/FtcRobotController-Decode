@@ -10,6 +10,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -27,18 +28,19 @@ public class Limelight {
     public double X_MIDDLE = X_RESOLUTION / 2;
     public double Y_RESOLUTION = 960;
     public double Y_MIDDLE = Y_RESOLUTION / 2;
-    double turret_offset_x = 1;
-    double turret_offset_y = 0;
-    double camera_offset_x = 1;
-    double camera_offset_y = 1;
+    double turret_offset_x = -3.073/1000;
+    double turret_offset_y = 5.242/1000;
+    double camera_offset_x = 155.057/1000;
+    double camera_offset_y = 0;
     public LimelightThread lt = new LimelightThread();
+    ElapsedTime timer = new ElapsedTime();
 
 
     public Limelight(LinearOpMode opMode) {
         this.opMode = opMode;
         limelight3A = opMode.hardwareMap.get(Limelight3A.class, "limelight");
         limelight3A.pipelineSwitch(0);
-
+        timer.reset();
     }
 
     public Limelight(LinearOpMode opMode, Turret tt, Follower fl) {
@@ -47,7 +49,7 @@ public class Limelight {
         this.tt = tt;
         this.fl = fl;
         limelight3A.pipelineSwitch(0);
-
+        timer.reset();
     }
 
     //--------------------------------------------------------------START OR STOP CAMERA
@@ -139,6 +141,12 @@ public class Limelight {
         if (Math.abs(localizationErrors[0]) > 2 || Math.abs(localizationErrors[1]) > 2
                 || Math.abs(localizationErrors[2]) > 5) {
             fl.setPose(tagPose);
+        }
+    }
+    public void relocalizeInNSeconds(double n){
+        if(timer.milliseconds() >= n){
+            relocalizeWhenError();
+            timer.reset();
         }
     }
 

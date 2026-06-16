@@ -123,12 +123,12 @@ public class AutoSniper {
                 tt.setAimMethod(AimingMethod.LOCALIZATION);
                 switch (alliance) {
                     case RED:
-                        angleOfTurret = Math.toDegrees(Math.atan((goalY - (y + sY)) / (goalX - (x + sX))));
-                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret); // - 180;
+                        angleOfTurret = -90 + Math.toDegrees(Math.atan((goalY - (y + sY)) / (goalX - (x + sX))));
+                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret);
                         break;
                     case BLUE:
-                        angleOfTurret = 180 - Math.toDegrees(Math.atan((goalY - (y + sY)) / ((x + sX) - goalX)));
-                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret); // - 180;
+                        angleOfTurret = 270 - Math.toDegrees(Math.atan((goalY - (y + sY)) / ((x + sX) - goalX)));
+                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret);
                         break;
                     case NONE:
                         angleOfTurret = 0;
