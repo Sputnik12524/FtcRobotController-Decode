@@ -9,12 +9,16 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
+import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.AutoSniper;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 @Autonomous(name = "BLUE 12 Long ", group = "Autonomous")
@@ -25,10 +29,14 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
+    ElapsedTime loggerTimer;
 
     Intake in;
     Shooter sh;
     Logger lg;
+    Turret tt;
+    AutoSniper as;
+    Limelight ll;
 
     @Override
     public void runOpMode() {
@@ -38,10 +46,17 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
 
         actionTimer = new Timer();
         actionTimer.resetTimer();
+        loggerTimer = new ElapsedTime();
+
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(new Pose(60, 8, Math.toRadians(90)));
 
         in = new Intake(this);
+        ll = new Limelight(this);
         sh = new Shooter(this);
         lg = new Logger("pospos");
+        tt = new Turret(this);
+        as = new AutoSniper(tt, sh, ll, follower);
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
@@ -53,6 +68,8 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
         sh.closeTunnel();
         sh.setLongThrowMode();
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        as.setAlliance(Alliance.BLUE);
+        tt.turretRegulator.start();
 
         waitForStart();
         while (opModeIsActive()) {
@@ -61,8 +78,6 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
 
 
-            
-
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
@@ -70,9 +85,14 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
             t.addData("Heading", follower.getPose().getHeading());
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+                loggerTimer.reset();
+            }
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
+        tt.turretRegulator.interrupt();
     }
 
 
@@ -86,7 +106,6 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
         public final PathChain PathSecondPresentArtefacts; //48.60
         public final PathChain PathSecondIntakingArtefacts;  //17.60
         public final PathChain PathThirdScoring; // 47.115
-
         public final PathChain PathThirdPresentArtefacts;
         public final PathChain PathThirdIntakingArtefacts;
         public final PathChain PathFourScoring;
@@ -316,3 +335,4 @@ public class Auto12ArtefactsLongBlue extends LinearOpMode {
         actionTimer.resetTimer();
     }
 }
+

@@ -37,6 +37,7 @@ public class Auto9ArtefactsShortPlayOffBlue extends LinearOpMode {
     AutoSniper as;
     Turret tt;
     Limelight ll;
+    ElapsedTime loggerTimer;
 
     public static double TURRET_WAIT = 3500;
 
@@ -62,6 +63,7 @@ public class Auto9ArtefactsShortPlayOffBlue extends LinearOpMode {
         sh = new Shooter(this, follower);
         as = new AutoSniper(tt, sh, ll);
         timer = new ElapsedTime();
+        loggerTimer = new ElapsedTime();
 
         paths = new Paths(follower); // Build paths
 
@@ -89,8 +91,12 @@ public class Auto9ArtefactsShortPlayOffBlue extends LinearOpMode {
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.addData("Aim method", tt.getAimMethod());
             t.update();
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+                loggerTimer.reset();
+            }
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
         tt.turretRegulator.interrupt();
         ll.startOrStopLL(true);

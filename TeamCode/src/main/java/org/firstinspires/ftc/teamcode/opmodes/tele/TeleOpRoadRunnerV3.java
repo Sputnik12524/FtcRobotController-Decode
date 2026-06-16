@@ -119,13 +119,15 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
         try {
             logger.getAll("pospos");
-            follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
+            follower.setStartingPose(new Pose(logger.x, logger.y, logger.heading));
             if (logger.al == Alliance.BLUE) {
                 as.setAlliance(Alliance.BLUE);
             } else {
                 as.setAlliance(Alliance.RED);
             }
+            tt.ZeroRealPose = logger.turretPose;
         } catch (IOException | NullPointerException e) {
+            tt.isResetTurretPose = true;
             isInterpolActive = false;
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));

@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
@@ -31,6 +29,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     ElapsedTime timer;
+    ElapsedTime loggerTimer;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
@@ -64,6 +63,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
         sh = new Shooter(this, follower);
         as = new AutoSniper(tt, sh, ll);
         timer = new ElapsedTime();
+        loggerTimer = new ElapsedTime();
 
         paths = new Paths(follower); // Build paths
 
@@ -91,8 +91,12 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.addData("Aim method", tt.getAimMethod());
             t.update();
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+                loggerTimer.reset();
+            }
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
         tt.turretRegulator.interrupt();
         ll.startOrStopLL(true);

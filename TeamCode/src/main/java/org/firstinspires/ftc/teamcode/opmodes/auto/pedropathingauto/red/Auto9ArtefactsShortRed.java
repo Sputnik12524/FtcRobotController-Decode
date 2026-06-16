@@ -30,6 +30,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     ElapsedTime timer;
+    ElapsedTime loggerTimer;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
@@ -49,6 +50,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         timer = new ElapsedTime();
 
         actionTimer = new Timer();
+        loggerTimer = new ElapsedTime();
         actionTimer.resetTimer();
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
@@ -92,12 +94,16 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
             telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
             t.update();
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+                loggerTimer.reset();
+            }
         }
         tt.turnByTarget(0);
         tt.turretRegulator.interrupt();
         ll.startOrStopLL(true);
 
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
     }
 

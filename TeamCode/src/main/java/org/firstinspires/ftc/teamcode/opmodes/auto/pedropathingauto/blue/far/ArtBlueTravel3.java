@@ -77,7 +77,7 @@ public class ArtBlueTravel3 extends LinearOpMode {
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
         lg.fileClose();
     }
 
@@ -134,8 +134,7 @@ public class ArtBlueTravel3 extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy() && !sh.isTunnelOpen ) {
-                    lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                    lg.fileClose();
+
                     setPathState(-100);
                 }
                 break;

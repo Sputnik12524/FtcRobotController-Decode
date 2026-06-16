@@ -21,6 +21,7 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.geometry.Pose;
 
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "BLUE 6 Short", group = "Autonomous")
 @Configurable // Panels
@@ -31,6 +32,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
     private Timer pathTimer;
     Logger lg;
     private Timer actionTimer;
+
     Turret tt;
     public Pose currentPose; // Current pose of the robot
 
@@ -38,6 +40,8 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
     Shooter sh;
     Limelight ll;
     AutoSniper as;
+    ElapsedTime loggerTimer;
+
 
     @Override
     public void runOpMode() {
@@ -47,6 +51,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
         opmodeTimer.resetTimer();
         actionTimer = new Timer();
         actionTimer.resetTimer();
+        loggerTimer = new ElapsedTime();
 
         // Panels Telemetry instance
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -86,7 +91,13 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
             panelsTelemetry.debug("Y", follower.getPose().getY());
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+                loggerTimer.reset();
+            }
         }
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+        lg.fileClose();
         tt.turretRegulator.interrupt();
     }
 
@@ -97,6 +108,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
         public final PathChain PathIntakingArtifacts;
         public final PathChain PathSecondScoring;
         public final PathChain PathLeaving;
+
 
         public Paths(Follower follower) {
             PathFirstScoring = follower.pathBuilder().addPath(
@@ -200,6 +212,7 @@ public class Auto6ArtifactsShortBlue extends LinearOpMode {
                 break;
 
         }
+
     }
 
 

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import static java.lang.Math.abs;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -45,10 +47,13 @@ public class Turret {
     public static double POS_LEFTMOST = -130;
 
     private boolean stateMagneting = false;
+    public boolean isResetTurretPose = false;
 
     public boolean isInLimits = false;
     public double voltage;
     public double errorPlus;
+    public double ZeroRealPose;
+    double currentPoseOfTurret;
 
     public Turret(LinearOpMode opMode, Limelight ll) {
         this.opMode = opMode;
@@ -82,7 +87,11 @@ public class Turret {
             //double power = 0;
             //double powerP = 0;
             while (!isInterrupted()) {
+                currentPoseOfTurret = getCurrentPosOfTurret();
                 switch (aimMethod) {
+                    case TO_ZERO:
+                        error = ZeroRealPose - currentPoseOfTurret;
+                        turnToZeroPosition(error*kPL);
                     case CAMERA:
                         //sumError = 0; //
                         error = -limelight3A.getTagInfo()[1];
@@ -99,9 +108,9 @@ public class Turret {
                         break;
 
                     case LOCALIZATION:
-                        error = target - getCurrentPosOfTurret();
+                        error = target - currentPoseOfTurret;
                         dError = error - pastError;
-                        sumError = sumError + error * getCurrentPosOfTurret();
+                        sumError = sumError + error * currentPoseOfTurret;
 
                         double power = error * kPL + sumError * kIL + dError * kDL / timer.milliseconds(); //JUST POWER
 
@@ -130,7 +139,7 @@ public class Turret {
     }
 
 
-    public double   getCurrentPosOfTurret() {
+    public double getCurrentPosOfTurret() {
         return turret.getCurrentPosition() / TPR * rSmallGear / rBigGear * 360;
     }
 
@@ -156,6 +165,29 @@ public class Turret {
             turret.setPower(power);
         }
         stateMagneting = isMagneting();
+    }
+
+
+
+    public void turnToZeroPosition(double power){
+
+        double pose = turret.getCurrentPosition();
+        if (isMagneting() && !stateMagneting) {
+            turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            isResetTurretPose = true;
+            kPL = 0.02;
+        } else if (abs(ZeroRealPose - pose) < 15) {
+            kPL = 0.0075;
+            isInLimits = true;
+            turret.setPower(power);
+        } else {
+            isInLimits = true;
+            kPL = 0.02;
+            turret.setPower(power);
+        }
+        stateMagneting = isMagneting();
+
     }
 
 
@@ -214,13 +246,14 @@ public class Turret {
         return value;
     }
 
-    public double[] getLocalizationCoefficients(){
-        return new double[] {
+    public double[] getLocalizationCoefficients() {
+        return new double[]{
                 kPL, kIL, kDL
         };
     }
-    public double[] getCameraCoefficients(){
-        return new double[] {
+
+    public double[] getCameraCoefficients() {
+        return new double[]{
                 kPC, kDC
         };
     }
