@@ -61,6 +61,7 @@ public class Limelight {
 
     //--------------------------------------------------------------GETTING INFO FROM APRIL TAG
     public double[] getTagInfo() {
+        update();
         double[] tagInfo = new double[4];
         LLResult result = getResult();
         double id = 0;

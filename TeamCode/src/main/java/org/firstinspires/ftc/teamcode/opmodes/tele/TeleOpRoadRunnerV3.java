@@ -150,13 +150,20 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
         waitForStart();
-        interpolAndAimingThread.start();
+        //interpolAndAimingThread.start();
         dtFormulasThread.start();
 
         while (opModeIsActive()) {
             ll.update();
             long loopStart = System.nanoTime();
             tt.tuneTurretPID(turret_kPL,turret_kIL,turret_kDL,turret_kPC,turret_kDC);
+
+            as.continuousCalculateGeneralValues(
+                    follower.getPose().getX(),
+                    follower.getPose().getY(),
+                    follower.getHeading(),
+                    lastVelo
+            );
 
 //            //-------------------------------- DRIVETRAIN
 
@@ -188,13 +195,18 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
             //---------------------------------------- SHOOTER
 
+            sh.setVelocityTarget(30);
             sh.shootByVelocity();
-            lastVelo = sh.getVelocityRPS();
+            //lastVelo = sh.getVelocityRPS();23
 
             sh.coverSwitch();
 
             //-------------------------------- TURRET
-
+            as.continuousTurnTurretToGate(
+                    follower.getPose().getX(),
+                    follower.getPose().getY(),
+                    follower.getHeading()
+            );
 
             //--------------------------------- RESET AIM
             if (gamepad1.dpad_left) {

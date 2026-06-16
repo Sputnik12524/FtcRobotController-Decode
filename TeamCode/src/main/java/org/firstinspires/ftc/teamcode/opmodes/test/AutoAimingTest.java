@@ -70,6 +70,7 @@ public class AutoAimingTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            ll.update();
             follower.update();
 
             //---------------------------------------------- VALUES
