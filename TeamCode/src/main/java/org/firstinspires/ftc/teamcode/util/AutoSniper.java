@@ -115,20 +115,21 @@ public class AutoSniper {
         if (AIMING_ACTIVE) {
             if (x <= 0) x = 1;
             if (x >= 144) x = 143;
-            if (!tt.isResetTurretPose) {
-                tt.setAimMethod(AimingMethod.TO_ZERO);
-            } else if ((ll.getGoalTag()[0] == 20 || ll.getGoalTag()[0] == 24)) {
+//            if (!tt.isResetTurretPose) {
+//                tt.setAimMethod(AimingMethod.TO_ZERO);
+//            } else
+            if ((ll.getGoalTag()[0] == 20 || ll.getGoalTag()[0] == 24)) {
                 tt.setAimMethod(AimingMethod.CAMERA);
             } else {
                 tt.setAimMethod(AimingMethod.LOCALIZATION);
                 switch (alliance) {
                     case RED:
-                        angleOfTurret = -90 + Math.toDegrees(Math.atan((goalY - (y + sY)) / (goalX - (x + sX))));
-                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret);
+                        angleOfTurret = Math.toDegrees(Math.atan((goalY - (y + sY)) / (goalX - (x + sX))));
+                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 90;
                         break;
                     case BLUE:
-                        angleOfTurret = 270 - Math.toDegrees(Math.atan((goalY - (y + sY)) / ((x + sX) - goalX)));
-                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret);
+                        angleOfTurret = 180 - Math.toDegrees(Math.atan((goalY - (y + sY)) / ((x + sX) - goalX)));
+                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 90;
                         break;
                     case NONE:
                         angleOfTurret = 0;

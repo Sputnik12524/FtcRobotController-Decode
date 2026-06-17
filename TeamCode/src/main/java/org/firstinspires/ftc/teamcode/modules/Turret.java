@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -43,8 +44,8 @@ public class Turret {
     public double target = 0;
     public double ll_weight = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = 10;
-    public static double POS_LEFTMOST = -350;
+    public static double POS_RIGHTMOST = -1;
+    public static double POS_LEFTMOST = 350;
 
     private boolean stateMagneting = false;
     public boolean isResetTurretPose = false;
@@ -149,13 +150,13 @@ public class Turret {
             turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             kPL = 0.02;
-        } else if (pose > POS_RIGHTMOST && power > 0) {
+        } else if (pose < POS_RIGHTMOST && power < 0) {
             isInLimits = false;
             turnStopByPower();
-        } else if (pose < POS_LEFTMOST && power < 0) {
+        } else if (pose > POS_LEFTMOST && power > 0) {
             isInLimits = false;
             turnStopByPower();
-        } else if (pose > -15 && pose < 15) { //!!!!!!! ПОМЕНЯНО ИЛИ НА И
+        } else if (pose > -15 && pose < 15) { //!!!!!!! ПОМЕНЯНО ИЛИ НА И. ЗАПИШИТЕ В КОНСТАНТЫ ЫЫЫЫЫЫ
             kPL = 0.0075;
             isInLimits = true;
             turret.setPower(power);
@@ -201,10 +202,10 @@ public class Turret {
 
     public double angleNormalising(double targetNew) {
         double normTarget = targetNew;
-        if (targetNew > POS_RIGHTMOST) {
-            normTarget = targetNew - 360;
-        } else if (targetNew < POS_LEFTMOST) {
+        if (targetNew < POS_RIGHTMOST) {
             normTarget = targetNew + 360;
+        } else if (targetNew > POS_LEFTMOST) {
+            normTarget = targetNew - 360;
         }
         return normTarget;
     }

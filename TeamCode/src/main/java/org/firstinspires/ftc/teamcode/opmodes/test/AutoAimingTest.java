@@ -61,7 +61,7 @@ public class AutoAimingTest extends LinearOpMode {
 
         tt.turretRegulator.start();
 
-        as.setAlliance(Alliance.RED);
+        as.setAlliance(Alliance.BLUE);
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
         sh.setVelocityTarget(0);
@@ -108,6 +108,7 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addData("target FROM AutoSniper", as.target);
                 telemetry.addData("angleOfTurret (отн. поля)", as.angleOfTurret);
                 telemetry.addData("Aiming method", tt.getAimMethod());
+                telemetry.addLine("Ахахаха лохи -45");
             } else {
                 telemetry.addLine("TURRET is stopped (put X)");
                 tt.turnByTarget(0);
