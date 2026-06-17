@@ -55,13 +55,13 @@ public class Shooter {
     public static double POWER = 1;
 
     ///  Cover
-    public static double POS_COVER_OPEN = 0.5;
-    public static double POS_COVER_CLOSE = 0.8;
+    public static double POS_COVER_OPEN = 0.525;
+    public static double POS_COVER_CLOSE = 0.775;
     public boolean canShoot = false;
 
     /// Adjuster
-    public static double POS_SHORT_THROW = 0.05;
-    public static double POS_LONG_THROW = 0.005;
+    public static double POS_SHORT_THROW = 1;
+    public static double POS_LONG_THROW = 0.86;
     public static double TIME_BETWEEN_SHOOT = 130;
     public static double TIME_AFTER_SHOOT = 1500;
     public static double DELTA_ADJUSTER = 0.01;

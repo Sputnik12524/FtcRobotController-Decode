@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
@@ -24,10 +26,10 @@ public class Intake {
     //---------------------------------------------- ROTATE
 
     public void rotateIn() {
-        catcher.setPower(-POWER_CATCHER);
+        catcher.setPower(POWER_CATCHER);
     }
     public void rotateOut() {
-        catcher.setPower(POWER_CATCHER);
+        catcher.setPower(-POWER_CATCHER);
     }
     public void rotateStop() {
         catcher.setPower(0);

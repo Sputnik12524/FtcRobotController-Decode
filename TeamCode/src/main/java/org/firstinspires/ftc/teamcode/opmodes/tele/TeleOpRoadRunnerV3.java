@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.AimingMethod;
@@ -37,7 +36,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     Shooter sh;
     Intake in;
     Turret tt;
-    Transfer tr;
     Follower follower;
     AutoSniper as;
     Logger logger;
@@ -94,7 +92,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         g1 = new GamepadManager(gamepad1);
         g2 = new GamepadManager(gamepad2);
         follower = Constants.createFollower(hardwareMap);
-        tr = new Transfer(this);
         ll = new Limelight(this);
         sh = new Shooter(this, follower);
         in = new Intake(this);
@@ -301,12 +298,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         this.state = state;
     }
 
-    void artefactsControl() {
-        if (tr.howMany() == 3 && timer1.milliseconds() > 300) {
-            in.rotateStop();
-            timer1.reset();
-        }
-    }
 
 
     void inUpdate() {
@@ -346,23 +337,23 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         @Override
         public void run() {
             while (!isInterrupted()) {
-                if (!attentionControl) {
-                    as.continuousSetVelocityTargetByInterpol(x, y);
-                    as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
-                    as.continuousCalculateGeneralValues(x, y, head, lastVelo);
-                } else {
-                    if (gamepad1.x && !isShootingShort && !stateX1) {
-                        sh.setVelocityTarget(-Shooter.VELOCITY_FOR_SHORT_THROW);
-                        sh.setShortThrowMode();
-                        sh.shootByVelocity();
-                        isShootingMedium = false;
-                        isShootingShort = true;
-                    } else if (gamepad1.x && !stateX1 && isShootingShort) {
-                        sh.closeTunnel();
-                        sh.shootStop();
-                        isShootingMedium = false;
-                    }
-                }
+//                if (!attentionControl) {
+//                    as.continuousSetVelocityTargetByInterpol(x, y);
+//                    as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
+//                    as.continuousCalculateGeneralValues(x, y, head, lastVelo);
+//                } else {
+//                    if (gamepad1.x && !isShootingShort && !stateX1) {
+//                        sh.setVelocityTarget(-Shooter.VELOCITY_FOR_SHORT_THROW);
+//                        sh.setShortThrowMode();
+//                        sh.shootByVelocity();
+//                        isShootingMedium = false;
+//                        isShootingShort = true;
+//                    } else if (gamepad1.x && !stateX1 && isShootingShort) {
+//                        sh.closeTunnel();
+//                        sh.shootStop();
+//                        isShootingMedium = false;
+//                    }
+//                }
 
                 if (!attentionControl) {
                     as.continuousTurnTurretToGate(x, y, head);

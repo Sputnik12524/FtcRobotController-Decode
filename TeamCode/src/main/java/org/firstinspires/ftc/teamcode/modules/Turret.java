@@ -100,7 +100,7 @@ public class Turret {
                         else {
                             dError = error - pastError;
 
-                            double powerP = error * kPC + kDC * dError / timer.milliseconds(); //ПРОСТО ПАВЕРП ЕСЛИ ПЛАВНОЕ
+                             double powerP = error * kPC + kDC * dError / timer.milliseconds(); //ПРОСТО ПАВЕРП ЕСЛИ ПЛАВНОЕ
 
                             turnInLimits(powerP); // ЗАКОММЕНТИТЬ ЕСЛИ ПЛАВНОЕ ПЕРЕКЛЮЧЕНИЕ
                         }
@@ -134,7 +134,7 @@ public class Turret {
 //                    ll_weight = clampValue(ll_weight - delta, 0, 1);
 //                }
 //                double output = (1 - ll_weight) * power + ll_weight*powerP; //
-//                turnInLimits(output); //
+  //              turnInLimits(output); //
             }
         }
     }
