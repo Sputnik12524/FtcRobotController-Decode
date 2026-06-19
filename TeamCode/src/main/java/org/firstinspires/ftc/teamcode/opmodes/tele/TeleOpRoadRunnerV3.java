@@ -149,7 +149,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         Telemetry dashtele = dashboard.getTelemetry();
         sh.closeTunnel();
         tt.turnByTarget(0);
-       // tt.turretRegulator.start();
+        tt.turretRegulator.start();
         ll.lt.start();
         tt.setAimMethod(AimingMethod.LOCALIZATION);
 
@@ -159,6 +159,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         dtFormulasThread.start();
 
         while (opModeIsActive()) {
+
             ll.update();
             long loopStart = System.nanoTime();
             tt.tuneTurretPID(turret_kPL, turret_kIL, turret_kDL, turret_kPC, turret_kDC);
@@ -188,7 +189,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
             //---------------------------------------- SHOOTER
 
-//            sh.setVelocityTarget(VEL);
+            sh.setVelocityTarget(VEL);
             sh.shootByVelocity();
             //lastVelo = sh.getVelocityRPS();23
 
@@ -203,7 +204,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             } else if (gamepad1.left_stick_button){
                 target -= 0.01;
             }
-           // sh.setAngleAdjuster(target);
+            sh.setAngleAdjuster(target);
 
             //-------------------------------- TURRET
 
@@ -214,6 +215,9 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 isPoseReset = true;
                 follower.setPose(new Pose(16, 80, Math.toRadians(90)));
                 as.setAlliance(Alliance.BLUE);
+            }
+            if(gamepad1.start){
+
             }
 
             if (gamepad1.dpad_right) {
@@ -272,7 +276,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             dashtele.addData("l", as.l);
             dashtele.addData("Adjuster", sh.angleAdjuster.getPosition());
             dashtele.addData("Target", as.targetVelo);
-            dashtele.addData("Upper", sh.getVelocityRPS());
+            dashtele.addData("Upper", sh.getVelocityUpper());
             dashtele.addData("Lower", sh.getVelocityRPSLower());
             dashtele.update();
             telemetry.update();
@@ -344,12 +348,12 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                         lastVelo
                 );
                 if (!attentionControl) {
-                    as.continuousCalculateGeneralValues(x, y, head, lastVelo);
-                    as.continuousSetVelocityTargetByInterpol(x, y);
-                    as.continuousSetAngleByInterpol();
+//                    as.continuousCalculateGeneralValues(x, y, head, lastVelo);
+//                    as.continuousSetVelocityTargetByInterpol(x, y);
+//                    as.continuousSetAngleByInterpol();
                    // as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
 
-//                } else {
+                } else {
 //                    if (gamepad1.x && !isShootingShort && !stateX1) {
 //                        sh.setVelocityTarget(-Shooter.VELOCITY_FOR_SHORT_THROW);
 //                        sh.setShortThrowMode();

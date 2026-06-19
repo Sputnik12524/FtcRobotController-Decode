@@ -38,8 +38,12 @@ public class Shooter {
     Follower follower;
     Pose currentPose;
     ElapsedTime isSpinUpTimer = new ElapsedTime();
+    public  static  double p = 17;
+    public  static  double i = 0;
+    public  static  double d = 0;
+    public  static  double f = 13;
 
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(11, 0, 10, 13.5);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(p, i, d, f);
     private final ElapsedTime timer = new ElapsedTime();
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
@@ -316,6 +320,9 @@ public class Shooter {
 
     public double getVelocityRPS() {
         return (shooterUpper.getVelocity() + shooterLower.getVelocity()) / (TPR * 2);
+    }
+    public double getVelocityUpper(){
+        return shooterUpper.getVelocity() / TPR;
     }
 
     public double getVelocityTPS() {

@@ -67,15 +67,15 @@ public class AutoSniper {
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
 
-//    double[] ValuesOfVelocity = {42.5, 47.5, 51.5, 51.5, 52.5, 57.5, 61, 62.5, 64.5}; // {45-47, 49-50, 56-57, 60, 61-62}
+    //    double[] ValuesOfVelocity = {42.5, 47.5, 51.5, 51.5, 52.5, 57.5, 61, 62.5, 64.5}; // {45-47, 49-50, 56-57, 60, 61-62}
 //    double[] ValuesOfDistanceForVelocity = {1.061, 1.2058, 1.463, 1.8002, 1.8165, 2.0397, 2.3578, 2.4738, 2.6415};
 //
 //    double[] ValuesOfAngle = {0, 1, 2, 3, 4, 5, 6, 7};
 //    double[] ValuesOfDistanceForAngle = {0, 1, 2, 3, 4, 5, 6, 7};
-double[] ValuesOfVelocity = {46.75, 59, 60.6, 64};
-    double[] ValuesOfDistance = {1.081, 2.624, 2.73, 3.1};
+    double[] ValuesOfVelocity = {46.75, 59, 60.6};
+    double[] ValuesOfDistance = {1.081, 2.624, 2.73};
 
-    double[] ValuesOfAngle = {1, 0.8, 0.8, 0.8};
+    double[] ValuesOfAngle = {1, 0.8, 0.8};
     public static double tag = 24;
     public boolean isShort, isLong = false;
 
@@ -197,8 +197,8 @@ double[] ValuesOfVelocity = {46.75, 59, 60.6, 64};
 
     public void continuousSetAngleByInterpol() {
         for (int i = 0; i < ValuesOfDistance.length - 1; i++) {
-            if (l > ValuesOfDistance[3]) {
-                l = ValuesOfDistance[3];
+            if (l > ValuesOfDistance[2]) {
+                l = ValuesOfDistance[2];
             } else if (l < ValuesOfDistance[0]) {
                 l = ValuesOfDistance[0];
             }
@@ -228,25 +228,23 @@ double[] ValuesOfVelocity = {46.75, 59, 60.6, 64};
     }
 
     public void continuousSetVelocityTargetByInterpol(double x, double y) {
-        if ((y >= Math.abs(x - 72) + 60)) {
-            for (int i = 0; i < ValuesOfDistance.length - 1; i++) {
-                if (l > ValuesOfDistance[3]) {
-                    l = ValuesOfDistance[3];
-                } else if (l < ValuesOfDistance[0]) {
-                    l = ValuesOfDistance[0];
-                }
-                if (ValuesOfDistance[i] <= l && l <= ValuesOfDistance[i + 1]) {
-                    v1 = ValuesOfVelocity[i];
-                    v2 = ValuesOfVelocity[i + 1];
-                    l1 = ValuesOfDistance[i];
-                    l2 = ValuesOfDistance[i + 1];
 
-                    targetVelo = v1 + (((l - l1) / (l2 - l1)) * (v2 - v1));
-                    sh.setVelocityTarget(targetVelo);
-                }
+        for (int i = 0; i < ValuesOfDistance.length - 1; i++) {
+            if (l > ValuesOfDistance[2]) {
+                l = ValuesOfDistance[2];
+            } else if (l < ValuesOfDistance[0]) {
+                l = ValuesOfDistance[0];
             }
-        } else {
-            sh.setVelocityTarget(mainVelo);
+            if (ValuesOfDistance[i] <= l && l <= ValuesOfDistance[i + 1]) {
+                v1 = ValuesOfVelocity[i];
+                v2 = ValuesOfVelocity[i + 1];
+                l1 = ValuesOfDistance[i];
+                l2 = ValuesOfDistance[i + 1];
+
+                targetVelo = v1 + (((l - l1) / (l2 - l1)) * (v2 - v1));
+                sh.setVelocityTarget(targetVelo);
+            }
+
         }
     }
 

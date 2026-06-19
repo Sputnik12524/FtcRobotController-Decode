@@ -47,6 +47,8 @@ public class Turret {
     public static double POS_RIGHTMOST = -1;
     public static double POS_LEFTMOST = 350;
 
+    public static double delta = 0.05;
+
     private boolean stateMagneting = false;
     public boolean isResetTurretPose = false;
 
@@ -85,8 +87,8 @@ public class Turret {
             turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             timer.reset();
-            //double power = 0;
-            //double powerP = 0;
+            double power = 0;
+            double powerP = 0;
             while (!isInterrupted()) {
                 currentPoseOfTurret = getCurrentPosOfTurret();
                 switch (aimMethod) {
@@ -96,11 +98,11 @@ public class Turret {
                     case CAMERA:
                         //sumError = 0; //
                         error = -limelight3A.getTagInfo()[1];
-                        if (error < 0.25 && error > -0.25) turnInLimits(0);
+                        if (error < 2 && error > -2) turnInLimits(0);
                         else {
                             dError = error - pastError;
 
-                             double powerP = error * kPC + kDC * dError / timer.milliseconds(); //ПРОСТО ПАВЕРП ЕСЛИ ПЛАВНОЕ
+                              powerP = error * kPC + kDC * dError / timer.milliseconds(); //ПРОСТО ПАВЕРП ЕСЛИ ПЛАВНОЕ
 
                             turnInLimits(powerP); // ЗАКОММЕНТИТЬ ЕСЛИ ПЛАВНОЕ ПЕРЕКЛЮЧЕНИЕ
                         }
@@ -113,7 +115,7 @@ public class Turret {
                         dError = error - pastError;
                         sumError = sumError + error * currentPoseOfTurret;
 
-                        double power = error * kPL + sumError * kIL + dError * kDL / timer.milliseconds(); //JUST POWER
+                        power = error * kPL + sumError * kIL + dError * kDL / timer.milliseconds(); //JUST POWER
 
                         turnInLimits(power); //COMMENT IF BLEND
 
@@ -127,14 +129,14 @@ public class Turret {
                         timer.reset();
 
                 }
-//                double delta = 0.0005;//
+
 //                if (aimMethod == AimingMethod.CAMERA) {
 //                    ll_weight = clampValue(ll_weight + delta, 0, 1);
 //                } else {
 //                    ll_weight = clampValue(ll_weight - delta, 0, 1);
 //                }
 //                double output = (1 - ll_weight) * power + ll_weight*powerP; //
-  //              turnInLimits(output); //
+//              turnInLimits(output); //
             }
         }
     }
