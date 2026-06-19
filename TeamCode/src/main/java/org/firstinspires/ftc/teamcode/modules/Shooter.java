@@ -60,6 +60,7 @@ public class Shooter {
     public boolean canShoot = false;
 
     /// Adjuster
+    ///
     public static double POS_SHORT_THROW = 1;
     public static double POS_LONG_THROW = 0.86;
     public static double TIME_BETWEEN_SHOOT = 130;

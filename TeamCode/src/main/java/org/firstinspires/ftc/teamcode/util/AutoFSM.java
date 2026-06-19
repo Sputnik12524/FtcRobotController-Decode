@@ -29,7 +29,6 @@ public class AutoFSM {
     Logger logger;
     Intake in;
     Turret tt;
-    Transfer tr;
     Follower follower;
     AutoSniper as;
     Limelight ll;
@@ -41,14 +40,15 @@ public class AutoFSM {
     public boolean complete = false;
     public boolean wroteLogger = true;
     public boolean ready = false;
+    boolean attentionControl = true;
+    boolean isInterpolActive = true;
 
 
-    public AutoFSM(Follower follower, Transfer tr, Shooter sh, Limelight ll, Intake in, Turret tt, Logger logger, AutoSniper as, Paths paths) {
+    public AutoFSM(Follower follower, Shooter sh, Limelight ll, Intake in, Turret tt, Logger logger, AutoSniper as, Paths paths) {
         this.sh = sh;
         this.logger = logger;
         this.in = in;
         this.tt = tt;
-        this.tr = tr;
         this.follower = follower;
         this.as = as;
         this.ll = ll;
@@ -63,18 +63,18 @@ public class AutoFSM {
             logger.getAll("pospos");
             follower.setStartingPose(new Pose(logger.x, logger.y, logger.heading));
             if (logger.al == Alliance.BLUE) {
-                alliance = Alliance.BLUE;
                 as.setAlliance(Alliance.BLUE);
             } else {
                 as.setAlliance(Alliance.RED);
-                alliance = Alliance.RED;
             }
             tt.ZeroRealPose = logger.turretPose;
         } catch (IOException | NullPointerException e) {
             tt.isResetTurretPose = true;
+            isInterpolActive = false;
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));
-            as.setAlliance(Alliance.BLUE); //аккуратно
+            attentionControl = true;
+            as.setAlliance(Alliance.BLUE);
         }
     }
 
@@ -201,19 +201,4 @@ public class AutoFSM {
         autoState = AutoStates.INIT;
         autoTimer.reset();
     }
-
-    public void artefactsControl(){
-        if (tr.howMany() > 3) {
-            in.rotateStop();
-        }
-    }
-
-    public void updateArtefacts() {
-        if (tr.howMany() > 3) {
-            in.rotateStop();
-            if (follower.getPose().getY() >= 48) setAuto(AUTO.GOAL);
-            else setAuto(AUTO.HUMAN);
-        }
-    }
-
 }

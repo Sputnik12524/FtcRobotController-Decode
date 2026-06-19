@@ -37,7 +37,6 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
     AutoSniper as;
     Shooter sh;
     Logger lg;
-    Transfer tr;
     Turret tt;
     public static double TURRET_WAIT = 3500;
 
@@ -57,8 +56,6 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(123, 122, Math.toRadians(-136)));
-
-        tr = new Transfer(this);
 
         in = new Intake(this);
         Limelight ll = new Limelight(this);
@@ -84,26 +81,26 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
             as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
+            double turretPos = tt.getCurrentPosOfTurret();
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
             t.addData("Shooter Velocity", sh.getVelocityRPS());
-            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
-            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
+            t.addData("Turret ", turretPos);
+
             t.update();
             if (loggerTimer.milliseconds() > 750) {
-                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), turretPos);
                 loggerTimer.reset();
             }
         }
-        tt.turnByTarget(0);
-        tt.turretRegulator.interrupt();
+       // tt.turnByTarget(0);
         ll.startOrStopLL(true);
 
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+        //lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+        tt.turretRegulator.interrupt();
         lg.fileClose();
     }
 
@@ -207,18 +204,20 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                sh.closeTunnel();
-                sh.shootByVelocity();
-                in.rotateIn();
+                //sh.closeTunnel();
+                // sh.shootByVelocity();
+                //  in.rotateIn();
                 follower.followPath(paths.PathScoring);
                 setPathState(1);
                 break;
 
             case 1:
-                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
-                    break;
-                sh.openTunnel();
-                setPathState(2);
+//                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+//                    break;
+//sh.openTunnel();
+           //     if(!follower.isBusy()) {
+                    setPathState(2);
+           //     }
                 break;
 
             case 2:
@@ -229,8 +228,8 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
 
             case 4:
                 if (!follower.isBusy()) {
-                    in.rotateIn();
-                    sh.closeTunnel();
+                    //in.rotateIn();
+                    //sh.closeTunnel();
                     follower.followPath(paths.PathIntakingArtifacts, true);
                     setPathState(5);
                 }
@@ -243,17 +242,17 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 }
                 break;
             case 6:
-                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
-                    break;
-                sh.openTunnel();
+  //              if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+    //                break;
+                //sh.openTunnel();
                 setPathState(7);
 
                 break;
 
             case 7:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
-                sh.closeTunnel();
-                in.rotateIn();
+               // sh.closeTunnel();
+              //  in.rotateIn();
                 follower.followPath(paths.PathSecondPresentArtefacts, true);
                 setPathState(8);
                 break;
@@ -274,21 +273,25 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 10:
-                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
-                    break;
-                sh.openTunnel();
+            //    if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+              //      break;
+               // sh.openTunnel();
                 setPathState(11);
                 break;
 
             case 11:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
-                tt.turnByTarget(0);
                 as.enableAutoTurretAiming(false);
-                in.rotateStop();
-                sh.shootStop();
+                tt.turnByTarget(0);
+                //in.rotateStop();
+                //sh.shootStop();
                 follower.followPath(paths.PathLeaving);
-                setPathState(-100);
+                setPathState(12);
                 break;
+
+            case 12:
+                if(follower.isBusy() || actionTimer.getElapsedTime() < 10000) break;
+                setPathState(-100);
 
         }
 

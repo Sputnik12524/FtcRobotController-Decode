@@ -46,6 +46,7 @@ public class Logger {
                 default:
                     writer.write("none");
             }
+            writer.flush();
         } catch (IOException exe) {
             exe.printStackTrace();
         }

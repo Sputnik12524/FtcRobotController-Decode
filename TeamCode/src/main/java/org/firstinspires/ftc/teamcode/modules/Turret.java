@@ -127,7 +127,7 @@ public class Turret {
                         timer.reset();
 
                 }
-//                double delta = 0.05;//
+//                double delta = 0.0005;//
 //                if (aimMethod == AimingMethod.CAMERA) {
 //                    ll_weight = clampValue(ll_weight + delta, 0, 1);
 //                } else {
