@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
 import org.firstinspires.ftc.teamcode.modules.Turret;
@@ -23,9 +24,12 @@ public class AutoAimingTest extends LinearOpMode {
     Turret tt;
     Shooter sh;
     Limelight ll;
+    Intake in;
 
     double lastVelo = 0;
     double constVelo = 100;
+    public static double VEL = 49;
+    public static double ANGLE = 0.86;
 
     boolean xState = false;
     boolean turretState = false;
@@ -55,14 +59,18 @@ public class AutoAimingTest extends LinearOpMode {
         tt = new Turret(this);
         sh = new Shooter(this);
         as = new AutoSniper(tt, sh, ll);
+        in = new Intake(this);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(72,72, 0));
         follower.update();
 
-        tt.turretRegulator.start();
-
         as.setAlliance(Alliance.BLUE);
+
+        tt.turnByTarget(0);
+        tt.turretRegulator.start();
+        ll.lt.start();
         tt.setAimMethod(AimingMethod.LOCALIZATION);
+
 
         sh.setVelocityTarget(0);
 
@@ -116,6 +124,15 @@ public class AutoAimingTest extends LinearOpMode {
             }
 
 
+            sh.coverSwitch();
+            if (gamepad1.leftBumperWasPressed()) {
+                sh.canShoot = true;
+            }
+            if(gamepad1.dpad_left) {
+                in.rotateIn();
+            }
+
+
             //---------------------------------------------- VELOCITY
 
             if (gamepad1.b && !bState && !constVeloState) {
@@ -125,12 +142,14 @@ public class AutoAimingTest extends LinearOpMode {
             }
             telemetry.addLine("");
             if (constVeloState) {
-                sh.setVelocityTarget(constVelo);
+                sh.setVelocityTarget(VEL);
+                sh.setAngleAdjuster(ANGLE);
                 sh.shootByVelocity();
                 telemetry.addLine("VELOCITY IS CONST");
-                telemetry.addData("targetVelocity", as.targetVeloForArtifact);
-                telemetry.addData("targetVelocity", constVelo);
+                telemetry.addData("targetVelocity", as.targetVelo);
                 telemetry.addData("realVelocity", sh.getVelocityRPS());
+                telemetry.addData("angle pos", sh.getAngleAdjusterPos());
+                telemetry.addData("l (b)", as.l);
             } else {
                 telemetry.addLine("VELOCITY is stopped (put B)");
                 sh.setVelocityTarget(0);
@@ -149,11 +168,10 @@ public class AutoAimingTest extends LinearOpMode {
 
             telemetry.addLine("");
             if (angleContState && !angleLocState) {
-                as.continuousSetAngleByFormula(
-                        sh.getAngleAdjusterPos()
-                );
+                as.continuousSetAngleByInterpol();
+                sh.setAngleAdjuster(as.targetAngle);
                 telemetry.addLine("ANGLE TELEMETRY (FORMULA):");
-                telemetry.addData("targetAngle", as.angleOfAdjuster);
+                telemetry.addData("targetAngle", as.targetAngle);
                 telemetry.addData("realAngle", as.convertServoPosToAngle(sh.getAngleAdjusterPos()));
                 telemetry.addData("ServoPos", sh.getAngleAdjusterPos());
                 telemetry.addData("NON NORMALISING ANGLE", as.angleOfAdjusterBeforeNormalising);
@@ -164,8 +182,8 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addLine("ANGLE TELEMETRY (INTERPOL):");
                 telemetry.addData("targetAngle", as.targetAngle);
             } else {
-                telemetry.addLine("default long ANGLE (put Y or A)");
-                sh.setLongThrowMode();
+               // telemetry.addLine("default long ANGLE (put Y or A)");
+                //sh.setLongThrowMode();
             }
 
 

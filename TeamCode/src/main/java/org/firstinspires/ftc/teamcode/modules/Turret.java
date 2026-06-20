@@ -14,6 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.util.AimingMethod;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Config
 public class Turret {
     final LinearOpMode opMode;
@@ -28,12 +31,12 @@ public class Turret {
     public final double rBigGear = 178;
 
     public static double kPC = 0.0189; //0.015
-    public static double kDC = 0;
+    public static double kDC = 0.00015;
 
     public static double kPL = 0.021; //0.02
 
     public static double kIL = 0;
-    public static double kDL = 0.02;
+    public static double kDL = 0.025;
     public static double kF = 0.1;
     private final double TPR = 537.7;
     //public double current;
@@ -44,8 +47,8 @@ public class Turret {
     public double target = 0;
     public double ll_weight = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = -1;
-    public static double POS_LEFTMOST = 350;
+    public static double POS_RIGHTMOST = -30;
+    public static double POS_LEFTMOST = 330;
 
     public static double delta = 0.05;
 
@@ -97,7 +100,9 @@ public class Turret {
                         turnToZeroPosition(error*kPL);
                     case CAMERA:
                         //sumError = 0; //
-                        error = -limelight3A.getTagInfo()[1];
+                        BigDecimal bd = new BigDecimal(Double.toString(-limelight3A.getTagInfo()[1]));
+                        bd = bd.setScale(3, RoundingMode.HALF_UP);
+                        error = bd.doubleValue();
                         if (error < 2 && error > -2) turnInLimits(0);
                         else {
                             dError = error - pastError;

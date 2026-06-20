@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
@@ -36,7 +37,7 @@ public class IntakeTest extends LinearOpMode {
 
         FtcDashboard dash = FtcDashboard.getInstance();
         Telemetry dashTele = dash.getTelemetry();
-
+        MultipleTelemetry t = new MultipleTelemetry(telemetry, dashTele);
         timer.reset();
        // logger.addHeader("Time,Velocity");
 
@@ -64,15 +65,23 @@ public class IntakeTest extends LinearOpMode {
             }
             stateA1 = gamepad1.a;
             stateB1 = gamepad1.b;
+            ampsUpdate();
 
-            telemetry.update();
+            t.addData("INtake volage", in.getAmps());
 
             dashTele.addLine("SHOOTER:");
             dashTele.addData("target of RPS:", RPS);
             dashTele.addData("ADJUSTER POS", POS_ADJUSTER);
-            dashTele.update();
+
+            t.update();
         }
        // logger.fileClose();
+    }
+    void ampsUpdate() {
+        if (timer.milliseconds() > 100) {
+            in.voltage += in.getAmps();
+            timer.reset();
+        }
     }
 }
 

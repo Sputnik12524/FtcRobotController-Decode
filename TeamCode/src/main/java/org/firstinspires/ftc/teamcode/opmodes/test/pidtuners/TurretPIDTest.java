@@ -41,6 +41,9 @@ public class TurretPIDTest extends LinearOpMode {
         fl.setStartingPose(new Pose(72,72,0));
         fl.update();
 
+        kP = Turret.kPL;
+        kI = Turret.kIL;
+
         ll.startOrStopLL(false);
         as.setAlliance(Alliance.RED);
         tt.turretRegulator.start();
@@ -53,7 +56,7 @@ public class TurretPIDTest extends LinearOpMode {
 
             fl.update();
 
-            //tt.tuneTurretPID(kP, kI, kD, kPC, kDC);
+            tt.tuneTurretPID(kP, kI, kD, kPC, kDC);
 
             //---------------------------------------------- TURRET
 

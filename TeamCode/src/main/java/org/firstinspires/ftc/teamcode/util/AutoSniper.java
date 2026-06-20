@@ -16,6 +16,7 @@ public class AutoSniper {
 
 
     AimingMethod state = AimingMethod.LOCALIZATION;
+    ShooterStates shState = ShooterStates.STOP;
 
     ElapsedTime isSpinUpTimer = new ElapsedTime();
     private final ElapsedTime timer = new ElapsedTime();
@@ -55,8 +56,8 @@ public class AutoSniper {
 
     public static double MAX_ANGLE = 60;
     public static double MIN_ANGLE = 45;
-    public static double POS_FOR_MAX_ANGLE = 0.125;
-    public static double POS_FOR_MIN_ANGLE = 0.005;
+    public static double POS_FOR_MAX_ANGLE = 1;
+    public static double POS_FOR_MIN_ANGLE = 0.815;
 
     public static double IS_SPIN_UP = 1;
 
@@ -74,6 +75,11 @@ public class AutoSniper {
 //    double[] ValuesOfDistanceForAngle = {0, 1, 2, 3, 4, 5, 6, 7};
     double[] ValuesOfVelocity = {46.75, 59, 60.6};
     double[] ValuesOfDistance = {1.081, 2.624, 2.73};
+
+    double[] ValuesOfAngleForClose = {0.86, 0.83, 0.82, 0.815};
+    double[] ValuesOfDistanceForClose = {1.1, 1.37, 1.6, 1.7269};
+    double[] ValuesOfAngleForFar = {1, 1, 1}; //заполнить
+    double[] ValuesOfDistanceForFar = {1, 2, 3}; //заполнить
 
     double[] ValuesOfAngle = {1, 0.8, 0.8};
     public static double tag = 24;
@@ -128,11 +134,11 @@ public class AutoSniper {
                 switch (alliance) {
                     case RED:
                         angleOfTurret = Math.toDegrees(Math.atan((goalY - (y + sY)) / (goalX - (x + sX))));
-                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 90;
+                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
                         break;
                     case BLUE:
                         angleOfTurret = 180 - Math.toDegrees(Math.atan((goalY - (y + sY)) / ((x + sX) - goalX)));
-                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 90;
+                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
                         break;
                     case NONE:
                         angleOfTurret = 0;
@@ -248,11 +254,55 @@ public class AutoSniper {
         }
     }
 
+    public void continuousSetTunedAngleByInterpol(double[] ValuesOfDistance_3, double[] ValuesOfAngle_3) {
+
+        for (int i = 0; i < ValuesOfDistance_3.length - 1; i++) {
+            if (l > ValuesOfDistance_3[3]) {
+                l = ValuesOfDistance_3[3];
+            } else if (l < ValuesOfDistance_3[0]) {
+                l = ValuesOfDistance_3[0];
+            }
+            if (ValuesOfDistance_3[i] <= l && l <= ValuesOfDistance_3[i + 1]) {
+                v1 = ValuesOfAngle_3[i];
+                v2 = ValuesOfAngle_3[i + 1];
+                l1 = ValuesOfDistance_3[i];
+                l2 = ValuesOfDistance_3[i + 1];
+
+                targetAngle = v1 + (((l - l1) / (l2 - l1)) * (v2 - v1));
+                sh.setAngleAdjuster(targetAngle);
+            }
+
+        }
+    }
+
     public boolean isSpinUp() {
         if (sh.getVelocityRPS() == 0) return false;
         return sh.getVelocityRPS() >= targetVelo - IS_SPIN_UP;
     }
-
+    public void setShootingMode(ShooterStates state){
+        shState = state;
+    }
+    public void shootingFSM(){
+        switch(shState){
+            case CLOSE:
+                continuousSetTunedAngleByInterpol(ValuesOfDistanceForClose, ValuesOfAngleForClose);
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+                break;
+            case FAR:
+                continuousSetTunedAngleByInterpol(ValuesOfDistanceForFar, ValuesOfAngleForFar);
+                sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+                break;
+            case STOP:
+                targetAngle = Shooter.POS_SHORT_THROW;
+                sh.setVelocityTarget(0);
+                break;
+        }
+    }
+//    public void switchShState(double y) {
+//        if(y > 72 && y < 106)  setState(ShooterStates.ONLY_VELOCITY);
+//        else if (y>=106)   setState(ShooterStates.ONLY_ADJUSTER);
+//        else if (y < 72) setState(ShooterStates.FAR_ZONE);
+//    }
 
     public void continuousCalculateGeneralValues(double x, double y, double angleOfDrivetrain, double angularVelocity) {
         sY = cMTI(sv * Math.sin(angleOfDrivetrain)); //inches

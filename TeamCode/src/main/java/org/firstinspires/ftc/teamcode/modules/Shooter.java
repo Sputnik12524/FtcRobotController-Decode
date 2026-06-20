@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.util.ShooterStates;
 
 @Config
 public class Shooter {
@@ -38,10 +39,10 @@ public class Shooter {
     Follower follower;
     Pose currentPose;
     ElapsedTime isSpinUpTimer = new ElapsedTime();
-    public  static  double p = 17;
+    public  static  double p = 20;
     public  static  double i = 0;
-    public  static  double d = 0;
-    public  static  double f = 13;
+    public  static  double d = 20;
+    public  static  double f = 15;
 
     public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(p, i, d, f);
     private final ElapsedTime timer = new ElapsedTime();
@@ -53,8 +54,8 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 77;  //47 //64
-    public static double VELOCITY_FOR_SHORT_THROW = 50;//52
+    public static double VELOCITY_FOR_LONG_THROW = 60;  //47 //64
+    public static double VELOCITY_FOR_SHORT_THROW = 48;//52
     public static double VELOCITY_FOR_MEDIUM_THROW = 60;  //47 //64
     public static double POWER = 1;
 
@@ -332,4 +333,5 @@ public class Shooter {
     public double getAngleAdjusterPos() {
         return angleAdjuster.getPosition();
     }
+
 }
