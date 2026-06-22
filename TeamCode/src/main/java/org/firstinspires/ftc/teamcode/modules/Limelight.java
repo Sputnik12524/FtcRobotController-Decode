@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.List;
 
@@ -28,9 +29,9 @@ public class Limelight {
     public double X_MIDDLE = X_RESOLUTION / 2;
     public double Y_RESOLUTION = 960;
     public double Y_MIDDLE = Y_RESOLUTION / 2;
-    double turret_offset_x = -3.073/1000;
-    double turret_offset_y = 5.242/1000;
-    double camera_offset_x = 155.057/1000;
+    double turret_offset_x = -3.073 / 1000;
+    double turret_offset_y = 5.242 / 1000;
+    double camera_offset_x = 155.057 / 1000;
     double camera_offset_y = 0;
     public LimelightThread lt = new LimelightThread();
     ElapsedTime timer = new ElapsedTime();
@@ -94,10 +95,10 @@ public class Limelight {
         }
     }
 
-    public class LimelightThread extends Thread{
+    public class LimelightThread extends Thread {
         @Override
         public void run() {
-            while (!isInterrupted()){
+            while (!isInterrupted()) {
                 getGoalTag();
             }
         }
@@ -106,23 +107,27 @@ public class Limelight {
     //------------------------------------------------КРИНЖ ПОЗА ПО APRIL TAG
     public Pose getPoseByAprilTag() {
         Pose pp;
-        LLResult result = getResult();
-        if (!result.isValid()) pp = null;
-        else {
-            double x = result.getBotpose().getPosition().x;
-            double y = result.getBotpose().getPosition().y;
-            double head = result.getBotpose().getOrientation().getYaw(AngleUnit.RADIANS);
-            double[] pose = calculatePose(x, y, head);
-            pp = new Pose(pose[0], pose[1], pose[2], FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE);
+        LLResult result = limelight3A.getLatestResult();
+        Pose3D botpose = result.getBotpose();
+        try {
+            double x = botpose.getPosition().x;
+            double y = botpose.getPosition().y;
+            double head = botpose.getOrientation().getYaw(AngleUnit.RADIANS);
+            x = 144 - x * 39.37 - 72;
+            y = 144 + y * 39.37 - 72;
+//            double[] pose = calculatePose(x, y, head);
+            pp = new Pose(y, x, head, FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE);//помеял все окей
+            return pp;
+        } catch (Exception e) {
+            return new Pose(11, 11, 11);
         }
-        return pp;
     }
 
-    public double[] getRawPose(){
+    public double[] getRawPose() {
         LLResult res = getResult();
-        if(!res.isValid()) return new double[] {0,0,0};
-        else{
-            return new double[] {
+        if (!res.isValid()) return new double[]{0, 0, 0};
+        else {
+            return new double[]{
                     res.getBotpose().getPosition().x,
                     res.getBotpose().getPosition().y,
                     res.getBotpose().getOrientation().getYaw(AngleUnit.DEGREES)
@@ -143,8 +148,9 @@ public class Limelight {
             fl.setPose(tagPose);
         }
     }
-    public void relocalizeInNSeconds(double n){
-        if(timer.milliseconds() >= n){
+
+    public void relocalizeInNSeconds(double n) {
+        if (timer.milliseconds() >= n) {
             relocalizeWhenError();
             timer.reset();
         }
@@ -200,7 +206,7 @@ public class Limelight {
         cachedResult = limelight3A.getLatestResult();
     }
 
-    public LLResult getResult()  {
+    public LLResult getResult() {
         return cachedResult;
     }
 

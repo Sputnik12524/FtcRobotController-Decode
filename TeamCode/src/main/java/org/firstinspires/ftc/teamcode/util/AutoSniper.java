@@ -74,14 +74,14 @@ public class AutoSniper {
 //    double[] ValuesOfAngle = {0, 1, 2, 3, 4, 5, 6, 7};
 //    double[] ValuesOfDistanceForAngle = {0, 1, 2, 3, 4, 5, 6, 7};
     double[] ValuesOfVelocity = {46.75, 59, 60.6};
-    double[] ValuesOfDistance = {1.081, 2.624, 2.73};
+    double[] ValuesOfDistance = {1.37, 1.91};
 
     double[] ValuesOfAngleForClose = {0.86, 0.83, 0.82, 0.815};
     double[] ValuesOfDistanceForClose = {1.1, 1.37, 1.6, 1.7269};
     double[] ValuesOfAngleForFar = {1, 1, 1}; //заполнить
     double[] ValuesOfDistanceForFar = {1, 2, 3}; //заполнить
 
-    double[] ValuesOfAngle = {1, 0.8, 0.8};
+    double[] ValuesOfAngle = {0.94, 0.8};
     public static double tag = 24;
     public boolean isShort, isLong = false;
 
@@ -203,8 +203,8 @@ public class AutoSniper {
 
     public void continuousSetAngleByInterpol() {
         for (int i = 0; i < ValuesOfDistance.length - 1; i++) {
-            if (l > ValuesOfDistance[2]) {
-                l = ValuesOfDistance[2];
+            if (l > ValuesOfDistance[ValuesOfDistance.length - 1]) {
+                l = ValuesOfDistance[ValuesOfDistance.length - 1];
             } else if (l < ValuesOfDistance[0]) {
                 l = ValuesOfDistance[0];
             }
@@ -236,8 +236,8 @@ public class AutoSniper {
     public void continuousSetVelocityTargetByInterpol(double x, double y) {
 
         for (int i = 0; i < ValuesOfDistance.length - 1; i++) {
-            if (l > ValuesOfDistance[2]) {
-                l = ValuesOfDistance[2];
+            if (l > ValuesOfDistance[ValuesOfDistance.length - 1]) {
+                l = ValuesOfDistance[ValuesOfDistance.length - 1];
             } else if (l < ValuesOfDistance[0]) {
                 l = ValuesOfDistance[0];
             }

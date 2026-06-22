@@ -49,10 +49,10 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     GamepadManager g1;
     GamepadManager g2;
 
-    public static double VEL = 30;
+    public static double VEL = 49;
     public static double turret_kDC = 0;
     public static double turret_kIC = 0;
-    public static double turret_kPC = 0.0189;
+    public static double turret_kPC = 0.005;
     public static double turret_kDL = 0.02;
     public static double turret_kIL = 0;
     public static double turret_kPL = 0.021;
@@ -89,6 +89,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     double cycles;
     boolean slowMode = false;
     Pose pose;
+    static double target = 0.86;
     double x, y, head;
 
 
@@ -149,7 +150,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                     follower.getPose().getY(),
                     follower.getHeading()
             );
-
+//1.91  49 0.8
+        //1.37 49 0.94
         sh.closeTunnel();
         tt.turnByTarget(0);
         tt.turretRegulator.start();
@@ -163,6 +165,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            sh.setVelocityTarget(VEL);
             ll.update();
             long loopStart = System.nanoTime();
             tt.tuneTurretPID(turret_kPL, turret_kIL, turret_kDL, turret_kPC, turret_kDC);
@@ -190,27 +193,25 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             //---------------------------------------- SHOOTER
 
 
-
             sh.coverSwitch();
             if (gamepad1.leftBumperWasPressed()) {
                 sh.canShoot = true;
             }
 
-//            if(gamepad1.right_bumper) {
+//            if (gamepad1.right_bumper) {
 //                target += 0.01;
-//            } else if (gamepad1.left_stick_button){
+//            } else if (gamepad1.left_stick_button) {
 //                target -= 0.01;
 //            }
-            //--------------------------------- RESET AIM
+//            sh.setAngleAdjuster(target);
+            ///    --------------------------------- RESET AIM
             if (gamepad1.dpad_left) {
                 tt.turnByTarget(0);
                 isPoseReset = true;
                 follower.setPose(new Pose(16, 80, Math.toRadians(90)));
                 as.setAlliance(Alliance.BLUE);
             }
-            if (gamepad1.start) {
 
-            }
 
             if (gamepad1.dpad_right) {
                 tt.turnByTarget(0);
@@ -218,7 +219,11 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 follower.setPose(new Pose(129, 80, Math.toRadians(90)));
                 as.setAlliance(Alliance.RED);
             }
+            if (gamepad1.dpadUpWasPressed()) {
 
+                follower.setPose(ll.getPoseByAprilTag());
+
+            }
             /// EXTRA MANUAL CONTROL
 
             if (gamepad1.right_stick_button && !RSBState && !attentionControl) {
@@ -257,14 +262,16 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            t.addLine(String.valueOf((int) y));
 //            t.addLine(String.valueOf((int) Math.toDegrees(head)));
 //            t.addData("error TT", tt.error);
-//            t.addData("target TT", tt.target);
-//            t.addData("target TT AS", as.target);
+            t.addData("target TT", tt.target);
+            t.addData("target TT AS", as.target);
+            t.addData("turret position degrees", tt.getCurrentPosOfTurret());
             t.addData("Adjuster", sh.getAngleAdjusterPos());
             t.addData("x", follower.getPose().getX());
             t.addData("y", follower.getPose().getY());
             t.addData("l", as.l);
             t.addData("Upper", sh.getVelocityUpper());
             t.addData("Lower", sh.getVelocityRPSLower());
+            t.addData("Camera 666", ll.getGoalTag()[0]);
             t.update();
             telemetry.update();
 
@@ -335,19 +342,14 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                         head,
                         lastVelo
                 );
+//                sh.setVelocityTarget(VEL);
                 sh.shootByVelocity();
                 lastVelo = sh.getVelocityRPS();
-                as.shootingFSM();
+
+
                 if (!attentionControl) {
-                    if (gamepad1.x) {
-                        as.setShootingMode(ShooterStates.CLOSE);
-                    } else if (gamepad1.y) {
-                        as.setShootingMode(ShooterStates.FAR);
-                    }
-
-
-//                    as.continuousSetVelocityTargetByInterpol(follower.getPose().getX(), follower.getPose().getY());
-//                    as.continuousSetAngleByInterpol();
+//as.continuousSetVelocityTargetByInterpol(follower.getPose().getX(), follower.getPose().getY());
+                    as.continuousSetAngleByInterpol();
 //                    sh.setAngleAdjuster(as.targetAngle);
 
 //                    as.continuousCalculateGeneralValues(x, y, head, lastVelo);
@@ -355,8 +357,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //                    as.continuousSetAngleByInterpol();
                     // as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
 
-                } else {
-                    as.setShootingMode(ShooterStates.STOP);
+                }
+
 
 //                    if (gamepad1.x && !isShootingShort && !stateX1) {
 //                        sh.setVelocityTarget(-Shooter.VELOCITY_FOR_SHORT_THROW);
@@ -369,7 +371,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //                        sh.shootStop();
 //                        isShootingMedium = false;
 //                    }
-                }
+
 
                 if (!attentionControl) {
                     as.continuousTurnTurretToGate(x, y, head);
