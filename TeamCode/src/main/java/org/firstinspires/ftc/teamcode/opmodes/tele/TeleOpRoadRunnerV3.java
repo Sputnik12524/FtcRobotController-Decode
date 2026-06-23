@@ -140,7 +140,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));
             attentionControl = true;
-            as.setAlliance(Alliance.BLUE);
+            as.setAlliance(Alliance.RED);
         }
 
         follower.update();
@@ -220,9 +220,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 as.setAlliance(Alliance.RED);
             }
             if (gamepad1.dpadUpWasPressed()) {
-
                 follower.setPose(ll.getPoseByAprilTag());
-
             }
             /// EXTRA MANUAL CONTROL
 
