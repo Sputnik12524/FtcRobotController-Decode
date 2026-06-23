@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
+import static java.lang.Math.abs;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -49,10 +51,10 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     GamepadManager g1;
     GamepadManager g2;
 
-    public static double VEL = 49;
+    public static double VEL = 50;
     public static double turret_kDC = 0;
     public static double turret_kIC = 0;
-    public static double turret_kPC = 0.005;
+    public static double turret_kPC = 0.0085;
     public static double turret_kDL = 0.02;
     public static double turret_kIL = 0;
     public static double turret_kPL = 0.021;
@@ -66,31 +68,18 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 
     /// Shooter
     boolean attentionControl = true;
-    public double shortBonusVelocity = 0;
-    public double longBonusVelocity = 0;
     public double lastVelo = 0;
 
     //intake
-    boolean isRotateIn = false;
-    boolean isRotateOut = false;
-    boolean stateA1 = false;
-    boolean stateB1 = false;
-    boolean stateLSB = false;
-    boolean stateB2 = false;
     final double WAIT_TIME = 150;
 
 
     //shooter
-    boolean stateY1 = false;
-    boolean stateX1 = false;
-    boolean isShootingShort = false;
-    boolean isShootingMedium = false;
     boolean RSBState = false;
-    double cycles;
-    boolean slowMode = false;
     Pose pose;
     static double target = 0.86;
     double x, y, head;
+
 
 
     @Override
@@ -119,7 +108,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         time = new ElapsedTime();
         MultipleTelemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        sh.setAngleAdjuster(0.86);
+        sh.setAngleAdjuster(target);
         as.setShootingMode(ShooterStates.STOP);
 
 
@@ -150,8 +139,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                     follower.getPose().getY(),
                     follower.getHeading()
             );
-//1.91  49 0.8
-        //1.37 49 0.94
+
         sh.closeTunnel();
         tt.turnByTarget(0);
         tt.turretRegulator.start();
@@ -220,7 +208,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 as.setAlliance(Alliance.RED);
             }
             if (gamepad1.dpadUpWasPressed()) {
-                follower.setPose(ll.getPoseByAprilTag());
+                follower.setPose(new Pose(abs(ll.getPoseByAprilTag().getX()), abs(ll.getPoseByAprilTag().getY()), ll.getPoseByAprilTag().getHeading()));
             }
             /// EXTRA MANUAL CONTROL
 
@@ -270,6 +258,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             t.addData("Upper", sh.getVelocityUpper());
             t.addData("Lower", sh.getVelocityRPSLower());
             t.addData("Camera 666", ll.getGoalTag()[0]);
+            t.addData("lastTurret", tt.ZeroRealPose);
             t.update();
             telemetry.update();
 
@@ -340,7 +329,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                         head,
                         lastVelo
                 );
-//                sh.setVelocityTarget(VEL);
+
                 sh.shootByVelocity();
                 lastVelo = sh.getVelocityRPS();
 

@@ -100,6 +100,7 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
 
 //            // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
+            t.addData("Aim  method", tt.getAimMethod());
             t.addData("X", follower.getPose().getX());
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
@@ -109,11 +110,11 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
             t.update();
 
             if (loggerTimer.milliseconds() > 750) {
-                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
                 loggerTimer.reset();
             }
         }
-        tt.turnByTarget(0);
+
         lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
         tt.turretRegulator.interrupt();

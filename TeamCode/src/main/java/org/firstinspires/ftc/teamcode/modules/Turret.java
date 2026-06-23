@@ -55,6 +55,7 @@ public class Turret {
     private boolean stateMagneting = false;
     public boolean isResetTurretPose = false;
 
+
     public boolean isInLimits = false;
     public double voltage;
     public double errorPlus;
@@ -186,11 +187,9 @@ public class Turret {
             isResetTurretPose = true;
             kPL = 0.02;
         } else if (abs(ZeroRealPose - pose) < 15) {
-            kPL = 0.0075;
-            isInLimits = true;
+            kPL = 0.01;
             turret.setPower(power);
         } else {
-            isInLimits = true;
             kPL = 0.02;
             turret.setPower(power);
         }

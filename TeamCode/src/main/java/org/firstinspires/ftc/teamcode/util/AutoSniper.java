@@ -84,6 +84,7 @@ public class AutoSniper {
     double[] ValuesOfAngle = {0.94, 0.8};
     public static double tag = 24;
     public boolean isShort, isLong = false;
+    public boolean needToResetPose = false;
 
     public AutoSniper(Turret turret, Shooter shooter) {
         tt = turret;
@@ -124,33 +125,33 @@ public class AutoSniper {
         if (AIMING_ACTIVE) {
             if (x <= 0) x = 1;
             if (x >= 144) x = 143;
-//            if (!tt.isResetTurretPose) {
-//                tt.setAimMethod(AimingMethod.TO_ZERO);
-//            } else
-            if ((ll.getGoalTag()[0] == 20 || ll.getGoalTag()[0] == 24)) {
-                tt.setAimMethod(AimingMethod.CAMERA);
+            if (!tt.isResetTurretPose && needToResetPose) {
+                tt.setAimMethod(AimingMethod.TO_ZERO);
             } else {
-                tt.setAimMethod(AimingMethod.LOCALIZATION);
-                switch (alliance) {
-                    case RED:
-                        angleOfTurret = Math.toDegrees(Math.atan((goalY - (y + sY)) / (goalX - (x + sX))));
-                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
-                        break;
-                    case BLUE:
-                        angleOfTurret = 180 - Math.toDegrees(Math.atan((goalY - (y + sY)) / ((x + sX) - goalX)));
-                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
-                        break;
-                    case NONE:
-                        angleOfTurret = 0;
-                        break;
+                if ((ll.getGoalTag()[0] == 20 || ll.getGoalTag()[0] == 24)) {
+                    tt.setAimMethod(AimingMethod.CAMERA);
+                } else {
+                    tt.setAimMethod(AimingMethod.LOCALIZATION);
+                    switch (alliance) {
+                        case RED:
+                            angleOfTurret = Math.toDegrees(Math.atan((goalY - (y + sY)) / (goalX - (x + sX))));
+                            target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
+                            break;
+                        case BLUE:
+                            angleOfTurret = 180 - Math.toDegrees(Math.atan((goalY - (y + sY)) / ((x + sX) - goalX)));
+                            target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
+                            break;
+                        case NONE:
+                            angleOfTurret = 0;
+                            break;
+                    }
+
+                    target = tt.angleNormalising(target + targetBonus + driverTargetBonus);
+                    tt.turnByTarget(target);
+                    //tt.current = 0;
+
                 }
-
-                target = tt.angleNormalising(target + targetBonus + driverTargetBonus);
-                tt.turnByTarget(target);
-                //tt.current = 0;
-
             }
-
 
         } else {
             tt.turnByTarget(0);
@@ -279,11 +280,13 @@ public class AutoSniper {
         if (sh.getVelocityRPS() == 0) return false;
         return sh.getVelocityRPS() >= targetVelo - IS_SPIN_UP;
     }
-    public void setShootingMode(ShooterStates state){
+
+    public void setShootingMode(ShooterStates state) {
         shState = state;
     }
-    public void shootingFSM(){
-        switch(shState){
+
+    public void shootingFSM() {
+        switch (shState) {
             case CLOSE:
                 continuousSetTunedAngleByInterpol(ValuesOfDistanceForClose, ValuesOfAngleForClose);
                 sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);

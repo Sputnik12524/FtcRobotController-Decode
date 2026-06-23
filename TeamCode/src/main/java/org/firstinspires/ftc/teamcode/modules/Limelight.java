@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import static java.lang.Math.abs;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.FTCCoordinates;
@@ -113,8 +115,8 @@ public class Limelight {
             double x = botpose.getPosition().x;
             double y = botpose.getPosition().y;
             double head = botpose.getOrientation().getYaw(AngleUnit.RADIANS);
-            x = 144 - x * 39.37 - 72;
-            y = 144 + y * 39.37 - 72;
+            x = 72 - x * 39.37;
+            y = 72 + y * 39.37;
 //            double[] pose = calculatePose(x, y, head);
             pp = new Pose(y, x, head, FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE);//помеял все окей
             return pp;
@@ -143,8 +145,8 @@ public class Limelight {
         double[] localizationErrors = comparePose(poseOdo, poseTag);
 
 
-        if (Math.abs(localizationErrors[0]) > 2 || Math.abs(localizationErrors[1]) > 2
-                || Math.abs(localizationErrors[2]) > 5) {
+        if (abs(localizationErrors[0]) > 2 || abs(localizationErrors[1]) > 2
+                || abs(localizationErrors[2]) > 5) {
             fl.setPose(tagPose);
         }
     }
