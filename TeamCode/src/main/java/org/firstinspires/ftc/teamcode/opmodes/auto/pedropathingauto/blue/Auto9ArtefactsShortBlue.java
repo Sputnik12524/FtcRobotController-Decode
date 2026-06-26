@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.blue;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -96,10 +97,8 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 loggerTimer.reset();
             }
         }
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
-        lg.fileClose();
         tt.turretRegulator.interrupt();
-        ll.startOrStopLL(true);
+        lg.fileClose();
     }
 
 
@@ -177,8 +176,10 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                     .build();
 
             PathThirdScoring = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(35, 60),
+                            new BezierCurve(
+                                    new Pose(23, 60),
+
+                                    new Pose(52, 72),
 
                                     scoringPose
                             )
@@ -240,11 +241,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 }
                 break;
             case 6:
-                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
-                    break;
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT) break;
                 sh.openTunnel();
                 setPathState(7);
-
                 break;
 
             case 7:
@@ -271,8 +270,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                 break;
 
             case 10:
-                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
-                    break;
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT) break;
                 sh.openTunnel();
                 setPathState(11);
                 break;
@@ -280,6 +278,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             case 11:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
                 as.enableAutoTurretAiming(false);
+                tt.turnByTarget(0);
                 in.rotateStop();
                 sh.shootStop();
                 follower.followPath(paths.PathLeaving);

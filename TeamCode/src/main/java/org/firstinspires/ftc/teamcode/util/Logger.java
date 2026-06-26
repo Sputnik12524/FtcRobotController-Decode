@@ -19,6 +19,7 @@ public class Logger {
     public double y;
     public double heading;
     public double turretPose;
+    public double oldTurretPose;
 
     public Logger(String fileName) {
         this.fileName = fileName;
@@ -38,15 +39,18 @@ public class Logger {
 
             switch (alliance) {
                 case RED:
-                    writer.write("Red" + "," + x + "," + y + "," + heading + "," + turretPose);
+                    writer.write("Red" + "," + x + "," + y + "," + heading + "," + oldTurretPose);
                     break;
                 case BLUE:
-                    writer.write("Blue" + "," + x + "," + y + "," + heading + "," + turretPose);
+                    writer.write("Blue" + "," + x + "," + y + "," + heading + "," + oldTurretPose);
                     break;
                 default:
                     writer.write("none");
             }
             writer.flush();
+            if (turretPose != 0) {
+                oldTurretPose = turretPose;
+            }
         } catch (IOException exe) {
             exe.printStackTrace();
         }

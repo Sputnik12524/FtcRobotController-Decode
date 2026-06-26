@@ -125,9 +125,9 @@ public class AutoSniper {
         if (AIMING_ACTIVE) {
             if (x <= 0) x = 1;
             if (x >= 144) x = 143;
-            if (!tt.isResetTurretPose && needToResetPose) {
-                tt.setAimMethod(AimingMethod.TO_ZERO);
-            } else {
+//            if (!tt.isResetTurretPose && needToResetPose) {
+//                tt.setAimMethod(AimingMethod.TO_ZERO);
+//            } else {
                 if ((ll.getGoalTag()[0] == 20 || ll.getGoalTag()[0] == 24)) {
                     tt.setAimMethod(AimingMethod.CAMERA);
                 } else {
@@ -151,7 +151,7 @@ public class AutoSniper {
                     //tt.current = 0;
 
                 }
-            }
+           // }
 
         } else {
             tt.turnByTarget(0);

@@ -78,7 +78,7 @@ public class Auto18ArtefactsShortRed extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
 
-            tt.turnByTarget(25);
+            as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
 
 //            // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
@@ -91,7 +91,7 @@ public class Auto18ArtefactsShortRed extends LinearOpMode {
             t.update();
 
             if (loggerTimer.milliseconds() > 750) {
-                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
                 loggerTimer.reset();
             }
         }

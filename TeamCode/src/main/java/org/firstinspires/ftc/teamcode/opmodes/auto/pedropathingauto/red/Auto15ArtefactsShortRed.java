@@ -38,6 +38,8 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
     Logger lg;
     Turret tt;
     AutoSniper as;
+    public static double TURRET_WAIT = 3500;
+
 
     @Override
     public void runOpMode() {
@@ -110,7 +112,7 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
             t.update();
 
             if (loggerTimer.milliseconds() > 750) {
-                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
                 loggerTimer.reset();
             }
         }
@@ -262,7 +264,6 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
                                     new Pose(85, 104)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
-
                     .build();
         }
 
@@ -280,10 +281,11 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 1:
-                if (sh.isSpinUp() && !follower.isBusy()) {
-                    sh.openTunnel();
-                    setPathState(2);
-                }
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
+                sh.openTunnel();
+                setPathState(2);
+
                 break;
 
             case 2:
@@ -310,10 +312,11 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 7:
-                if (sh.isSpinUp() && !follower.isBusy()) {
-                    sh.openTunnel();
-                    setPathState(8);
-                }
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
+                sh.openTunnel();
+                setPathState(8);
+
                 break;
 
             case 8:
@@ -340,10 +343,12 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 11:
-                if (sh.isSpinUp() && !follower.isBusy()) {
-                    sh.openTunnel();
-                    setPathState(12);
-                }
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
+
+                sh.openTunnel();
+                setPathState(12);
+
                 break;
 
             case 12:
@@ -356,7 +361,7 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
 
 
             case 28:
-                if(!follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
+                if (!follower.isBusy() && actionTimer.getElapsedTime() > 1000) {
                     follower.followPath(paths.PathToIntake);
                     setPathState(13);
                 }
@@ -370,10 +375,11 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 14:
-                if (!follower.isBusy() && sh.isSpinUp()) {
-                    sh.openTunnel();
-                    setPathState(15);
-                }
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
+                sh.openTunnel();
+                setPathState(15);
+
                 break;
 
             case 15:
@@ -398,10 +404,11 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 19:
-                if (!follower.isBusy() && sh.isSpinUp()) {
-                    sh.openTunnel();
-                    setPathState(20);
-                }
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
+                sh.openTunnel();
+                setPathState(20);
+
                 break;
 
             case 20:

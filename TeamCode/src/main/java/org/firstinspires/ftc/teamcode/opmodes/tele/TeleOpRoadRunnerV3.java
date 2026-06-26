@@ -51,7 +51,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     GamepadManager g1;
     GamepadManager g2;
 
-    public static double VEL = 50;
+    public static double VEL = 0;
     public static double turret_kDC = 0;
     public static double turret_kIC = 0;
     public static double turret_kPC = 0.0085;
@@ -79,6 +79,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     Pose pose;
     static double target = 0.86;
     double x, y, head;
+    double attensionTarget = 0;
 
 
 
@@ -123,6 +124,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 as.setAlliance(Alliance.RED);
             }
             tt.ZeroRealPose = logger.turretPose;
+            as.needToResetPose = true;
         } catch (IOException | NullPointerException e) {
             tt.isResetTurretPose = true;
             isInterpolActive = false;
@@ -144,7 +146,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         tt.turnByTarget(0);
         tt.turretRegulator.start();
         ll.lt.start();
-        tt.setAimMethod(AimingMethod.LOCALIZATION);
+        tt.setAimMethod(AimingMethod.TO_ZERO);
 
 
         waitForStart();
@@ -229,8 +231,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            t.addData("kD", tt.getLocalizationCoefficients()[2]);
 //            t.addData("Turret camera kP", tt.getCameraCoefficients()[0]);
 //            t.addData("Turret camera kD", tt.getCameraCoefficients()[1]);
-            t.addData("Target", as.targetVelo);
-            t.addData("Velocity shooter", sh.getVelocityRPS());
+        //    t.addData("Target", as.targetVelo);
+          //  t.addData("Velocity shooter", sh.getVelocityRPS());
 //            t.addData("Loop ms", loopMs);
 //            t.addData("l", as.l);
 //            t.addData("All time", cc.getAll());
@@ -241,27 +243,25 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            t.addData("Magnetic state", tt.isMagneting());
 //            t.addData("InZone", sh.inZone());
 //            t.addData("Позиция сброшена", isPoseReset);
-            t.addData("Alliance", as.alliance);
+          //  t.addData("Alliance", as.alliance);
             t.addData("AimMethod", tt.getAimMethod());
-            t.addData("Tx", ll.getTagInfo()[1]);
+         //   t.addData("Tx", ll.getTagInfo()[1]);
 //            t.addLine(String.valueOf((int) (x)));
 //            t.addLine(String.valueOf((int) y));
 //            t.addLine(String.valueOf((int) Math.toDegrees(head)));
 //            t.addData("error TT", tt.error);
-            t.addData("target TT", tt.target);
-            t.addData("target TT AS", as.target);
-            t.addData("turret position degrees", tt.getCurrentPosOfTurret());
-            t.addData("Adjuster", sh.getAngleAdjusterPos());
+            //t.addData("target TT", tt.target);
+            //t.addData("target TT AS", as.target);
+            //t.addData("turret position degrees", tt.getCurrentPosOfTurret());
+           // t.addData("Adjuster", sh.getAngleAdjusterPos());
             t.addData("x", follower.getPose().getX());
             t.addData("y", follower.getPose().getY());
-            t.addData("l", as.l);
-            t.addData("Upper", sh.getVelocityUpper());
-            t.addData("Lower", sh.getVelocityRPSLower());
-            t.addData("Camera 666", ll.getGoalTag()[0]);
-            t.addData("lastTurret", tt.ZeroRealPose);
+//            t.addData("l", as.l);
+            //t.addData("Upper", sh.getVelocityUpper());
+            //t.addData("Lower", sh.getVelocityRPSLower());
+           // t.addData("Camera 666", ll.getGoalTag()[0]);
+            //t.addData("lastTurret", tt.ZeroRealPose);
             t.update();
-            telemetry.update();
-
 
         }
         ll.startOrStopLL(true);
@@ -345,8 +345,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                     // as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
 
                 }
-
-
 //                    if (gamepad1.x && !isShootingShort && !stateX1) {
 //                        sh.setVelocityTarget(-Shooter.VELOCITY_FOR_SHORT_THROW);
 //                        sh.setShortThrowMode();

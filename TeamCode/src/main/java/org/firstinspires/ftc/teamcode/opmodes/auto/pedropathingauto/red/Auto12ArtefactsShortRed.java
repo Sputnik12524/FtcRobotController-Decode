@@ -39,6 +39,8 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
     Logger lg;
     Turret tt;
     AutoSniper as;
+    public static double TURRET_WAIT = 3500;
+
 
     @Override
     public void runOpMode() {
@@ -81,7 +83,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
             autonomousPathUpdate(); // Update autonomous state machine
             currentPose = follower.getPose(); // Update the current pose
             double x = follower.getPose().getX();
-            double y  = follower.getPose().getY();
+            double y = follower.getPose().getY();
             double head = follower.getPose().getHeading();
 
             as.continuousCalculateGeneralValues(x, y, head, lastVelo);
@@ -108,12 +110,12 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
             t.addData("turret target", as.target);
             t.update();
 
-            if (loggerTimer.milliseconds() > 750) {
-                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+            if (loggerTimer.milliseconds() > 300) {
+                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
                 loggerTimer.reset();
             }
         }
-        tt.turnByTarget(0);
+//        tt.turnByTarget(0);
         lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
         tt.turretRegulator.interrupt();
@@ -122,10 +124,10 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
     public static class Paths {
         public final PathChain PathScoring;
-    //    public final PathChain PathLeaving;
-        public final PathChain SecondPathToPresetArtifacts,SecondPathIntakingArtifacts, SecondPathScoring;
+        //    public final PathChain PathLeaving;
+        public final PathChain SecondPathToPresetArtifacts, SecondPathIntakingArtifacts, SecondPathScoring;
         public final PathChain OpenPath;
-       // public final PathChain OpenPath2;
+        // public final PathChain OpenPath2;
         public final PathChain ThirdPathPresetArtefacts, ThirdPathIntakingArtefacts, ThirdPathScoring;
         public final PathChain FourthPathToPreset, FourthPathIntaking, FourthPathScoring;
         final Pose scoringPath = new Pose(96, 96);
@@ -153,7 +155,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
             SecondPathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                   new Pose(100, 62),
+                                    new Pose(100, 62),
 
                                     new Pose(121, 62) // 106, 95
                             )
@@ -174,7 +176,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                             new BezierCurve(
                                     new Pose(121, 62),
 
-                                    new Pose(82,72),
+                                    new Pose(82, 72),
 
                                     scoringPath
                             )
@@ -233,10 +235,12 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                     .build();
 
             FourthPathScoring = follower.pathBuilder().addPath(
-                            new BezierLine(
+                            new BezierCurve(
                                     new Pose(134, 36),
 
-                                    new Pose(98,128)
+                                    new Pose(),
+
+                                    new Pose(98, 128)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -267,7 +271,9 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 1:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
+                in.rotateIn();
                 sh.openTunnel();
                 setPathState(2);
                 break;
@@ -304,7 +310,8 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 7:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
                 sh.openTunnel();
                 setPathState(8);
                 break;
@@ -333,7 +340,8 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 11:
-                if (!sh.isSpinUp() || follower.isBusy()) break;
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
                 sh.openTunnel();
                 setPathState(12);
                 break;
@@ -361,10 +369,11 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 15:
-                if (!follower.isBusy() && sh.isSpinUp()) {
-                    sh.openTunnel();
-                    setPathState(16);
-                }
+                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
+                    break;
+                sh.openTunnel();
+                setPathState(16);
+
                 break;
             case 16:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1400) break;

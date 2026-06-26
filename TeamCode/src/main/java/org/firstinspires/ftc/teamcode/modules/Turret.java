@@ -97,8 +97,9 @@ public class Turret {
                 currentPoseOfTurret = getCurrentPosOfTurret();
                 switch (aimMethod) {
                     case TO_ZERO:
-                        error = ZeroRealPose - currentPoseOfTurret;
+                        error = -currentPoseOfTurret - ZeroRealPose;
                         turnToZeroPosition(error*kPL);
+                        break;
                     case CAMERA:
                         //sumError = 0; //
                         BigDecimal bd = new BigDecimal(Double.toString(-limelight3A.getTagInfo()[1]));
@@ -186,11 +187,12 @@ public class Turret {
             turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             isResetTurretPose = true;
             kPL = 0.02;
-        } else if (abs(ZeroRealPose - pose) < 15) {
-            kPL = 0.01;
+            setAimMethod(AimingMethod.NONE);
+        } else if (abs(-pose - ZeroRealPose) < 15) {
+            kPL = 0.0075;
             turret.setPower(power);
         } else {
-            kPL = 0.02;
+            kPL = 0.01;
             turret.setPower(power);
         }
         stateMagneting = isMagneting();
