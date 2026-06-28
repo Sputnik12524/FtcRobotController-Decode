@@ -90,7 +90,7 @@ public class Auto18ArtefactsShortRed extends LinearOpMode {
             t.addData("turret target", as.target);
             t.update();
 
-            if (loggerTimer.milliseconds() > 750) {
+            if (loggerTimer.milliseconds() > 300) {
                 lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
                 loggerTimer.reset();
             }

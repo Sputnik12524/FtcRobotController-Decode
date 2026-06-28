@@ -19,7 +19,7 @@ public class DriveTrain {
     public static final double PULSES = 537.7;
     public static final double CENTI_TO_PULSES = PULSES / (Math.PI * WHEEL_DIAMETER);
     public static double multiplier = 1;
-    public static double p = 2;
+    public static double p = 3;
 
 
     public DriveTrain(LinearOpMode opMode) {

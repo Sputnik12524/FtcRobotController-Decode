@@ -232,7 +232,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            t.addData("Turret camera kD", tt.getCameraCoefficients()[1]);
             //    t.addData("Target", as.targetVelo);
             //  t.addData("Velocity shooter", sh.getVelocityRPS());
-            t.addLine("x:  " + x + "\ny:  " + y + "\nVelocity:" + sh.getVelocityRPS());
+            t.addLine("x:  " + x + "\ny:  " + y + "\nVelocity:" + sh.getVelocityRPS() + "\n Alliance: " + as.alliance);
 //            t.addData("Loop ms", loopMs);
 //            t.addData("l", as.l);
 //            t.addData("All time", cc.getAll());
@@ -246,13 +246,13 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             //  t.addData("Alliance", as.alliance);
             //   t.addData("AimMethod", tt.getAimMethod());
 //               t.addData("Tx", ll.getTagInfo()[1]);
-            t.addLine(String.valueOf((int) (x)));
-            t.addLine(String.valueOf((int) y));
-            t.addLine(String.valueOf((int) Math.toDegrees(head)));
+         //   t.addLine(String.valueOf((int) (x)));
+        //    t.addLine(String.valueOf((int) y));
+         //   t.addLine(String.valueOf((int) Math.toDegrees(head)));
 //            t.addData("error TT", tt.error);
-            t.addData("target TT", tt.target);
-            t.addData("target TT AS", as.target);
-            t.addData("turret position degrees", tt.getCurrentPosOfTurret());
+         //   t.addData("target TT", tt.target);
+         //   t.addData("target TT AS", as.target);
+         //   t.addData("turret position degrees", tt.getCurrentPosOfTurret());
             // t.addData("Adjuster", sh.getAngleAdjusterPos());
 //            t.addData("x", follower.getPose().getX());
 //            t.addData("y", follower.getPose().getY());

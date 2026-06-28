@@ -74,7 +74,7 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
 
-            if (loggerTimer.milliseconds() > 750) {
+            if (loggerTimer.milliseconds() > 300) {
                 lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
                 loggerTimer.reset();
             }
