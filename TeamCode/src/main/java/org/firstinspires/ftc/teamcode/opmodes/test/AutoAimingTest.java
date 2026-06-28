@@ -30,9 +30,10 @@ public class AutoAimingTest extends LinearOpMode {
     double constVelo = 100;
     public static double VEL = 49;
     public static double ANGLE = 0.86;
+    public static double ANGLE_OF_TURRET = 0;
 
     boolean xState = false;
-    boolean turretState = false;
+    boolean turretState = true;
 
     boolean bState = false;
     boolean veloState = false;
@@ -119,7 +120,7 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addLine("Ахахаха лохи -45");
             } else {
                 telemetry.addLine("TURRET is stopped (put X)");
-                tt.turnByTarget(0);
+                tt.turnByTarget(ANGLE_OF_TURRET);
                 turretState = false;
             }
 
@@ -152,7 +153,7 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addData("l (b)", as.l);
             } else {
                 telemetry.addLine("VELOCITY is stopped (put B)");
-                sh.setVelocityTarget(0);
+                sh.setVelocityTarget(ANGLE_OF_TURRET);
             }
             lastVelo = sh.getVelocityRPS();
 

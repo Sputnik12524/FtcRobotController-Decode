@@ -92,15 +92,15 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             t.addData("Turret ", turretPos);
 
             t.update();
-            if (loggerTimer.milliseconds() > 750) {
-                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), turretPos);
+            if (loggerTimer.milliseconds() > 300) {
+                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
                 loggerTimer.reset();
             }
         }
         // tt.turnByTarget(0);
         ll.startOrStopLL(true);
 
-        //lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         tt.turretRegulator.interrupt();
         lg.fileClose();
     }
@@ -215,10 +215,10 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 1:
-                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
-                    break;
-                sh.openTunnel();
-                setPathState(2);
+                if (sh.isSpinUp() && !follower.isBusy()) {
+                    sh.openTunnel();
+                    setPathState(2);
+                }
                 break;
 
             case 2:

@@ -128,30 +128,30 @@ public class AutoSniper {
 //            if (!tt.isResetTurretPose && needToResetPose) {
 //                tt.setAimMethod(AimingMethod.TO_ZERO);
 //            } else {
-                if ((ll.getGoalTag()[0] == 20 || ll.getGoalTag()[0] == 24)) {
-                    tt.setAimMethod(AimingMethod.CAMERA);
-                } else {
-                    tt.setAimMethod(AimingMethod.LOCALIZATION);
-                    switch (alliance) {
-                        case RED:
-                            angleOfTurret = Math.toDegrees(Math.atan((goalY - (y + sY)) / (goalX - (x + sX))));
-                            target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
-                            break;
-                        case BLUE:
-                            angleOfTurret = 180 - Math.toDegrees(Math.atan((goalY - (y + sY)) / ((x + sX) - goalX)));
-                            target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
-                            break;
-                        case NONE:
-                            angleOfTurret = 0;
-                            break;
-                    }
-
-                    target = tt.angleNormalising(target + targetBonus + driverTargetBonus);
-                    tt.turnByTarget(target);
-                    //tt.current = 0;
-
+            if ((ll.getGoalTag()[0] == 20 || ll.getGoalTag()[0] == 24)) {
+                tt.setAimMethod(AimingMethod.CAMERA);
+            } else {
+                tt.setAimMethod(AimingMethod.LOCALIZATION);
+                switch (alliance) {
+                    case RED:
+                        angleOfTurret = Math.toDegrees(Math.atan((goalY - (y + sY)) / (goalX - (x + sX))));
+                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
+                        break;
+                    case BLUE:
+                        angleOfTurret = 180 - Math.toDegrees(Math.atan((goalY - (y + sY)) / ((x + sX) - goalX)));
+                        target = -(Math.toDegrees(angleOfDrivetrain) - angleOfTurret) + 70;
+                        break;
+                    case NONE:
+                        angleOfTurret = 0;
+                        break;
                 }
-           // }
+
+                target = tt.angleNormalising(target + targetBonus + driverTargetBonus);
+                tt.turnByTarget(target);
+                //tt.current = 0;
+
+            }
+            // }
 
         } else {
             tt.turnByTarget(0);

@@ -47,8 +47,8 @@ public class Turret {
     public double target = 0;
     public double ll_weight = 0;
     public double angleOfTurret;
-    public static double POS_RIGHTMOST = -50;
-    public static double POS_LEFTMOST = 310;
+    public static double POS_RIGHTMOST = -100;
+    public static double POS_LEFTMOST = 275;
 
     public static double delta = 0.05;
 

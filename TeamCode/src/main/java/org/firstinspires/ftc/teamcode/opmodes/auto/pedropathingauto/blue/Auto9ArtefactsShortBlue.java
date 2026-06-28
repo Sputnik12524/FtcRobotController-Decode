@@ -92,7 +92,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.addData("Aim method", tt.getAimMethod());
             t.update();
-            if (loggerTimer.milliseconds() > 750) {
+            if (loggerTimer.milliseconds() > 300) {
                 lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
                 loggerTimer.reset();
             }
@@ -159,7 +159,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     scoringPose,
 
-                                    new Pose(50, 60)
+                                    new Pose(50, 50)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -167,9 +167,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathSecondIntakingArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(50, 60),
+                                    new Pose(50, 50),
 
-                                    new Pose(23, 60)
+                                    new Pose(23, 50)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -177,7 +177,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathThirdScoring = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(23, 60),
+                                    new Pose(23, 50),
 
                                     new Pose(52, 72),
 

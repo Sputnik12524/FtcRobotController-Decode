@@ -51,7 +51,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     GamepadManager g1;
     GamepadManager g2;
 
-    public static double VEL = 0;
+    public static double VEL = 50;
     public static double turret_kDC = 0;
     public static double turret_kIC = 0;
     public static double turret_kPC = 0.0085;
@@ -80,7 +80,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
     static double target = 0.86;
     double x, y, head;
     double attensionTarget = 0;
-
 
 
     @Override
@@ -231,35 +230,36 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            t.addData("kD", tt.getLocalizationCoefficients()[2]);
 //            t.addData("Turret camera kP", tt.getCameraCoefficients()[0]);
 //            t.addData("Turret camera kD", tt.getCameraCoefficients()[1]);
-        //    t.addData("Target", as.targetVelo);
-          //  t.addData("Velocity shooter", sh.getVelocityRPS());
+            //    t.addData("Target", as.targetVelo);
+            //  t.addData("Velocity shooter", sh.getVelocityRPS());
+            t.addLine("x:  " + x + "\ny:  " + y + "\nVelocity:" + sh.getVelocityRPS());
 //            t.addData("Loop ms", loopMs);
 //            t.addData("l", as.l);
 //            t.addData("All time", cc.getAll());
 //            t.addData("Average Cycle", cc.getAverage());
-//            t.addData("MAX Cycle", cc.getMax());
+//            t.addData("MAX Cycle", cc.getMax()); bv
 //            t.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
 //            t.addData("isInterpol", isInterpolActive
 //            t.addData("Magnetic state", tt.isMagneting());
 //            t.addData("InZone", sh.inZone());
 //            t.addData("Позиция сброшена", isPoseReset);
-          //  t.addData("Alliance", as.alliance);
-            t.addData("AimMethod", tt.getAimMethod());
-         //   t.addData("Tx", ll.getTagInfo()[1]);
-//            t.addLine(String.valueOf((int) (x)));
-//            t.addLine(String.valueOf((int) y));
-//            t.addLine(String.valueOf((int) Math.toDegrees(head)));
+            //  t.addData("Alliance", as.alliance);
+            //   t.addData("AimMethod", tt.getAimMethod());
+//               t.addData("Tx", ll.getTagInfo()[1]);
+            t.addLine(String.valueOf((int) (x)));
+            t.addLine(String.valueOf((int) y));
+            t.addLine(String.valueOf((int) Math.toDegrees(head)));
 //            t.addData("error TT", tt.error);
-            //t.addData("target TT", tt.target);
-            //t.addData("target TT AS", as.target);
-            //t.addData("turret position degrees", tt.getCurrentPosOfTurret());
-           // t.addData("Adjuster", sh.getAngleAdjusterPos());
-            t.addData("x", follower.getPose().getX());
-            t.addData("y", follower.getPose().getY());
+            t.addData("target TT", tt.target);
+            t.addData("target TT AS", as.target);
+            t.addData("turret position degrees", tt.getCurrentPosOfTurret());
+            // t.addData("Adjuster", sh.getAngleAdjusterPos());
+//            t.addData("x", follower.getPose().getX());
+//            t.addData("y", follower.getPose().getY());
 //            t.addData("l", as.l);
             //t.addData("Upper", sh.getVelocityUpper());
             //t.addData("Lower", sh.getVelocityRPSLower());
-           // t.addData("Camera 666", ll.getGoalTag()[0]);
+            // t.addData("Camera 666", ll.getGoalTag()[0]);
             //t.addData("lastTurret", tt.ZeroRealPose);
             t.update();
 
@@ -358,7 +358,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //                    }
 
 
-                if (!attentionControl) {
+                if (!attentionControl) {///////////////////////////////////////////
                     as.continuousTurnTurretToGate(x, y, head);
                 } else {
                     tt.setAimMethod(AimingMethod.LOCALIZATION);
@@ -373,6 +373,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
         @Override
         public void run() {
             while (!isInterrupted()) {
+                //dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
                 dt.setMotorsPowerNonLinear(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
             }
         }

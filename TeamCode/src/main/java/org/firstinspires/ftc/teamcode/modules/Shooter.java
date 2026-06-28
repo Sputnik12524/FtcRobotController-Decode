@@ -111,7 +111,7 @@ public class Shooter {
         shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterUpper.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
@@ -136,7 +136,7 @@ public class Shooter {
         shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterUpper.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);

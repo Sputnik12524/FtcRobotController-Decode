@@ -288,7 +288,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 if (!follower.isBusy()) {
                     in.rotateIn();
                     sh.closeTunnel();
-                    follower.followPath(paths.SecondPathIntakingArtifacts, true);
+                    follower.followPath(paths.SecondPathIntakingArtifacts);
                     setPathState(4);
                 }
                 break;
@@ -296,14 +296,14 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
             case 4:
                 if (!follower.isBusy()) {
                     in.rotateStop();
-                    follower.followPath(paths.OpenPath, true);
+                    follower.followPath(paths.OpenPath);
                     setPathState(6);
                 }
                 break;
 
             case 6:
                 if (!follower.isBusy() || actionTimer.getElapsedTime() > 1000) {
-                    follower.followPath(paths.SecondPathScoring, true);
+                    follower.followPath(paths.SecondPathScoring);
                     in.rotateIn();
                     setPathState(7);
                 }
@@ -320,13 +320,13 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1400) break;
                 sh.closeTunnel();
                 in.rotateIn();
-                follower.followPath(paths.ThirdPathPresetArtefacts, true);
+                follower.followPath(paths.ThirdPathPresetArtefacts);
                 setPathState(9);
                 break;
 
             case 9:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.ThirdPathIntakingArtefacts, true);
+                    follower.followPath(paths.ThirdPathIntakingArtefacts);
                     setPathState(10);
                 }
                 break;
@@ -334,7 +334,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
             case 10:
                 if (!follower.isBusy()) {
                     in.rotateIn();
-                    follower.followPath(paths.ThirdPathScoring, true);
+                    follower.followPath(paths.ThirdPathScoring);
                     setPathState(11);
                 }
                 break;
@@ -363,7 +363,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
             case 14:
                 if (!follower.isBusy()) {
-                    follower.followPath(paths.FourthPathScoring);
+                    follower.followPath(paths.FourthPathScoring, true);
                     setPathState(15);
                 }
                 break;

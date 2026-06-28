@@ -69,6 +69,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
         tt.turretRegulator.start();
         ll.startOrStopLL(false);
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        as.setAlliance(Alliance.BLUE);
 
         waitForStart();
         while (opModeIsActive()) {
