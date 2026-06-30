@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.modules.Turret;
 
 public class AutoSniper {
 
-    public Turret tt;
-    public Shooter sh;
+    public final Turret tt;
+    public final Shooter sh;
     public Limelight ll;
     Follower follower;
 
@@ -22,25 +22,25 @@ public class AutoSniper {
     private final ElapsedTime timer = new ElapsedTime();
 
     //---------------------------------------------- GENERAL COEFFICIENTS
-    public double goalY = 138;
+    public final double goalY = 138;
     public double goalX = 138; // Изначально для красного
-    public double goalZ = 51.5;
+    public final double goalZ = 51.5;
     public Alliance alliance = Alliance.NONE;
 
     public double interpolPose = 70;
 
-    public double highOfShooting = 9.84;
-    public double R = 0.1; // meters
-    public double differenceVelocity = 0;
+    public final double highOfShooting = 9.84;
+    public final double R = 0.1; // meters
+    public final double differenceVelocity = 0;
     public boolean AIMING_ACTIVE = true;
     public double targetVeloForArtifact = 0;
     public double targetVelo = 0;
     public double mainVelo = 52;
     public double targetAngle = 0;
 
-    public double z = goalZ - highOfShooting;
+    public final double z = goalZ - highOfShooting;
 
-    public double sv = 0.017; // meters
+    public final double sv = 0.017; // meters
 
     public double target = 0;
     public double targetBonus = 0;
@@ -51,37 +51,32 @@ public class AutoSniper {
     public double angleOfAdjusterBeforeNormalising;
     public double angleByFormulas;
 
-    double ITM = 0.0254;
-    double g = 9.81;
+    final double ITM = 0.0254;
+    final double g = 9.81;
 
-    public static double MAX_ANGLE = 60;
-    public static double MIN_ANGLE = 45;
-    public static double POS_FOR_MAX_ANGLE = 1;
-    public static double POS_FOR_MIN_ANGLE = 0.815;
+    public static final double MAX_ANGLE = 60;
+    public static final double MIN_ANGLE = 45;
+    public static final double POS_FOR_MAX_ANGLE = 1;
+    public static final double POS_FOR_MIN_ANGLE = 0.815;
 
-    public static double IS_SPIN_UP = 1;
+    public static final double IS_SPIN_UP = 1;
 
     public double sX, sY, c, a, D, l = 0;
     public double v1, v2, l1, l2 = 0;
-    public double minDistanceForLongThrowMode = 2.63;
+    public final double minDistanceForLongThrowMode = 2.63;
 
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
 
-    //    double[] ValuesOfVelocity = {42.5, 47.5, 51.5, 51.5, 52.5, 57.5, 61, 62.5, 64.5}; // {45-47, 49-50, 56-57, 60, 61-62}
-//    double[] ValuesOfDistanceForVelocity = {1.061, 1.2058, 1.463, 1.8002, 1.8165, 2.0397, 2.3578, 2.4738, 2.6415};
-//
-//    double[] ValuesOfAngle = {0, 1, 2, 3, 4, 5, 6, 7};
-//    double[] ValuesOfDistanceForAngle = {0, 1, 2, 3, 4, 5, 6, 7};
-    double[] ValuesOfVelocity = {46.75, 59, 60.6};
-    double[] ValuesOfDistance = {1.37, 1.91};
+    final double[] ValuesOfVelocity = {46.75, 59, 60.6};
+    final double[] ValuesOfDistance = {1.37, 1.91};
 
-    double[] ValuesOfAngleForClose = {0.86, 0.83, 0.82, 0.815};
-    double[] ValuesOfDistanceForClose = {1.1, 1.37, 1.6, 1.7269};
-    double[] ValuesOfAngleForFar = {1, 1, 1}; //заполнить
-    double[] ValuesOfDistanceForFar = {1, 2, 3}; //заполнить
+    final double[] ValuesOfAngleForClose = {0.86, 0.83, 0.82, 0.815};
+    final double[] ValuesOfDistanceForClose = {1.1, 1.37, 1.6, 1.7269};
+    final double[] ValuesOfAngleForFar = {1, 1, 1}; //заполнить
+    final double[] ValuesOfDistanceForFar = {1, 2, 3}; //заполнить
 
-    double[] ValuesOfAngle = {0.94, 0.8};
+    final double[] ValuesOfAngle = {0.94, 0.8};
     public static double tag = 24;
     public boolean isShort, isLong = false;
     public boolean needToResetPose = false;
@@ -301,11 +296,6 @@ public class AutoSniper {
                 break;
         }
     }
-//    public void switchShState(double y) {
-//        if(y > 72 && y < 106)  setState(ShooterStates.ONLY_VELOCITY);
-//        else if (y>=106)   setState(ShooterStates.ONLY_ADJUSTER);
-//        else if (y < 72) setState(ShooterStates.FAR_ZONE);
-//    }
 
     public void continuousCalculateGeneralValues(double x, double y, double angleOfDrivetrain, double angularVelocity) {
         sY = cMTI(sv * Math.sin(angleOfDrivetrain)); //inches

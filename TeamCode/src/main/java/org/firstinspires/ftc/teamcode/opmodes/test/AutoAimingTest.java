@@ -183,8 +183,8 @@ public class AutoAimingTest extends LinearOpMode {
                 telemetry.addLine("ANGLE TELEMETRY (INTERPOL):");
                 telemetry.addData("targetAngle", as.targetAngle);
             } else {
-               // telemetry.addLine("default long ANGLE (put Y or A)");
-                //sh.setLongThrowMode();
+                telemetry.addLine("default long ANGLE (put Y or A)");
+                sh.setLongThrowMode();
             }
 
 

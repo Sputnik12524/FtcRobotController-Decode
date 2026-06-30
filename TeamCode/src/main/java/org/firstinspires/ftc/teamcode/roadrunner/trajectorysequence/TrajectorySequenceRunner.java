@@ -189,7 +189,7 @@ public class TrajectorySequenceRunner {
                 }
             }
 
-            while (remainingMarkers.size() > 0 && deltaTime > remainingMarkers.get(0).getTime()) {
+            while (!remainingMarkers.isEmpty() && deltaTime > remainingMarkers.get(0).getTime()) {
                 remainingMarkers.get(0).getCallback().onMarkerReached();
                 remainingMarkers.remove(0);
             }

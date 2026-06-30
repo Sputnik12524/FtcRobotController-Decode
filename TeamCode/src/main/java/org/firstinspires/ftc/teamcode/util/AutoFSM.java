@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 
 import java.io.IOException;
@@ -25,16 +24,16 @@ public class AutoFSM {
 
     public MODE mode = MODE.DRIVER;
 
-    Shooter sh;
-    Logger logger;
-    Intake in;
-    Turret tt;
-    Follower follower;
-    AutoSniper as;
-    Limelight ll;
-    Paths paths;
-    ElapsedTime autoStTimer;
-    ElapsedTime autoTimer;
+    final Shooter sh;
+    final Logger logger;
+    final Intake in;
+    final Turret tt;
+    final Follower follower;
+    final AutoSniper as;
+    final Limelight ll;
+    final Paths paths;
+    final ElapsedTime autoStTimer;
+    final ElapsedTime autoTimer;
 
     Alliance alliance;
     public boolean complete = false;

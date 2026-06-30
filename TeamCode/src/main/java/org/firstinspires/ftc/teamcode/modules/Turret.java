@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -91,8 +90,8 @@ public class Turret {
             turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             timer.reset();
-            double power = 0;
-            double powerP = 0;
+            double power;
+            double powerP;
             while (!isInterrupted()) {
                 currentPoseOfTurret = getCurrentPosOfTurret();
                 switch (aimMethod) {
@@ -137,13 +136,6 @@ public class Turret {
 
                 }
 
-//                if (aimMethod == AimingMethod.CAMERA) {
-//                    ll_weight = clampValue(ll_weight + delta, 0, 1);
-//                } else {
-//                    ll_weight = clampValue(ll_weight - delta, 0, 1);
-//                }
-//                double output = (1 - ll_weight) * power + ll_weight*powerP; //
-//              turnInLimits(output); //
             }
         }
     }

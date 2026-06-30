@@ -43,18 +43,18 @@ public class MT2BotposeTest extends LinearOpMode {
 
         while (opModeIsActive()) {
             LLStatus status = limelight3A.getStatus();
-//            telemetry.addData("Name", "%s", status.getName());
-//            telemetry.addData("Pipeline", "Index: %d, Type: %s",
-//                    status.getPipelineIndex(), status.getPipelineType());
+            telemetry.addData("Name", "%s", status.getName());
+            telemetry.addData("Pipeline", "Index: %d, Type: %s",
+                    status.getPipelineIndex(), status.getPipelineType());
 
             LLResult result = limelight3A.getLatestResult();
             if (result.isValid()) {
                 //Pose3D botposemt2 = result.getBotpose_MT2();
 
                 Pose3D botpose = result.getBotpose();
-//
-//                telemetry.addData("tx", result.getTx());
-//                telemetry.addData("ty", result.getTy());
+
+                telemetry.addData("tx", result.getTx());
+                telemetry.addData("ty", result.getTy());
 
                 t.addData("botpose", botpose.toString()); //МЕТРЫ
 
