@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.teamcode.util.Paths;
 
 
 @TeleOp(name = "TeleOpRR_V2", group = "0")
+@Disabled
 @Config
 public class TeleOpRoadRunnerV2 extends LinearOpMode {
     Paths paths;
