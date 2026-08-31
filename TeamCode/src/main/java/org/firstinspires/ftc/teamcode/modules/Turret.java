@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -137,13 +136,6 @@ public class Turret {
 
                 }
 
-//                if (aimMethod == AimingMethod.CAMERA) {
-//                    ll_weight = clampValue(ll_weight + delta, 0, 1);
-//                } else {
-//                    ll_weight = clampValue(ll_weight - delta, 0, 1);
-//                }
-//                double output = (1 - ll_weight) * power + ll_weight*powerP; //
-//              turnInLimits(output); //
             }
         }
     }

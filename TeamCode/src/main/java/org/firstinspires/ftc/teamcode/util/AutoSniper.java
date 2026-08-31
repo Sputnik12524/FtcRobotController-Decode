@@ -68,11 +68,6 @@ public class AutoSniper {
     public boolean isCalculateNewVelocity = false;
     public boolean isCalculateNewAngle = false;
 
-    //    double[] ValuesOfVelocity = {42.5, 47.5, 51.5, 51.5, 52.5, 57.5, 61, 62.5, 64.5}; // {45-47, 49-50, 56-57, 60, 61-62}
-//    double[] ValuesOfDistanceForVelocity = {1.061, 1.2058, 1.463, 1.8002, 1.8165, 2.0397, 2.3578, 2.4738, 2.6415};
-//
-//    double[] ValuesOfAngle = {0, 1, 2, 3, 4, 5, 6, 7};
-//    double[] ValuesOfDistanceForAngle = {0, 1, 2, 3, 4, 5, 6, 7};
     double[] ValuesOfVelocity = {46.75, 59, 60.6};
     double[] ValuesOfDistance = {1.37, 1.91};
 
@@ -301,11 +296,6 @@ public class AutoSniper {
                 break;
         }
     }
-//    public void switchShState(double y) {
-//        if(y > 72 && y < 106)  setState(ShooterStates.ONLY_VELOCITY);
-//        else if (y>=106)   setState(ShooterStates.ONLY_ADJUSTER);
-//        else if (y < 72) setState(ShooterStates.FAR_ZONE);
-//    }
 
     public void continuousCalculateGeneralValues(double x, double y, double angleOfDrivetrain, double angularVelocity) {
         sY = cMTI(sv * Math.sin(angleOfDrivetrain)); //inches

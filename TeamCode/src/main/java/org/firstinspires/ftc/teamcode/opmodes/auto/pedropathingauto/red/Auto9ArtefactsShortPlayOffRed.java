@@ -39,7 +39,7 @@ public class Auto9ArtefactsShortPlayOffRed extends LinearOpMode {
     Logger lg;
     Transfer tr;
     Turret tt;
-    public static double TURRET_WAIT = 3500;
+    public static final double TURRET_WAIT = 3500;
 
 
     @Override

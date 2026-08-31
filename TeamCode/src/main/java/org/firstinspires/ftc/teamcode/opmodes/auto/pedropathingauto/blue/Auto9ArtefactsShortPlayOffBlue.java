@@ -39,7 +39,7 @@ public class Auto9ArtefactsShortPlayOffBlue extends LinearOpMode {
     Limelight ll;
     ElapsedTime loggerTimer;
 
-    public static double TURRET_WAIT = 3500;
+    public static final double TURRET_WAIT = 3500;
 
     @Override
     public void runOpMode() {

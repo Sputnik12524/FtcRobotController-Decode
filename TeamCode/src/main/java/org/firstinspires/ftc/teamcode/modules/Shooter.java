@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.util.ShooterStates;
 
 @Config
 public class Shooter {
@@ -54,9 +53,9 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 60;  //47 //64
-    public static double VELOCITY_FOR_SHORT_THROW = 48;//52
-    public static double VELOCITY_FOR_MEDIUM_THROW = 60;  //47 //64
+    public static double VELOCITY_FOR_LONG_THROW = 60;
+    public static double VELOCITY_FOR_SHORT_THROW = 48;
+    public static double VELOCITY_FOR_MEDIUM_THROW = 60;
     public static double POWER = 1;
 
     ///  Cover
@@ -207,9 +206,7 @@ public class Shooter {
     //---------------------------------------------- ADJUSTER
 
     public void setShortThrowMode() {
-        // setVelocityTarget(VELOCITY_FOR_SHORT_THROW + bonusShortVelocity);
         angleAdjuster.setPosition(POS_SHORT_THROW);
-        // shootByVelocity();
     }
 
     public void setLongThrowMode() {

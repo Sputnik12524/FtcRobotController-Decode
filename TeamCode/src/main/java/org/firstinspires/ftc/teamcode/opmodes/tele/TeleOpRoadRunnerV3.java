@@ -8,12 +8,10 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
@@ -187,13 +185,7 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 sh.canShoot = true;
             }
 
-//            if (gamepad1.right_bumper) {
-//                target += 0.01;
-//            } else if (gamepad1.left_stick_button) {
-//                target -= 0.01;
-//            }
-//            sh.setAngleAdjuster(target);
-            ///    --------------------------------- RESET AIM
+///    --------------------------------- RESET AIM
             if (gamepad1.dpad_left) {
                 tt.turnByTarget(0);
                 isPoseReset = true;
@@ -221,17 +213,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             RSBState = gamepad1.right_stick_button;
 
 
-//                long loopTimeNs = System.nanoTime() - loopStart;
-//            double loopMs = loopTimeNs / 1e6;
-//
-//            t.addData("Turret localization kP", tt.getLocalizationCoefficients()[0]);
-//            t.addData("turret kp", turret_kPL);
-//            t.addData("kI", tt.getLocalizationCoefficients()[1]);
-//            t.addData("kD", tt.getLocalizationCoefficients()[2]);
-//            t.addData("Turret camera kP", tt.getCameraCoefficients()[0]);
-//            t.addData("Turret camera kD", tt.getCameraCoefficients()[1]);
-            //    t.addData("Target", as.targetVelo);
-            //  t.addData("Velocity shooter", sh.getVelocityRPS());
             t.addLine("x:  " + x + "\ny:  " + y + "\nVelocity:" + sh.getVelocityRPS());
 //            t.addData("Loop ms", loopMs);
 //            t.addData("l", as.l);
@@ -240,12 +221,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
 //            t.addData("MAX Cycle", cc.getMax()); bv
 //            t.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
 //            t.addData("isInterpol", isInterpolActive
-//            t.addData("Magnetic state", tt.isMagneting());
-//            t.addData("InZone", sh.inZone());
-//            t.addData("Позиция сброшена", isPoseReset);
-            //  t.addData("Alliance", as.alliance);
-            //   t.addData("AimMethod", tt.getAimMethod());
-//               t.addData("Tx", ll.getTagInfo()[1]);
             t.addLine(String.valueOf((int) (x)));
             t.addLine(String.valueOf((int) y));
             t.addLine(String.valueOf((int) Math.toDegrees(head)));
@@ -253,14 +228,6 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
             t.addData("target TT", tt.target);
             t.addData("target TT AS", as.target);
             t.addData("turret position degrees", tt.getCurrentPosOfTurret());
-            // t.addData("Adjuster", sh.getAngleAdjusterPos());
-//            t.addData("x", follower.getPose().getX());
-//            t.addData("y", follower.getPose().getY());
-//            t.addData("l", as.l);
-            //t.addData("Upper", sh.getVelocityUpper());
-            //t.addData("Lower", sh.getVelocityRPSLower());
-            // t.addData("Camera 666", ll.getGoalTag()[0]);
-            //t.addData("lastTurret", tt.ZeroRealPose);
             t.update();
 
         }
@@ -337,25 +304,8 @@ public class TeleOpRoadRunnerV3 extends LinearOpMode {
                 if (!attentionControl) {
 //as.continuousSetVelocityTargetByInterpol(follower.getPose().getX(), follower.getPose().getY());
                     as.continuousSetAngleByInterpol();
-//                    sh.setAngleAdjuster(as.targetAngle);
-
-//                    as.continuousCalculateGeneralValues(x, y, head, lastVelo);
-//                    as.continuousSetVelocityTargetByInterpol(x, y);
-//                    as.continuousSetAngleByInterpol();
-                    // as.setAngleByLocalisation(as.l, sh.getAngleAdjusterPos());
 
                 }
-//                    if (gamepad1.x && !isShootingShort && !stateX1) {
-//                        sh.setVelocityTarget(-Shooter.VELOCITY_FOR_SHORT_THROW);
-//                        sh.setShortThrowMode();
-//                        sh.shootByVelocity();
-//                        isShootingMedium = false;
-//                        isShootingShort = true;
-//                    } else if (gamepad1.x && !stateX1 && isShootingShort) {
-//                        sh.closeTunnel();
-//                        sh.shootStop();
-//                        isShootingMedium = false;
-//                    }
 
 
                 if (!attentionControl) {///////////////////////////////////////////

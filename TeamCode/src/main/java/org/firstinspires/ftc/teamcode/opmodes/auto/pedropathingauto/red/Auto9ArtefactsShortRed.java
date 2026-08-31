@@ -16,7 +16,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -39,7 +38,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
     Shooter sh;
     Logger lg;
     Turret tt;
-    public static double TURRET_WAIT = 3500;
+    public static final double TURRET_WAIT = 3500;
 
 
     @Override

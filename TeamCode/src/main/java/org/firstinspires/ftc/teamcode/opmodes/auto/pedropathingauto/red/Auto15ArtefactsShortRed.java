@@ -38,7 +38,7 @@ public class Auto15ArtefactsShortRed extends LinearOpMode {
     Logger lg;
     Turret tt;
     AutoSniper as;
-    public static double TURRET_WAIT = 3500;
+    public static final double TURRET_WAIT = 3500;
 
 
     @Override

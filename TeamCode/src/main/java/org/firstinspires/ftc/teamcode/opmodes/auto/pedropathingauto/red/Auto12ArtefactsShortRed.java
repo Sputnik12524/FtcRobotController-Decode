@@ -39,7 +39,7 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
     Logger lg;
     Turret tt;
     AutoSniper as;
-    public static double TURRET_WAIT = 3500;
+    public static final double TURRET_WAIT = 3500;
 
 
     @Override
@@ -246,15 +246,6 @@ public class Auto12ArtefactsShortRed extends LinearOpMode {
 
                     .build();
 
-//            PathLeaving = follower.pathBuilder().addPath(
-//                            new BezierLine(
-//                                    scoringPath,
-//
-//                                    new Pose(125, 103)
-//                            )
-//                    ).setConstantHeadingInterpolation(Math.toRadians(0))
-//
-//                    .build();
         }
 
     }
