@@ -34,8 +34,8 @@ public class TeleOpFirstSeptember extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            double main = gamepad1.left_stick_x;
-            double side = gamepad1.left_stick_y;
+            double main = -gamepad1.left_stick_y;
+            double side = gamepad1.left_stick_x;
             double rotate = gamepad1.right_trigger - gamepad1.left_trigger;
 
             DriveTrain.multiplier = 0.5;
