@@ -27,6 +27,8 @@ public class Turret {
     public TurretRegulator turretRegulator = new TurretRegulator();
 
     public final double rSmallGear = 60;
+
+    public final double ttLimits = 15;
     public final double rBigGear = 178;
 
     public static double kPC = 0.0189; //0.015
@@ -112,7 +114,6 @@ public class Turret {
 
                             turnInLimits(powerP); // ЗАКОММЕНТИТЬ ЕСЛИ ПЛАВНОЕ ПЕРЕКЛЮЧЕНИЕ
                         }
-                        //pastError = error; //
                         timer.reset();
                         break;
 
@@ -157,7 +158,7 @@ public class Turret {
         } else if (pose > POS_LEFTMOST && power > 0) {
             isInLimits = false;
             turnStopByPower();
-        } else if (pose > -15 && pose < 15) { //!!!!!!! ПОМЕНЯНО ИЛИ НА И. ЗАПИШИТЕ В КОНСТАНТЫ ЫЫЫЫЫЫ
+        } else if (pose > -ttLimits && pose < ttLimits) { //!!!!!!! ПОМЕНЯНО ИЛИ НА И. ЗАПИШИТЕ В КОНСТАНТЫ ЫЫЫЫЫЫ
             kPL = 0.0075;
             isInLimits = true;
             turret.setPower(power);
