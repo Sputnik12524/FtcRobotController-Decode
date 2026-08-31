@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class Logger {
-    String directoryPath = "/sdcard/FIRST/";
+    final String directoryPath = "/sdcard/FIRST/";
     BufferedReader reader;
     BufferedWriter writer;
     BufferedWriter ampsWriter;

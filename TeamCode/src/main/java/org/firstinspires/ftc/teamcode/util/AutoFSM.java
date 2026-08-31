@@ -24,16 +24,16 @@ public class AutoFSM {
 
     public MODE mode = MODE.DRIVER;
 
-    Shooter sh;
-    Logger logger;
-    Intake in;
-    Turret tt;
-    Follower follower;
-    AutoSniper as;
-    Limelight ll;
-    Paths paths;
-    ElapsedTime autoStTimer;
-    ElapsedTime autoTimer;
+    final Shooter sh;
+    final Logger logger;
+    final Intake in;
+    final Turret tt;
+    final Follower follower;
+    final AutoSniper as;
+    final Limelight ll;
+    final Paths paths;
+    final ElapsedTime autoStTimer;
+    final ElapsedTime autoTimer;
 
     Alliance alliance;
     public boolean complete = false;

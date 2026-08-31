@@ -19,7 +19,7 @@ public class IntakeTest extends LinearOpMode {
 
     public static double RPS = 25;
 
-    public double POS_ADJUSTER = 0.5;
+    public static double POS_ADJUSTER = 0.5;
 
     boolean stateA1 = false;
     boolean stateB1 = false;
@@ -65,7 +65,7 @@ public class IntakeTest extends LinearOpMode {
             stateB1 = gamepad1.b;
             ampsUpdate();
 
-            t.addData("INtake volage", in.getAmps());
+            t.addData("Intake voltage", in.getAmps());
 
             dashTele.addLine("SHOOTER:");
             dashTele.addData("target of RPS:", RPS);

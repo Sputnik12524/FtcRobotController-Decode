@@ -24,19 +24,19 @@ public class Limelight {
     public final Limelight3A limelight3A;
     Turret tt;
     Follower fl;
-    LinearOpMode opMode;
+    final LinearOpMode opMode;
     public LLResult cachedResult;
 
-    public double X_RESOLUTION = 1280;
+    public final double X_RESOLUTION = 1280;
     public double X_MIDDLE = X_RESOLUTION / 2;
-    public double Y_RESOLUTION = 960;
+    public final double Y_RESOLUTION = 960;
     public double Y_MIDDLE = Y_RESOLUTION / 2;
-    double turret_offset_x = -3.073 / 1000;
-    double turret_offset_y = 5.242 / 1000;
-    double camera_offset_x = 155.057 / 1000;
-    double camera_offset_y = 0;
-    public LimelightThread lt = new LimelightThread();
-    ElapsedTime timer = new ElapsedTime();
+    final double turret_offset_x = -3.073 / 1000;
+    final double turret_offset_y = 5.242 / 1000;
+    final double camera_offset_x = 155.057 / 1000;
+    final double camera_offset_y = 0;
+    public final LimelightThread lt = new LimelightThread();
+    final ElapsedTime timer = new ElapsedTime();
 
 
     public Limelight(LinearOpMode opMode) {

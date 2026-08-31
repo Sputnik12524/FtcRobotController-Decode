@@ -91,7 +91,7 @@ public class Auto9ArtefactsShortPlayOffBlue extends LinearOpMode {
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.addData("Aim method", tt.getAimMethod());
             t.update();
-            if (loggerTimer.milliseconds() > 750) {
+            if (loggerTimer.milliseconds() > 300) {
                 lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
                 loggerTimer.reset();
             }

@@ -16,7 +16,7 @@ public class LightTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        DigitalChannel led1 = hardwareMap.get(DigitalChannel.class,"LED1");
+        DigitalChannel led1 = hardwareMap.get(DigitalChannel.class, "LED1");
         DigitalChannel led2 = hardwareMap.get(DigitalChannel.class, "LED2");
         led1.setMode(DigitalChannel.Mode.OUTPUT);
         led2.setMode(DigitalChannel.Mode.OUTPUT);

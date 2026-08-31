@@ -97,7 +97,7 @@ public class Auto12ArtefactsShortBlue extends LinearOpMode {
             t.addData("Turret ", tt.getCurrentPosOfTurret());
             // t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
-            if (loggerTimer.milliseconds() > 750) {
+            if (loggerTimer.milliseconds() > 300) {
                 lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
                 loggerTimer.reset();
             }

@@ -92,8 +92,8 @@ public class Turret {
             turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             timer.reset();
-            double power = 0;
-            double powerP = 0;
+            double power;
+            double powerP;
             while (!isInterrupted()) {
                 currentPoseOfTurret = getCurrentPosOfTurret();
                 switch (aimMethod) {

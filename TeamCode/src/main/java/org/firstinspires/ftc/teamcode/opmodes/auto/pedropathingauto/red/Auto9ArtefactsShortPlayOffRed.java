@@ -95,7 +95,7 @@ public class Auto9ArtefactsShortPlayOffRed extends LinearOpMode {
             telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
             t.update();
 
-            if (loggerTimer.milliseconds() > 750) {
+            if (loggerTimer.milliseconds() > 300) {
                 lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
                 loggerTimer.reset();
             }

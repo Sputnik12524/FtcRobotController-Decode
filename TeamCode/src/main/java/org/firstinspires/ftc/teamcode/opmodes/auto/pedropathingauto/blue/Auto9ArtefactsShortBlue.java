@@ -70,7 +70,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
         sh.closeTunnel();
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW-2);
         as.setAlliance(Alliance.BLUE);
         tt.turretRegulator.start();
         ll.startOrStopLL(false);
@@ -130,16 +130,16 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
                                     scoringPose,
 
-                                    new Pose(48, 84) //55,100
+                                    new Pose(50, 84) //55,100
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
                     .build();
             PathIntakingArtifacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(48, 84), //55,100
+                                    new Pose(50, 84), //55,100
 
-                                    new Pose(20, 84) //35,100
+                                    new Pose(28, 84) //35,100
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -159,7 +159,7 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
                             new BezierLine(
                                     scoringPose,
 
-                                    new Pose(50, 50)
+                                    new Pose(50, 55)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -167,9 +167,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathSecondIntakingArtefacts = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(50, 50),
+                                    new Pose(50, 55),
 
-                                    new Pose(23, 50)
+                                    new Pose(25, 55)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(-180))
 
@@ -177,9 +177,9 @@ public class Auto9ArtefactsShortBlue extends LinearOpMode {
 
             PathThirdScoring = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(23, 50),
+                                    new Pose(23, 55),
 
-                                    new Pose(52, 72),
+                                    new Pose(53, 60),
 
                                     scoringPose
                             )
