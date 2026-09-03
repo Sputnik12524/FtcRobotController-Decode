@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -26,6 +27,7 @@ import java.io.IOException;
 
 
 @TeleOp(name = "TeleOpRR", group = "0")
+@Disabled
 @Config
 public class TeleOpRoadRunner extends LinearOpMode {
 
@@ -71,11 +73,13 @@ public class TeleOpRoadRunner extends LinearOpMode {
 
         try {
             logger.getAll("pospos");
-            follower.setStartingPose(new Pose(logger.x, logger.y, logger.degrees));
+            follower.setStartingPose(new Pose(logger.x, logger.y, logger.heading));
             if (logger.al == Alliance.BLUE) {
                 as.setAlliance(Alliance.BLUE);
             } else as.setAlliance(Alliance.RED);
+            tt.ZeroRealPose = logger.turretPose;
         } catch (IOException | NullPointerException e) {
+            tt.isResetTurretPose = true;
             isInterpolActive = false;
             wroteLogger = false;
             follower.setStartingPose(new Pose(72, 72, 0));

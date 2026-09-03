@@ -21,6 +21,7 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.geometry.Pose;
 
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "RED 9  Long", group = "Autonomous")
 @Configurable // Panels
@@ -31,7 +32,7 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
-
+    ElapsedTime loggerTimer;
     Intake in;
     Shooter sh;
     Logger lg;
@@ -44,7 +45,7 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
         pathTimer = new Timer();
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
-
+loggerTimer = new ElapsedTime();
 
         // Panels Telemetry instance
         TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -84,9 +85,13 @@ public class Auto9ArtefactsLongRed extends LinearOpMode {
             panelsTelemetry.debug("Y", follower.getPose().getY());
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+                loggerTimer.reset();
+            }
         }
         tt.turretRegulator.interrupt();
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
     }
 

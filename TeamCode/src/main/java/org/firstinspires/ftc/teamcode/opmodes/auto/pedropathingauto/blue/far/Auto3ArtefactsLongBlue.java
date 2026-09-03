@@ -9,6 +9,7 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
@@ -27,7 +28,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
-
+    ElapsedTime loggerTimer;
     Intake in;
     Shooter sh;
     Logger lg;
@@ -35,7 +36,6 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
     Limelight ll;
     AutoSniper as;
     private Paths paths; // Paths defined in the Paths class
-
 
 
     @Override
@@ -46,6 +46,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
 
         actionTimer = new Timer();
         actionTimer.resetTimer();
+        loggerTimer = new ElapsedTime();
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(56, 8, Math.toRadians(90)));
@@ -68,6 +69,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
         tt.turretRegulator.start();
         ll.startOrStopLL(false);
         sh.setVelocityTarget(Shooter.VELOCITY_FOR_LONG_THROW);
+        as.setAlliance(Alliance.BLUE);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -82,12 +84,17 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
             t.addData("X", follower.getPose().getX());
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
-         //   t.addData("Shooter Velocity", sh.getVelocityRPS());
+            //   t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
+
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+                loggerTimer.reset();
+            }
         }
         tt.turretRegulator.interrupt();
         ll.startOrStopLL(true);
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
     }
 
@@ -110,7 +117,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                if(actionTimer.getElapsedTime() < 15000) break;
+                if (actionTimer.getElapsedTime() < 15000) break;
 
                 setPathState(1);
             case 1:
@@ -120,7 +127,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
                 setPathState(2);
                 break;
             case 2:
-                if (!sh.isSpinUp()||follower.isBusy())  break;
+                if (!sh.isSpinUp() || follower.isBusy()) break;
                 sh.openTunnel();
                 setPathState(3);
                 break;
@@ -131,7 +138,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
                 setPathState(4);
                 break;
             case 4:
-                if(follower.isBusy()) break;
+                if (follower.isBusy()) break;
                 sh.closeTunnel();
                 sh.shootStop();
                 in.rotateStop();
@@ -139,8 +146,7 @@ public class Auto3ArtefactsLongBlue extends LinearOpMode {
                 break;
             case 5:
                 if (!follower.isBusy() && !sh.isTunnelOpen) {
-                    lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                    lg.fileClose();
+
                     setPathState(-100);
                 }
                 break;

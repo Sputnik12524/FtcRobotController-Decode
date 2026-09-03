@@ -10,6 +10,7 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
@@ -25,6 +26,7 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
     private Paths paths; // Paths defined in the Paths class
     private Timer pathTimer;
     private Timer actionTimer;
+    ElapsedTime loggerTimer;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
@@ -37,6 +39,7 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
         Timer opmodeTimer = new Timer();
         actionTimer = new Timer();
         actionTimer.resetTimer();
+        loggerTimer = new ElapsedTime();
         opmodeTimer.resetTimer();
 
         in = new Intake(this);
@@ -70,7 +73,14 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
             panelsTelemetry.debug("Y", follower.getPose().getY());
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.update(telemetry);
+
+            if (loggerTimer.milliseconds() > 300) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+                loggerTimer.reset();
+            }
         }
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+        lg.fileClose();
     }
 
 
@@ -180,8 +190,7 @@ public class Auto6ArtifactsShortRed extends LinearOpMode {
                     sh.shootStop();
                     in.rotateStop();
                     follower.followPath(paths.PathLeaving);
-                    lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                    lg.fileClose();
+
                     setPathState(-1);
                 }
                 break;

@@ -74,7 +74,7 @@ public class Auto3ArtifactsShortBlue extends LinearOpMode {
             t.update();
         }
         //   tt.turretRegulator.interrupt();
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
         lg.fileClose();
     }
 

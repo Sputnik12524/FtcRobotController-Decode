@@ -59,7 +59,7 @@ public class AutoPedroPark extends LinearOpMode {
             t.addData("Heading", follower.getPose().getHeading());
             t.update();
         }
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
         lg.fileClose();
     }
 

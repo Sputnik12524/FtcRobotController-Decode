@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -32,7 +31,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     Shooter sh;
     Intake in;
     Turret tt;
-    Transfer tr;
     Follower follower;
     AutoSniper as;
     Logger logger;
@@ -57,7 +55,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
         follower = Constants.createFollower(hardwareMap);
         logger = new Logger("pospos");
-        tr = new Transfer(this);
         ll = new Limelight(this);
         sh = new Shooter(this, follower);
         in = new Intake(this);
@@ -65,7 +62,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
         as = new AutoSniper(tt, sh, ll);
         dt = new DriveTrain(this);
         paths = new Paths(follower);
-        af = new AutoFSM(follower, tr, sh, ll, in, tt, logger, as, paths);
+        af = new AutoFSM(follower, sh, ll, in, tt, logger, as, paths);
 
         dashboard = FtcDashboard.getInstance();
         dashtele = dashboard.getTelemetry();
@@ -130,7 +127,7 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
 
         /// =====================DRIVE TRAIN===============================///
 
-        if (g1.rightBumper.isPressed()) { //посмотреть работает ли
+        if (g1.rightBumper.isPressed()) {
             dt.turnRightSlowMode();
         } else if (g1.leftBumper.isPressed()) {
             dt.turnLeftSlowMode();
@@ -244,26 +241,6 @@ public class TeleOpRoadRunnerV2 extends LinearOpMode {
     }
 
     void updateTelemetry() {
-        telemetry.addData("TeleState", af.mode);
-        telemetry.addData("autoState", af.autoState);
-        telemetry.addData("Shooter LOW AMPS", sh.getLowAmps());
-        telemetry.addData("Shooter UP AMPS", sh.getUpAmps());
-        telemetry.addData("Intake AMPS", in.getAmps());
-        telemetry.addData("Turret AMPS", tt.getAmps());
-        telemetry.addData("ЭКСТРЕННОЕ УПРАВЛЕНИЕ:", attentionControl);
-        telemetry.addData("Velocity", sh.getVelocityRPS());
-        telemetry.addData("InZone", sh.inZone());
-        telemetry.addData("howMany", tr.howMany());
-        // telemetry.addData("Позиция сброшена", isPoseReset);
-        telemetry.addData("Alliance", as.alliance);
-        telemetry.addData("TARGET", sh.velocityTarget / 28);
-        telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
-        telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-        telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
-        dashtele.addData("Target ", sh.velocityTarget / 28);
-        dashtele.addData("Velocity shooter", sh.getVelocityRPS());
-        dashtele.addData("ADJUSTER POS", sh.angleAdjuster.getPosition());
-        dashtele.update();
         telemetry.update();
     }
 

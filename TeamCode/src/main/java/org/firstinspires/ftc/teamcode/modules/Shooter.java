@@ -38,8 +38,12 @@ public class Shooter {
     Follower follower;
     Pose currentPose;
     ElapsedTime isSpinUpTimer = new ElapsedTime();
+    public  static  double p = 20;
+    public  static  double i = 0;
+    public  static  double d = 20;
+    public  static  double f = 15;
 
-    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(11, 0, 10, 13.5);
+    public static PIDFCoefficients MOTOR_VELO_PID_SHOOTERS = new PIDFCoefficients(p, i, d, f);
     private final ElapsedTime timer = new ElapsedTime();
 
     enum states {DEFAULT, INIT, SHOOT, UPDATE, RESTART, START}
@@ -49,19 +53,20 @@ public class Shooter {
     //---------------------------------------------- DASHBOARD
 
     /// Shooter
-    public static double VELOCITY_FOR_LONG_THROW = 77;  //47 //64
-    public static double VELOCITY_FOR_SHORT_THROW = 50;//52
-    public static double VELOCITY_FOR_MEDIUM_THROW = 60;  //47 //64
+    public static double VELOCITY_FOR_LONG_THROW = 60;
+    public static double VELOCITY_FOR_SHORT_THROW = 48;
+    public static double VELOCITY_FOR_MEDIUM_THROW = 60;
     public static double POWER = 1;
 
     ///  Cover
-    public static double POS_COVER_OPEN = 0.5;
-    public static double POS_COVER_CLOSE = 0.8;
+    public static double POS_COVER_OPEN = 0.525;
+    public static double POS_COVER_CLOSE = 0.775;
     public boolean canShoot = false;
 
     /// Adjuster
-    public static double POS_SHORT_THROW = 0.05;
-    public static double POS_LONG_THROW = 0.005;
+    ///
+    public static double POS_SHORT_THROW = 1;
+    public static double POS_LONG_THROW = 0.86;
     public static double TIME_BETWEEN_SHOOT = 130;
     public static double TIME_AFTER_SHOOT = 1500;
     public static double DELTA_ADJUSTER = 0.01;
@@ -105,7 +110,7 @@ public class Shooter {
         shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterUpper.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
@@ -130,7 +135,7 @@ public class Shooter {
         shooterUpper.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterLower.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        shooterLower.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterUpper.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setPIDFCoefficients(shooterUpper, MOTOR_VELO_PID_SHOOTERS);
         setPIDFCoefficients(shooterLower, MOTOR_VELO_PID_SHOOTERS);
@@ -201,9 +206,7 @@ public class Shooter {
     //---------------------------------------------- ADJUSTER
 
     public void setShortThrowMode() {
-        // setVelocityTarget(VELOCITY_FOR_SHORT_THROW + bonusShortVelocity);
         angleAdjuster.setPosition(POS_SHORT_THROW);
-        // shootByVelocity();
     }
 
     public void setLongThrowMode() {
@@ -316,6 +319,9 @@ public class Shooter {
     public double getVelocityRPS() {
         return (shooterUpper.getVelocity() + shooterLower.getVelocity()) / (TPR * 2);
     }
+    public double getVelocityUpper(){
+        return shooterUpper.getVelocity() / TPR;
+    }
 
     public double getVelocityTPS() {
         return shooterUpper.getVelocity();
@@ -324,4 +330,5 @@ public class Shooter {
     public double getAngleAdjusterPos() {
         return angleAdjuster.getPosition();
     }
+
 }

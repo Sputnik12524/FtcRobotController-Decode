@@ -73,7 +73,7 @@ public class ArtRedTravel6 extends LinearOpMode {
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
         }
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
         lg.fileClose();
     }
 
@@ -184,8 +184,6 @@ public class ArtRedTravel6 extends LinearOpMode {
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 4000) break;
                 in.rotateStop();
                 follower.followPath(paths.PathLeaving);
-                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                lg.fileClose();
                 setPathState(-100);
 
                 break;

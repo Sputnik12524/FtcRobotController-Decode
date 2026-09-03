@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.pedropathingauto.red;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -15,7 +16,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.Limelight;
 import org.firstinspires.ftc.teamcode.modules.Shooter;
-import org.firstinspires.ftc.teamcode.modules.Transfer;
 import org.firstinspires.ftc.teamcode.modules.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -30,15 +30,15 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     ElapsedTime timer;
+    ElapsedTime loggerTimer;
     public Pose currentPose; // Current pose of the robot
 
     Intake in;
     AutoSniper as;
     Shooter sh;
     Logger lg;
-    Transfer tr;
     Turret tt;
-    public static double TURRET_WAIT = 3500;
+    public static final double TURRET_WAIT = 3500;
 
 
     @Override
@@ -49,14 +49,13 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         timer = new ElapsedTime();
 
         actionTimer = new Timer();
+        loggerTimer = new ElapsedTime();
         actionTimer.resetTimer();
 
         Telemetry dash = FtcDashboard.getInstance().getTelemetry();
         Telemetry t = new MultipleTelemetry(telemetry, dash);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(123, 122, Math.toRadians(-136)));
-
-        tr = new Transfer(this);
 
         in = new Intake(this);
         Limelight ll = new Limelight(this);
@@ -69,7 +68,7 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
         sh.closeTunnel();
         as.setAlliance(Alliance.RED);
         sh.setShortThrowMode();
-        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW);
+        sh.setVelocityTarget(Shooter.VELOCITY_FOR_SHORT_THROW-2);
         tt.turretRegulator.start();
         ll.startOrStopLL(false);
 
@@ -82,22 +81,26 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
             currentPose = follower.getPose(); // Update the current pose
             as.continuousTurnTurretToGate(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
+            double turretPos = tt.getCurrentPosOfTurret();
             // Log values to Panels and Driver Station
             t.addData("Path State", pathState);
             t.addData("X", follower.getPose().getX());
             t.addData("Y", follower.getPose().getY());
             t.addData("Heading", follower.getPose().getHeading());
             t.addData("Shooter Velocity", sh.getVelocityRPS());
-            telemetry.addLine(String.valueOf((int) (follower.getPose().getX())));
-            telemetry.addLine(String.valueOf((int) follower.getPose().getY()));
-            telemetry.addLine(String.valueOf((int) Math.toDegrees(follower.getHeading())));
+            t.addData("Turret ", turretPos);
+
             t.update();
+            if (loggerTimer.milliseconds() > 300) {
+                lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+                loggerTimer.reset();
+            }
         }
-        tt.turnByTarget(0);
-        tt.turretRegulator.interrupt();
+        // tt.turnByTarget(0);
         ll.startOrStopLL(true);
 
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+        tt.turretRegulator.interrupt();
         lg.fileClose();
     }
 
@@ -174,8 +177,10 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                     .build();
 
             PathThirdScoring = follower.pathBuilder().addPath(
-                            new BezierLine(
+                            new BezierCurve(
                                     new Pose(126, 52),
+
+                                    new Pose(95, 72),
 
                                     scoringPath
                             )
@@ -209,10 +214,10 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
                 break;
 
             case 1:
-                if (!sh.isSpinUp() || follower.isBusy() || actionTimer.getElapsedTime() < TURRET_WAIT)
-                    break;
-                sh.openTunnel();
-                setPathState(2);
+                if (sh.isSpinUp() && !follower.isBusy()) {
+                    sh.openTunnel();
+                    setPathState(2);
+                }
                 break;
 
             case 2:
@@ -276,13 +281,17 @@ public class Auto9ArtefactsShortRed extends LinearOpMode {
 
             case 11:
                 if (follower.isBusy() || actionTimer.getElapsedTime() < 1500) break;
-                tt.turnByTarget(0);
                 as.enableAutoTurretAiming(false);
+                tt.turnByTarget(0);
                 in.rotateStop();
                 sh.shootStop();
                 follower.followPath(paths.PathLeaving);
-                setPathState(-100);
+                setPathState(12);
                 break;
+
+            case 12:
+                if (follower.isBusy() || actionTimer.getElapsedTime() < 10000) break;
+                setPathState(-100);
 
         }
 

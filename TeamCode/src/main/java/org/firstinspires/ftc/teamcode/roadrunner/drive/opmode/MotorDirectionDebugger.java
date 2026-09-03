@@ -13,9 +13,9 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
 /**
  * This is a simple teleop routine for debugging your motor configuration.
  * Pressing each of the buttons will power its respective motor.
- *
+ * <p>
  * Button Mappings:
- *
+ * <p>
  * Xbox/PS4 Button - Motor
  *   X / ▢         - Front Left
  *   Y / Δ         - Front Right
@@ -35,7 +35,7 @@ import org.firstinspires.ftc.teamcode.modules.drivetrainrr.DriveTrainMecanum;
  *               '.             /             Wheel       \    Wheel
  *                \.          .'              (A/X)        \   (B/O)
  *                  \________/
- *
+ * <p>
  * Uncomment the @Disabled tag below to use this opmode.
  */
 @Disabled

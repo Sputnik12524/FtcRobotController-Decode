@@ -10,6 +10,7 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.modules.Intake;
@@ -30,6 +31,7 @@ public class Auto3ArtifactsLongRed extends LinearOpMode {
     private Timer pathTimer;
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
+    ElapsedTime loggerTimer;
 
     Intake in;
     Shooter sh;
@@ -47,6 +49,7 @@ public class Auto3ArtifactsLongRed extends LinearOpMode {
 
         actionTimer = new Timer();
         actionTimer.resetTimer();
+        loggerTimer = new ElapsedTime();
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(90, 8, Math.toRadians(90)));//22,124
@@ -89,9 +92,13 @@ public class Auto3ArtifactsLongRed extends LinearOpMode {
             t.addData("Heading", follower.getPose().getHeading());
             t.addData("Shooter Velocity", sh.getVelocityRPS());
             t.update();
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), 0);
+                loggerTimer.reset();
+            }
         }
         tt.turretRegulator.interrupt();
-        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
         ll.startOrStopLL(true);
     }
@@ -139,8 +146,6 @@ public class Auto3ArtifactsLongRed extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy() && !sh.isTunnelOpen) {
-                    lg.writePose(Alliance.RED, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-                    lg.fileClose();
                     setPathState(-100);
                 }
                 break;

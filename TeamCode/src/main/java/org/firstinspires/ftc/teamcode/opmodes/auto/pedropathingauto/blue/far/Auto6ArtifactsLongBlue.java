@@ -33,6 +33,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
     private Timer actionTimer;
     public Pose currentPose; // Current pose of the robot
     ElapsedTime timer;
+    ElapsedTime loggerTimer;
 
     Intake in;
     Shooter sh;
@@ -44,6 +45,7 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
         actionTimer = new Timer();
         pathTimer = new Timer();
         timer = new ElapsedTime();
+        loggerTimer = new ElapsedTime();
         Timer opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
@@ -88,10 +90,14 @@ public class Auto6ArtifactsLongBlue extends LinearOpMode {
             panelsTelemetry.debug("Heading", follower.getPose().getHeading());
             panelsTelemetry.debug("Velocity", sh.getVelocityRPS());
             panelsTelemetry.update(telemetry);
+            if (loggerTimer.milliseconds() > 750) {
+                lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
+                loggerTimer.reset();
+            }
         }
 
 
-        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        lg.writePose(Alliance.BLUE, follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), tt.getCurrentPosOfTurret());
         lg.fileClose();
         as.enableAutoTurretAiming(false);
         tt.turnByTarget(0);

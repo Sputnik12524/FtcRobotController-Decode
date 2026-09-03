@@ -41,13 +41,17 @@ public class TurretPIDTest extends LinearOpMode {
         fl.setStartingPose(new Pose(72,72,0));
         fl.update();
 
+        kP = Turret.kPL;
+        kI = Turret.kIL;
+
         ll.startOrStopLL(false);
-        as.setAlliance(Alliance.BLUE);
+        as.setAlliance(Alliance.RED);
         tt.turretRegulator.start();
 
         waitForStart();
 
         while (opModeIsActive()) {
+            ll.update();
 
 
             fl.update();
@@ -73,19 +77,13 @@ public class TurretPIDTest extends LinearOpMode {
             if (gamepad2.aWasPressed()) magnetic = false;
 
             if (turretState) {
-//                as.continuousTurnTurretToGate(
-//                        fl.getPose().getX(),
-//                        fl.getPose().getY(),
-//                        fl.getHeading()
-//                );
 
-//                t.addLine("TURRET TELEMETRY:");
+                t.addLine("TURRET TELEMETRY:");
                 t.addData("target", tt.target);
                 t.addData("current", tt.getCurrentPosOfTurret());
-//                t.addData("error", tt.error);
-//                t.addData("target FROM AutoSniper", as.target);
-//                t.addData("angleOfTurret (отн. поля)", as.angleOfTurret);
-
+                t.addData("ll_weight", tt.ll_weight);
+                t.addData("aim method", tt.getAimMethod());
+                t.addData("tx", ll.getGoalTag()[1]);
             } else {
                 t.addLine("TURRET is stopped (put X)");
                 tt.turnByTarget(0);
@@ -97,12 +95,6 @@ public class TurretPIDTest extends LinearOpMode {
 
             dt.setMotorsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_trigger - gamepad1.left_trigger);
 
-//
-//            t.addData("Follower x", fl.getPose().getX());
-//            t.addData("Follower y", fl.getPose().getY());
-//            t.addData("Follower heading", fl.getPose().getHeading());
-//            t.addData("Tx", ll.getTagInfo().get(1) );
-//            t.addData("Aim method", tt.getAimMethod());
             t.addData("Magnetic state", tt.isMagneting());
             t.addData("Magnetic state", magnetic);
 
